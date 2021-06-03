@@ -107,6 +107,7 @@ export default {
   // Render configuration: https://nuxtjs.org/docs/2.x/configuration-glossary/configuration-render#csp
   render: {
     csp: {
+      addMeta: true,
       reportOnly: false,
       hashAlgorithm: "sha256",
       policies: {
