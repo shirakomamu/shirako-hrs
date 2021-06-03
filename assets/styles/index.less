@@ -1,0 +1,49 @@
+html,
+#app {
+  background-color: transparent;
+}
+
+// to prevent offcanvas from jumping
+html {
+  height: 100vh;
+  padding: 0;
+}
+body,
+#app,
+.layout-container {
+  min-height: 100vh;
+  padding: 0;
+}
+
+.show-when-wide {
+  @media not all and (min-width: 640px) {
+    display: none;
+  }
+}
+.show-when-narrow {
+  @media (min-width: 640px) {
+    display: none;
+  }
+}
+
+// dark mode for @tailwindcss/forms
+@media (prefers-color-scheme: dark) {
+  [type="text"],
+  [type="email"],
+  [type="url"],
+  [type="password"],
+  [type="number"],
+  [type="date"],
+  [type="datetime-local"],
+  [type="month"],
+  [type="search"],
+  [type="tel"],
+  [type="time"],
+  [type="week"],
+  [multiple],
+  textarea,
+  select {
+    border-color: rgb(55, 65, 81);
+    background-color: rgb(25, 25, 25);
+  }
+}
