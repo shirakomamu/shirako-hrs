@@ -36,7 +36,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: ["@/assets/styles/index.less"],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [{ src: "./plugins/axios" }],
@@ -61,22 +61,23 @@ export default {
     [
       "@dansmaculotte/nuxt-security",
       {
-        dev: true,
+        dev: false,
         hsts: {
           maxAge: 63072000,
           includeSubDomains: true,
           preload: true,
         },
-        // csp: {
-        //   directives: {
-        //     defaultSrc: ["'self'"],
-        //     scriptSrc: ["'self'"],
-        //     fontSrc: ["'self'"],
-        //     imgSrc: ["'self'"],
-        //     styleSrc: ["'self'"],
-        //   },
-        //   reportOnly: false,
-        // },
+        csp: {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            objectSrc: ["'self'"],
+            // fontSrc: ["'self'"],
+            // imgSrc: ["'self'"],
+            // styleSrc: ["'self'"],
+          },
+          reportOnly: false,
+        },
         referrer: "same-origin",
         additionalHeaders: true, // x-frame-options, x-xss-protection, x-content-type-options
       },
@@ -105,19 +106,22 @@ export default {
   },
 
   // Render configuration: https://nuxtjs.org/docs/2.x/configuration-glossary/configuration-render#csp
-  render: {
-    csp: {
-      addMeta: true,
-      reportOnly: false,
-      hashAlgorithm: "sha256",
-      policies: {
-        "default-src": ["'self'"],
-        "script-src": ["'self'"],
-        "img-src": ["'self'"],
-        "style-src": ["'self'"],
-      },
-    },
-  },
+  // render: {
+  //   csp: {
+  //     reportOnly: false,
+  //     // hashAlgorithm: "sha256",
+  //     policies: {
+  //       "default-src": ["'self'"],
+  //       "script-src": ["'self'"],
+  //       "img-src": ["'self'"],
+  //       "style-src": ["'self'"],
+  //       "connect-src":
+  //         process.env.NODE_ENV === "production"
+  //           ? ["'self'"]
+  //           : ["'self'", "localhost:3000"],
+  //     },
+  //   },
+  // },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
@@ -127,14 +131,7 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-    extend(config, { isClient }) {
-      // Extend only webpack config for client-bundle
-      if (isClient) {
-        config.devtool = "source-map";
-      }
-    },
-  },
+  build: {},
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
@@ -143,9 +140,10 @@ export default {
 
   // TailwindCSS module configuration (https://tailwindcss.nuxtjs.org/options)
   tailwindcss: {
-    // cssPath: "~/assets/css/tailwind.css",
+    cssPath: "@/assets/styles/tailwind.less",
     configPath: "tailwind.config.js",
     exposeConfig: false,
+    viewer: false,
     config: {},
   },
 } as NuxtConfig;
