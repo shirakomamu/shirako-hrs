@@ -1,7 +1,15 @@
 import { NuxtConfig } from "@nuxt/types";
+// import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import appinfo from "./appinfo";
 
+const serverConfig = {
+  host: process.env.NODE_ENV !== "production" ? "localhost" : "0.0.0.0",
+  port: process.env.PORT || 3000,
+};
+
 export default {
+  srcDir: "client/",
+
   target: "server",
   ssr: true,
 
@@ -58,6 +66,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     "@nuxtjs/axios",
+    "@/modules/api",
     [
       "@dansmaculotte/nuxt-security",
       {
@@ -70,11 +79,11 @@ export default {
         csp: {
           directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'"],
+            scriptSrc: ["'self'", "unsafe-inline"], // inline required by vue2
             objectSrc: ["'self'"],
+            styleSrc: ["'self'", "unsafe-inline"], // inline required by vue2
             // fontSrc: ["'self'"],
             // imgSrc: ["'self'"],
-            // styleSrc: ["'self'"],
           },
           reportOnly: false,
         },
@@ -95,47 +104,46 @@ export default {
     axios: {
       baseURL:
         process.env.BASE_URL ||
-        "http://" + appinfo.serverHost + ":" + appinfo.serverPort,
+        "http://" + serverConfig.host + ":" + serverConfig.port,
     },
   },
 
   server: {
-    host: appinfo.serverHost,
-    port: appinfo.serverPort,
+    host: serverConfig.host,
+    port: serverConfig.port,
     timing: false,
   },
 
-  // Render configuration: https://nuxtjs.org/docs/2.x/configuration-glossary/configuration-render#csp
-  // render: {
-  //   csp: {
-  //     reportOnly: false,
-  //     // hashAlgorithm: "sha256",
-  //     policies: {
-  //       "default-src": ["'self'"],
-  //       "script-src": ["'self'"],
-  //       "img-src": ["'self'"],
-  //       "style-src": ["'self'"],
-  //       "connect-src":
-  //         process.env.NODE_ENV === "production"
-  //           ? ["'self'"]
-  //           : ["'self'", "localhost:3000"],
-  //     },
+  // serverMiddleware: [
+  //   {
+  //     path: "/api",
+  //     handler: await nest(), // use nest app instance as a normal nuxt server middleware
+  //   },
+  // ],
+
+  // PWA module configuration: https://go.nuxtjs.dev/pwa
+  // pwa: {
+  //   manifest: {
+  //     lang: "en",
   //   },
   // },
 
-  // PWA module configuration: https://go.nuxtjs.dev/pwa
-  pwa: {
-    manifest: {
-      lang: "en",
-    },
-  },
-
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: {
+    // extend(config) {
+    //   config.resolve = {
+    //     plugins: [
+    //       new TsconfigPathsPlugin({
+    //         configFile: "./tsconfig.json",
+    //       }),
+    //     ],
+    //   };
+    // },
+  },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    baseURL: "http://" + appinfo.serverHost + ":" + appinfo.serverPort,
+    baseURL: "http://" + serverConfig.host + ":" + serverConfig.port,
   },
 
   // TailwindCSS module configuration (https://tailwindcss.nuxtjs.org/options)
