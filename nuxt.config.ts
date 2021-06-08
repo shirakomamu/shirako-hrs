@@ -59,7 +59,7 @@ export default {
     // https://go.nuxtjs.dev/tailwindcss
     "@nuxtjs/tailwindcss",
     // https://go.nuxtjs.dev/pwa
-    "@nuxtjs/pwa",
+    // "@nuxtjs/pwa",
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -79,9 +79,9 @@ export default {
         csp: {
           directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "unsafe-inline"], // inline required by vue2
+            scriptSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             objectSrc: ["'self'"],
-            styleSrc: ["'self'", "unsafe-inline"], // inline required by vue2
+            styleSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             // fontSrc: ["'self'"],
             // imgSrc: ["'self'"],
           },
