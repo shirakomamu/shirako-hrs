@@ -1,6 +1,4 @@
-import configuration, {
-  types as SrkErrorTypes,
-} from "server/src/services/srk-error";
+import configuration, { types as SrkErrorTypes } from "src/services/srk-error";
 
 export default class SrkError implements SrkErrorTypes.SrkErrorInstance {
   public name: string;

@@ -1,6 +1,6 @@
-import { enums as GuardEnums } from "server/src/services/guard";
-import { enums as HrbacEnums } from "server/src/services/hrbac";
 import * as types from "./pages.types";
+import { enums as GuardEnums } from "src/services/guard";
+import { enums as HrbacEnums } from "src/services/hrbac";
 
 const pageMap: types.PageMap = {
   "/": {},

@@ -1,4 +1,4 @@
-import { enums as HrbacEnums } from "server/src/services/hrbac";
+import { enums as HrbacEnums } from "src/services/hrbac";
 
 export default class Actor {
   public id: string;

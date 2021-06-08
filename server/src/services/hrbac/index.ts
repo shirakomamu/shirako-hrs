@@ -1,6 +1,6 @@
-import HRBAC from "server/src/classes/Hrbac";
-import * as enums from "server/src/services/hrbac/hrbac.enums";
-import * as types from "server/src/services/hrbac/hrbac.types";
+import HRBAC from "src/classes/Hrbac";
+import * as enums from "src/services/hrbac/hrbac.enums";
+import * as types from "src/services/hrbac/hrbac.types";
 
 const opts = {
   [enums.RoleGroup.owner]: {
