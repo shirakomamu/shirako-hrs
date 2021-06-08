@@ -1,25 +1,9 @@
-import express from "express";
-import cookieParser from "cookie-parser";
+const path = require("path");
+const moduleAlias = require("module-alias");
+moduleAlias.addAliases({
+  "~~": path.join(__dirname, "/../"),
+  "@@": path.join(__dirname, "/../"),
+  src: path.join(__dirname, "/src/"),
+});
 
-// Require authentication handler
-import addUserData from "./src/middleware/addUserData";
-
-// API routes
-import cats from "./src/routes/cats";
-
-// Create express instance
-const app: express.Application = express();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.COOKIE_SECRET)); // for signed cookies
-app.use(cookieParser()); // for unsigned cookies
-
-// Add authentication data
-app.use(addUserData);
-
-// Import API Routes
-app.use("/cats", cats);
-
-// Export express app
-export default app;
+module.exports = require("./app");

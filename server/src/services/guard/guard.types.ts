@@ -1,5 +1,5 @@
-import { Role } from "server/src/services/hrbac/hrbac.enums";
 import { GuardBehavior } from "./guard.enums";
+import { Role } from "src/services/hrbac/hrbac.enums";
 
 export type Guard = {
   roles?: Role[];

@@ -2,38 +2,50 @@ import { Response } from "express";
 import {
   AUTH_JWT_COOKIE_NAME,
   AUTH_JWT_COOKIE_PARAMETERS,
-} from "../config/cookie";
+} from "src/config/cookie";
+import { interfaces as JwtInterfaces } from "src/services/jwt";
 import SrkError from "./SrkError";
 
 export default class SrkResponse {
-  public status: number;
   public ok: boolean;
   public error?: SrkError | null;
   public payload?: any;
+  public status: number;
+  public headers?: {
+    [key: string]: string;
+  };
 
-  constructor({
-    status,
-    error,
-    payload,
-  }: {
-    status?: number;
-    error?: SrkError | null;
-    payload?: any;
-  } = {}) {
-    this.status = status || (!error ? 200 : error.status);
+  constructor(
+    res: Response | JwtInterfaces.SrkExpressResponse,
+    {
+      status,
+      headers,
+      error,
+      payload,
+    }: {
+      status?: number;
+      headers?: { [key: string]: string };
+      error?: SrkError | null;
+      payload?: any;
+    } = {}
+  ) {
     this.ok = !error;
     this.error = error;
     this.payload = payload;
-  }
+    this.status = status || (!error ? 200 : error.status);
+    this.headers = headers;
 
-  public send(res: Response) {
     res.status(this.status);
+
+    for (const header in this.headers) {
+      res.header(header, this.headers[header]);
+    }
 
     if (this.error?.status === 401) {
       res.clearCookie(AUTH_JWT_COOKIE_NAME, AUTH_JWT_COOKIE_PARAMETERS);
     }
 
-    return res.json({
+    res.json({
       ok: this.ok,
       error:
         this.error instanceof SrkError

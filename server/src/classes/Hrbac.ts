@@ -1,12 +1,6 @@
-import {
-  enums as HrbacEnums,
-  types as HrbacTypes,
-} from "server/src/services/hrbac";
-import {
-  enums as GuardEnums,
-  types as GuardTypes,
-} from "server/src/services/guard";
 import memoize from "memoizee";
+import { enums as HrbacEnums, types as HrbacTypes } from "src/services/hrbac";
+import { enums as GuardEnums, types as GuardTypes } from "src/services/guard";
 import Actor from "./Actor";
 
 type ResolvedRbacOptions = {
@@ -33,9 +27,9 @@ export default class Hrbac {
     this.memoizedCan = this._getMemoizee();
   }
 
-  public can(actor: Actor, guard: GuardTypes.Guard): boolean {
+  public can(guard: GuardTypes.Guard, actor?: Actor): boolean {
     const roleResult = this.memoizedCan({
-      rgs: actor.rgs,
+      rgs: actor?.rgs || [],
       roles: guard.roles || [],
       mode: guard.mode,
     });
@@ -53,9 +47,9 @@ export default class Hrbac {
     // else, try to resolve the guards
     let guardResult = false;
     if (guard.mode === GuardEnums.GuardBehavior.all) {
-      guardResult = guard.guards.every((e) => this.can(actor, e));
+      guardResult = guard.guards.every((e) => this.can(e, actor));
     } else {
-      guardResult = guard.guards.some((e) => this.can(actor, e));
+      guardResult = guard.guards.some((e) => this.can(e, actor));
     }
 
     return guardResult;

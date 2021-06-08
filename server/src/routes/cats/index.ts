@@ -1,13 +1,29 @@
 import { Router } from "express";
-// import { body, param, query } from "express-validator";
+import { query } from "express-validator";
 
-import enforceRole from "@/src/middleware/enforceRole";
-import { route } from "@/src/middleware/route";
-import catsController from "./cats.controller";
+import { route } from "src/middleware/route";
+import useSimpleGuard from "src/middleware/useSimpleGuard";
+import { enums as HrbacEnums } from "src/services/hrbac";
+import CatsController from "./cats.controller";
 
 const catsController = new CatsController();
 const router: Router = Router();
 
-router.post("/", [enforceRole()], route(catsController.createAccount));
+router.get("/", [], route(catsController.listCats));
+router.get(
+  "/guarded",
+  [useSimpleGuard([HrbacEnums.Role._self_profile])],
+  route(catsController.listCats)
+);
+router.get(
+  "/validated",
+  [query("test").exists()],
+  route(catsController.listCats)
+);
+router.post(
+  "/",
+  [useSimpleGuard([HrbacEnums.Role._self_profile])],
+  route(catsController.listCats)
+);
 
 export default router;
