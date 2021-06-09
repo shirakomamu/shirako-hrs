@@ -130,11 +130,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    extend(config) {
-      config.externals = {
-        knex: "commonjs knex",
-        "mikro-orm": "commonjs mikro-orm",
-      };
+    extend(_config) {
+      // config.externals = {
+      //   knex: "commonjs knex",
+      //   "mikro-orm": "commonjs mikro-orm",
+      // };
       // config.resolve = {
       //   plugins: [
       //     new TsconfigPathsPlugin({
