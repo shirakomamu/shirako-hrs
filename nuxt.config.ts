@@ -130,15 +130,19 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    // extend(config) {
-    //   config.resolve = {
-    //     plugins: [
-    //       new TsconfigPathsPlugin({
-    //         configFile: "./tsconfig.json",
-    //       }),
-    //     ],
-    //   };
-    // },
+    extend(config) {
+      config.externals = {
+        knex: "commonjs knex",
+        "mikro-orm": "commonjs mikro-orm",
+      };
+      // config.resolve = {
+      //   plugins: [
+      //     new TsconfigPathsPlugin({
+      //       configFile: "./tsconfig.json",
+      //     }),
+      //   ],
+      // };
+    },
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)

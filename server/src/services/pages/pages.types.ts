@@ -1,5 +1,5 @@
-import { types as GuardTypes } from "src/services/guard";
+import { Guard } from "src/services/guard";
 
 export type PageMap = {
-  [key: string]: GuardTypes.Guard;
+  [key: string]: Guard;
 };

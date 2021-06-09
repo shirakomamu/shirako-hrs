@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import SrkError from "src/classes/SrkError";
-import { interfaces as JwtInterfaces } from "src/services/jwt";
+import { SrkExpressResponse } from "src/services/jwt";
 
 export const route = (func: Function) => {
   return (
     req: Request,
-    res: Response | JwtInterfaces.SrkExpressResponse,
+    res: Response | SrkExpressResponse,
     next: NextFunction
   ) => {
     const errors = validationResult(req);

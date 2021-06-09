@@ -1,47 +1,45 @@
 import HRBAC from "src/classes/Hrbac";
-import * as enums from "src/services/hrbac/hrbac.enums";
-import * as types from "src/services/hrbac/hrbac.types";
+import { Role, RoleGroup } from "./hrbac.enums";
+import { HrbacOptions } from "./hrbac.types";
 
 const opts = {
-  [enums.RoleGroup.owner]: {
+  [RoleGroup.owner]: {
     name: "Root",
     description: "Root permission.",
     roles: [],
-    inherits: [enums.RoleGroup.admin],
+    inherits: [RoleGroup.admin],
   },
-  [enums.RoleGroup.admin]: {
+  [RoleGroup.admin]: {
     name: "Administrator",
     description: "Super administrator.",
-    roles: [enums.Role._acl_roles_equal],
-    inherits: [enums.RoleGroup.acl_manager],
+    roles: [Role._acl_roles_equal],
+    inherits: [RoleGroup.acl_manager],
   },
-  [enums.RoleGroup.acl_manager]: {
+  [RoleGroup.acl_manager]: {
     name: "ACL manager",
     description: "Manage application ACL.",
     roles: [],
-    inherits: [
-      enums.RoleGroup.acl_members_manager,
-      enums.RoleGroup.acl_logs_viewer,
-    ],
+    inherits: [RoleGroup.acl_members_manager, RoleGroup.acl_logs_viewer],
   },
-  [enums.RoleGroup.acl_members_manager]: {
+  [RoleGroup.acl_members_manager]: {
     name: "ACL members manager",
     description: "Manage application members.",
-    roles: [enums.Role._acl_members_ALL, enums.Role._acl_roles_lower],
+    roles: [Role._acl_members_ALL, Role._acl_roles_lower],
   },
-  [enums.RoleGroup.acl_logs_viewer]: {
+  [RoleGroup.acl_logs_viewer]: {
     name: "ACL logs viewer",
     description: "View system logs.",
-    roles: [enums.Role._acl_logs_view],
+    roles: [Role._acl_logs_view],
   },
-  [enums.RoleGroup.member]: {
+  [RoleGroup.member]: {
     name: "Member",
-    description: "Base member enums.role.",
-    roles: [enums.Role._self_profile, enums.Role._self_apis],
+    description: "Base member role.",
+    roles: [Role._self_profile, Role._self_apis],
   },
-} as types.HrbacOptions;
+} as HrbacOptions;
 
 const hrbac = new HRBAC(opts);
 
 export default hrbac;
-export { types, enums };
+export * from "src/services/hrbac/hrbac.enums";
+export * from "src/services/hrbac/hrbac.types";

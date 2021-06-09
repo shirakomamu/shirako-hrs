@@ -1,5 +1,3 @@
-import * as types from "./srk-error.types";
-
 const configuration = {
   internalError: {
     name: "internal_error",
@@ -59,4 +57,4 @@ const configuration = {
 };
 
 export default configuration;
-export { types };
+export * from "./srk-error.types";

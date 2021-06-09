@@ -2,12 +2,12 @@
 import { NextFunction, Request, Response } from "express";
 import SrkError from "src/classes/SrkError";
 import SrkResponse from "src/classes/SrkResponse";
-import { interfaces as JwtInterfaces } from "src/services/jwt";
+import { SrkExpressResponse } from "src/services/jwt";
 
 export default function (
   error: Error | SrkError,
   _req: Request,
-  res: Response | JwtInterfaces.SrkExpressResponse,
+  res: Response | SrkExpressResponse,
   _next: NextFunction
 ) {
   if (error instanceof SrkError) {

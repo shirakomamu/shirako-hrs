@@ -1,0 +1,6 @@
+export const SNOWFLAKE_EPOCH = 1608336000000;
+export const SNOWFLAKE_WORKER_ID =
+  Number(process.env.API_SNOWFLAKE_WORKER_ID) || 101;
+export const SNOWFLAKE_WORKER_BITS = 8;
+export const SNOWFLAKE_PROCESS_BITS = 0;
+export const SNOWFLAKE_INCREMENT_BITS = 14;

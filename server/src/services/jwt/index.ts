@@ -1,5 +1,3 @@
-import * as enums from "./jwt.enums";
-import * as interfaces from "./jwt.interfaces";
-import * as types from "./jwt.types";
-
-export { enums, interfaces, types };
+export * from "./jwt.enums";
+export * from "./jwt.interfaces";
+export * from "./jwt.types";

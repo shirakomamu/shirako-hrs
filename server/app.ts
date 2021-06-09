@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 
 // Require authentication handler
 import addUserData from "src/middleware/addUserData";
+import initializeDb from "src/middleware/initializeDb";
 
 import routes from "src/routes";
 
@@ -17,6 +18,9 @@ app.use(cookieParser()); // for unsigned cookies
 
 // Add authentication data
 app.use(addUserData);
+
+// make sure orm is loaded
+app.use(initializeDb);
 
 // Import API Routes
 app.use(routes);

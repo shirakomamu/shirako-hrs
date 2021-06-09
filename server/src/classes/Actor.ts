@@ -1,30 +1,30 @@
-import { enums as HrbacEnums } from "src/services/hrbac";
+import { RoleGroup } from "src/services/hrbac";
 
 export default class Actor {
   public id: string;
-  public identifier: string; // user-visible ID (must be unique)
-  public email: string;
+  public username: string; // user-visible ID (must be unique)
+  public email: string | null;
   public cohort: string | null; // sub-managed member
   public key: string | null; // api key, non-null if used
-  public rgs: HrbacEnums.RoleGroup[];
+  public rgs: RoleGroup[];
 
   constructor({
     id,
-    identifier,
+    username,
     email,
     cohort,
     key,
     rgs,
   }: {
     id: string;
-    identifier: string;
+    username: string;
     email: string;
     cohort: string | null;
     key: string | null;
-    rgs: HrbacEnums.RoleGroup[];
+    rgs: RoleGroup[];
   }) {
     this.id = id;
-    this.identifier = identifier;
+    this.username = username;
     this.email = email;
     this.cohort = cohort;
     this.key = key;

@@ -3,7 +3,7 @@ import {
   AUTH_JWT_COOKIE_NAME,
   AUTH_JWT_COOKIE_PARAMETERS,
 } from "src/config/cookie";
-import { interfaces as JwtInterfaces } from "src/services/jwt";
+import { SrkExpressResponse } from "src/services/jwt";
 import SrkError from "./SrkError";
 
 export default class SrkResponse {
@@ -16,7 +16,7 @@ export default class SrkResponse {
   };
 
   constructor(
-    res: Response | JwtInterfaces.SrkExpressResponse,
+    res: Response | SrkExpressResponse,
     {
       status,
       headers,

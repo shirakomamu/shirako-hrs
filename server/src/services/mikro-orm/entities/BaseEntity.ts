@@ -1,16 +1,21 @@
-import { EntitySchema } from "@mikro-orm/core";
+import { BigIntType, EntitySchema } from "@mikro-orm/core";
+import snowflake from "src/services/snowflake";
 
-export interface BaseEntity {
-  id: number;
+export interface IBaseEntity {
+  id: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export default new EntitySchema<BaseEntity>({
+export default new EntitySchema<IBaseEntity>({
   name: "BaseEntity",
   abstract: true,
   properties: {
-    id: { type: "number", primary: true },
+    id: {
+      type: BigIntType,
+      primary: true,
+      onCreate: () => snowflake.generate(),
+    },
     createdAt: { type: "date", onCreate: () => new Date(), nullable: true },
     updatedAt: {
       type: "date",
