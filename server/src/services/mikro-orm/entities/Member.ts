@@ -2,12 +2,25 @@ import { Collection, EntitySchema } from "@mikro-orm/core";
 import { IApiKey } from "./ApiKey";
 import { IBaseEntity } from "./BaseEntity";
 
-export interface IMember extends IBaseEntity {
+export class IMember extends IBaseEntity {
   username: string;
   discriminator: number;
-  email: string | null;
+  email?: string | null;
   pwHash: string;
-  apiKeys: Collection<IApiKey>;
+  apiKeys = new Collection<IApiKey>(this);
+
+  constructor(
+    username: string,
+    discriminator: number,
+    pwHash: string,
+    email?: string
+  ) {
+    super();
+    this.username = username;
+    this.discriminator = discriminator;
+    this.pwHash = pwHash;
+    this.email = email;
+  }
 }
 
 export default new EntitySchema<IMember, IBaseEntity>({
@@ -25,4 +38,10 @@ export default new EntitySchema<IMember, IBaseEntity>({
       orphanRemoval: true,
     },
   },
+  uniques: [
+    {
+      properties: ["username", "discriminator"],
+      name: "fullUsername",
+    },
+  ],
 });

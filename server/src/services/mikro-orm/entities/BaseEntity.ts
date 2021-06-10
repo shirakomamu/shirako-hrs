@@ -1,10 +1,10 @@
 import { BigIntType, EntitySchema } from "@mikro-orm/core";
 import snowflake from "src/services/snowflake";
 
-export interface IBaseEntity {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+export class IBaseEntity {
+  id!: string;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export default new EntitySchema<IBaseEntity>({

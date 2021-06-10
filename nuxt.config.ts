@@ -158,4 +158,6 @@ export default {
     viewer: false,
     config: {},
   },
+
+  ignore: ["**/*.test.*", ["./migrations/*.*"]],
 } as NuxtConfig;

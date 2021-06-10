@@ -21,4 +21,5 @@ module.exports = {
       },
     ],
   },
+  ignorePatterns: ["**/migrations/Migration*.js"],
 };

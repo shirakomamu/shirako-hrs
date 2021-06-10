@@ -12,7 +12,8 @@ export default function (
 ) {
   if (error instanceof SrkError) {
     // if it's a managed error, then return it to user
-    console.error("Managed error:", error);
+    // console.error("Managed error:", error);
+    console.log("Error");
     return new SrkResponse(res, { error });
   } else {
     // if it's an unknown error, throw a generic internal

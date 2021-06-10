@@ -1,14 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { RequestContext } from "@mikro-orm/core";
 import { SrkExpressResponse } from "src/services/jwt";
-import ormService from "src/services/mikro-orm";
+import { storage } from "src/services/mikro-orm";
+import { DI } from "src/app";
 
-export default async (
+export default (
   _req: Request,
   _res: Response | SrkExpressResponse,
   next: NextFunction
 ) => {
-  const orm = await ormService;
-  RequestContext.create(orm.em, next);
-  // next();
+  storage.run(DI.em.fork(true, true), next);
 };

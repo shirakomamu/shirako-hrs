@@ -7,7 +7,7 @@ const configuration = {
   badRequest: {
     name: "bad_request",
     status: 400,
-    message: "The submitted data was not accepted.",
+    message: "The request data was rejected.",
   },
   badRoute: {
     name: "bad_route",

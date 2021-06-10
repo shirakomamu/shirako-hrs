@@ -2,10 +2,17 @@ import { EntitySchema } from "@mikro-orm/core";
 import { IBaseEntity } from "./BaseEntity";
 import { IMember } from "./Member";
 
-export interface IApiKey extends IBaseEntity {
+export class IApiKey extends IBaseEntity {
   key: string;
   useCount: number;
   member: IMember;
+
+  constructor(key: string, member: IMember) {
+    super();
+    this.key = key;
+    this.useCount = 0;
+    this.member = member;
+  }
 }
 
 export default new EntitySchema<IApiKey, IBaseEntity>({
