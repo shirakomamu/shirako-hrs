@@ -1,4 +1,5 @@
 import { ParamSchema } from "express-validator";
+import { NUM_AVAILABLE_DISCRIMINATORS } from "src/config/discriminator";
 import zxcvbn from "zxcvbn";
 
 export const UsernameParamSchema: ParamSchema = {
@@ -16,6 +17,21 @@ export const UsernameParamSchema: ParamSchema = {
   },
   isAlphanumeric: {
     errorMessage: "Username must consist of letters and numbers",
+  },
+};
+
+export const DiscriminatorParamSchema: ParamSchema = {
+  in: ["body"],
+  optional: true,
+  toInt: true,
+  isInt: {
+    errorMessage: `Discriminator must be an integer 0 ~ ${
+      NUM_AVAILABLE_DISCRIMINATORS - 1
+    }`,
+    options: {
+      min: 0,
+      max: NUM_AVAILABLE_DISCRIMINATORS - 1,
+    },
   },
 };
 

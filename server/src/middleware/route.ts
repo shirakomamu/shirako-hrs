@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import SrkError from "src/classes/SrkError";
 import { SrkExpressResponse } from "src/services/jwt";
-import errorHandler from "./errorHandler";
 
 export const route = (func: Function) => {
   return async (
@@ -14,18 +13,13 @@ export const route = (func: Function) => {
 
     /* validate all generic errors */
     if (!errors.isEmpty()) {
-      return errorHandler(
-        new SrkError("badRequest", errors.mapped()),
-        req,
-        res,
-        next
-      );
+      return next(new SrkError("badRequest", errors.mapped()));
     }
 
     try {
       await func(req, res, next);
     } catch (e) {
-      return errorHandler(e, req, res, next);
+      return next(e);
     }
   };
 };

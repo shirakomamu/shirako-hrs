@@ -1,5 +1,8 @@
 import { Router } from "express";
 
+// Rate limiter
+import rateLimiterRedis from "src/middleware/rateLimiterRedis";
+
 // Error catcher
 import errorHandler from "src/middleware/errorHandler";
 
@@ -10,6 +13,7 @@ import catchall from "src/routes/catchall";
 
 const router: Router = Router();
 
+router.use(rateLimiterRedis);
 router.use("/cats", cats);
 router.use("/auth", auth);
 router.use(catchall);

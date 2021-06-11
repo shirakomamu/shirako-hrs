@@ -5,7 +5,7 @@ import SrkError from "src/classes/SrkError";
 
 function assert(_jwt: any): asserts _jwt is SrkCookie {}
 
-export default function (req: Request, res: Response, next: NextFunction) {
+export default (req: Request, res: Response, next: NextFunction) => {
   // if no jwt is provided in signed cookie
   if (!req.signedCookies?.jwt) {
     res.locals.authResult = {
@@ -33,4 +33,4 @@ export default function (req: Request, res: Response, next: NextFunction) {
     actor: jwtData.actor,
   } as SrkCookie;
   return next();
-}
+};

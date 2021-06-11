@@ -3,10 +3,10 @@ import { SrkExpressResponse } from "src/services/jwt";
 import { storage } from "src/services/mikro-orm";
 import { DI } from "src/app";
 
-export default (
+export default async (
   _req: Request,
   _res: Response | SrkExpressResponse,
   next: NextFunction
 ) => {
-  storage.run(DI.em.fork(true, true), next);
+  storage.run((await DI.orm).em.fork(true, true), next);
 };

@@ -5,7 +5,7 @@ import { IBaseEntity } from "./BaseEntity";
 export class IMember extends IBaseEntity {
   username: string;
   discriminator: number;
-  email?: string | null;
+  email: string | null;
   pwHash: string;
   apiKeys = new Collection<IApiKey>(this);
 
@@ -13,7 +13,7 @@ export class IMember extends IBaseEntity {
     username: string,
     discriminator: number,
     pwHash: string,
-    email?: string
+    email: string | null
   ) {
     super();
     this.username = username;

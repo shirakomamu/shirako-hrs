@@ -1,7 +1,7 @@
 import { Request } from "express";
 import SrkResponse from "src/classes/SrkResponse";
 import { SrkExpressResponse } from "src/services/jwt";
-import registerNewMember from "./services/registerNewMember";
+import { registerNewMember } from "./methods";
 
 export default class {
   public registerNewMember = async (req: Request, res: SrkExpressResponse) => {

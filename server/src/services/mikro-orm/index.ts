@@ -6,7 +6,12 @@ import {
   Dictionary,
 } from "@mikro-orm/core";
 import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
+import {
+  RedisCacheAdapter,
+  RedisCacheAdapterOptions,
+} from "mikro-orm-cache-adapter-redis";
 import SrkError from "src/classes/SrkError";
+import createRedis from "src/services/redis";
 import { BaseEntity, ApiKey, Member } from "./entities";
 
 const storage = new AsyncLocalStorage<EntityManager>();
@@ -23,6 +28,15 @@ const orm = MikroORM.init({
     disableDynamicFileAccess: true,
     requireEntitiesArray: true,
     alwaysAnalyseProperties: true,
+  },
+  resultCache: {
+    adapter: RedisCacheAdapter,
+    options: {
+      client: createRedis({
+        keyPrefix: "mikro-orm:",
+      }),
+      debug: process.env.NODE_ENV !== "production",
+    } as RedisCacheAdapterOptions,
   },
   driverOptions: {
     connection: {
