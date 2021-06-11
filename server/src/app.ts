@@ -26,11 +26,12 @@ export const DI = {} as {
 
 (async () => {
   DI.orm = ormService;
-  DI.em = (await DI.orm).em as EntityManager;
-  DI.memberRepo = DI.em.getRepository(Member);
   const migrator = (await DI.orm).getMigrator();
   await migrator.createMigration();
   await migrator.up();
+
+  DI.em = (await DI.orm).em as EntityManager;
+  DI.memberRepo = DI.em.getRepository(Member);
 })();
 app.use(initializeDb);
 

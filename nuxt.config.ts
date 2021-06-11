@@ -98,6 +98,7 @@ export default {
       browserBaseURL: process.env.BROWSER_BASE_URL || "/",
     },
     appinfo,
+    fcSitekey: appinfo.fcSitekey,
   },
 
   privateRuntimeConfig: {
