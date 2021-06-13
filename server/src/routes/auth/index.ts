@@ -1,16 +1,24 @@
 import { Router } from "express";
-import { checkSchema } from "express-validator";
 
 import { route } from "src/middleware/route";
 import AuthController from "./auth.controller";
-import { RegisterNewMemberSchema } from "./auth.validation";
+import {
+  PageAuthValidators,
+  RegisterNewMemberValidators,
+} from "./auth.validation";
 
 const authController = new AuthController();
 const router: Router = Router();
 
 router.post(
+  "/pages",
+  ...PageAuthValidators,
+  route(authController.checkPageAccess)
+);
+
+router.post(
   "/register",
-  checkSchema(RegisterNewMemberSchema),
+  ...RegisterNewMemberValidators,
   route(authController.registerNewMember)
 );
 

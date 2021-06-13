@@ -2,13 +2,13 @@ import { DI } from "src/app";
 import { NUM_AVAILABLE_DISCRIMINATORS } from "src/config/discriminator";
 
 export default async function getAvailableDiscriminators({
-  username,
+  displayName,
 }: {
-  username: string;
+  displayName: string;
 }) {
   const existingDiscriminators = (
     await DI.memberRepo.find({
-      username,
+      displayName,
     })
   ).map((e) => e.discriminator);
 

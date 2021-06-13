@@ -1,3 +1,5 @@
+import { MemberRegistrationDto } from "@@/common/dto/auth";
+import { IMemberRegisterPayload } from "@@/common/interfaces/api";
 import { DI } from "src/app";
 import SrkError from "src/classes/SrkError";
 import { hash } from "src/services/bcrypt";
@@ -5,30 +7,31 @@ import { SrkCookie } from "src/services/jwt";
 import chooseRandomDiscriminator from "./utils/chooseRandomDiscriminator";
 import isDiscriminatorAvailable from "./utils/isDiscriminatorAvailable";
 
-export default async function userRegister(
+export default async function (
   _authResult: SrkCookie,
   {
     username,
+    displayName,
     discriminator,
     password,
     email,
-  }: {
-    username: string;
-    discriminator?: number;
-    password: string;
-    email?: string | null;
+  }: MemberRegistrationDto
+): Promise<IMemberRegisterPayload> {
+  if (await DI.memberRepo.find({ username })) {
+    throw new SrkError("usernameNotAvailable");
   }
-) {
+
   if (typeof discriminator !== "undefined") {
-    if (!(await isDiscriminatorAvailable({ username, discriminator }))) {
+    if (!(await isDiscriminatorAvailable({ displayName, discriminator }))) {
       throw new SrkError("discriminatorNotAvailable");
     }
   } else {
-    discriminator = await chooseRandomDiscriminator({ username });
+    discriminator = await chooseRandomDiscriminator({ displayName });
   }
 
   const member = DI.memberRepo.create({
     username,
+    displayName,
     email,
     discriminator,
     pwHash: await hash(password),
@@ -36,5 +39,7 @@ export default async function userRegister(
 
   await DI.memberRepo.persistAndFlush(member);
 
-  return member;
+  return {
+    id: member.id,
+  };
 }

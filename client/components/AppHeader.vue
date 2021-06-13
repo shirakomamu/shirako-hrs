@@ -1,49 +1,63 @@
 <template>
   <div class="nav flex items-center">
-    <div class="justify-start ml-8 mr-4 items-center flex-grow">
-      <router-link to="/" class="space-x-4 flex items-center">
+    <div class="justify-start ml-8 mr-4 items-center">
+      <nuxt-link to="/" class="space-x-4 flex items-center">
         <img class="app-icon" alt="shirako-hrs logo" width="32" height="32" />
         <span class="font-semibold show-when-wide dark:text-white">{{
           appName
-        }}</span></router-link
+        }}</span></nuxt-link
       >
     </div>
-    <div class="flex-shrink space-x-8 ml-4 mr-8 flex items-center">
-      <router-link
-        v-for="(link, index) of links"
-        :key="index"
-        :to="link.to"
-        class="align-middle dark:text-gray-100 text-sm link-underline-animate"
-        :class="{ 'font-bold': isRouteMatched(link.to) }"
-        >{{ link.label }}</router-link
+    <div class="flex-grow" />
+    <div class="space-x-8 ml-4 mr-8 flex items-center align-middle text-sm">
+      <nuxt-link
+        v-if="!user"
+        to="/register"
+        class="dark:text-gray-100 link-underline-animate"
+        >Register</nuxt-link
       >
+      <nuxt-link v-if="!user" v-slot="{ navigate }" to="/login" custom>
+        <button
+          type="button"
+          class="
+            rounded-full
+            bg-black
+            dark:bg-white
+            text-white
+            dark:text-black
+            py-1
+            px-4
+            font-semibold
+          "
+          @click="navigate"
+          @keypress.enter="navigate"
+        >
+          Sign in
+        </button>
+      </nuxt-link>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import { mapGetters } from "vuex";
+
+// dark:text-gray-100
+// text-sm
+// link-underline-animate
 
 export default Vue.extend({
   name: "AppHeader",
   data() {
     return {
       appName: this.$config.appinfo.name as string,
-      links: [
-        {
-          to: "/",
-          label: "Home",
-        },
-        {
-          to: "/projects",
-          label: "Projects",
-        },
-        {
-          to: "/about",
-          label: "About",
-        },
-      ] as { to: string; label: string }[],
     };
+  },
+  computed: {
+    ...mapGetters({
+      user: "auth/user",
+    }),
   },
   methods: {
     isRouteMatched(to: string) {

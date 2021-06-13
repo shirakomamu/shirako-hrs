@@ -1,15 +1,4 @@
-import { GuardBehavior } from "src/services/guard";
-import { Role } from "src/services/hrbac";
-import { PageMap } from "./pages.types";
+import { PAGE_MAP } from "src/config/pages";
 
-const pageMap: PageMap = {
-  "/": {},
-  "/profile": {
-    roles: [Role._self_profile],
-    guards: [],
-    mode: GuardBehavior.all,
-  },
-};
-
-export default pageMap;
+export default PAGE_MAP;
 export * from "./pages.types";

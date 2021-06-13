@@ -1,13 +1,13 @@
 import getAvailableDiscriminators from "./getAvailableDiscriminators";
 
 export default async function isDiscriminatorAvailable({
-  username,
+  displayName,
   discriminator,
 }: {
-  username: string;
+  displayName: string;
   discriminator: number;
 }) {
-  return (await getAvailableDiscriminators({ username })).includes(
+  return (await getAvailableDiscriminators({ displayName })).includes(
     discriminator
   );
 }

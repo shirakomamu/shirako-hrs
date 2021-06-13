@@ -2,16 +2,16 @@ import SrkError from "src/classes/SrkError";
 import getAvailableDiscriminators from "./getAvailableDiscriminators";
 
 export default async function chooseRandomDiscriminator({
-  username,
+  displayName,
 }: {
-  username: string;
+  displayName: string;
 }) {
   const availableDiscriminators = await getAvailableDiscriminators({
-    username,
+    displayName,
   });
 
   if (!availableDiscriminators.length) {
-    throw new SrkError("usernameNotAvailable");
+    throw new SrkError("displayNameNotAvailable");
   }
 
   const discriminator =

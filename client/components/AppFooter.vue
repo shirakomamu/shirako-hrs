@@ -2,14 +2,26 @@
   <div class="nav h-12 flex items-center">
     <div class="justify-start ml-8 flex flex-grow items-center">
       <div class="text-gray-500 text-sm">
-        <span>© {{ new Date().getFullYear() }} 白子マム</span> |
-        <!-- <span
-          ><EmailHider :text="emailText" :show-email-as-text="false"
-        /></span> -->
-        <router-link
+        <span
+          >© 2021
+          <a
+            href="https://shirako.dev/"
+            target="_blank"
+            class="hover:underline focus:underline"
+            >白子マム</a
+          ></span
+        >
+        |
+        <nuxt-link
           to="/privacy"
           class="text-blue-500 hover:underline focus:underline"
-          >privacy</router-link
+          >privacy</nuxt-link
+        >
+        |
+        <nuxt-link
+          to="/tos"
+          class="text-blue-500 hover:underline focus:underline"
+          >terms</nuxt-link
         >
       </div>
     </div>
@@ -26,8 +38,7 @@ export default Vue.extend({
   name: "AppFooter",
   data() {
     return {
-      hash: (process.env.VUE_APP_GIT_HASH || "n/a") as string,
-      emailText: "✉️ say hello" as string,
+      hash: (this.$config.build || "n/a") as string,
     };
   },
 });

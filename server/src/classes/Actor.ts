@@ -2,7 +2,7 @@ import { RoleGroup } from "src/services/hrbac";
 
 export default class Actor {
   public id: string;
-  public username: string; // user-visible ID (must be unique)
+  public username: string; // user ID (must be unique)
   public email: string | null;
   public cohort: string | null; // sub-managed member
   public key: string | null; // api key, non-null if used

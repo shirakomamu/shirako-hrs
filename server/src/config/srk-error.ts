@@ -66,6 +66,11 @@ const config = {
     status: 400,
     message: "This username is not available.",
   },
+  displayNameNotAvailable: {
+    name: "display_name_not_available",
+    status: 400,
+    message: "This display name is not available.",
+  },
   discriminatorNotAvailable: {
     name: "discriminator_not_available",
     status: 400,

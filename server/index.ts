@@ -3,7 +3,6 @@ const moduleAlias = require("module-alias");
 moduleAlias.addAliases({
   src: path.join(__dirname, "/src/"),
   "@@": path.join(__dirname, "/../"),
-  "~~": path.join(__dirname, "/../"),
 });
 
 module.exports = require("./src/app");

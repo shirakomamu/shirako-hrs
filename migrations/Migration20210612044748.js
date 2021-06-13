@@ -2,10 +2,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const Migration = require('@mikro-orm/migrations').Migration;
 
-class Migration20210610054005 extends Migration {
+class Migration20210612044748 extends Migration {
 
   async up() {
-    this.addSql('create table "member" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "username" varchar(255) not null, "discriminator" int4 not null, "email" varchar(255) null, "pw_hash" varchar(255) not null);');
+    this.addSql('create table "member" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "username" varchar(255) not null, "display_name" varchar(255) not null default \'\', "discriminator" int4 not null, "email" varchar(255) null, "pw_hash" varchar(255) not null);');
+    this.addSql('alter table "member" add constraint "member_username_unique" unique ("username");');
 
     this.addSql('create table "api_key" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "key" varchar(255) not null, "use_count" int4 not null default 0, "member_id" bigint not null);');
     this.addSql('alter table "api_key" add constraint "api_key_key_unique" unique ("key");');
@@ -16,4 +17,4 @@ class Migration20210610054005 extends Migration {
   }
 
 }
-exports.Migration20210610054005 = Migration20210610054005;
+exports.Migration20210612044748 = Migration20210612044748;

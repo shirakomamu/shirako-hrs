@@ -1,4 +1,5 @@
 import { Response } from "express";
+import ISrkResponse from "@@/common/interfaces/api";
 import {
   AUTH_JWT_COOKIE_NAME,
   AUTH_JWT_COOKIE_PARAMETERS,
@@ -45,7 +46,7 @@ export default class SrkResponse {
       res.clearCookie(AUTH_JWT_COOKIE_NAME, AUTH_JWT_COOKIE_PARAMETERS);
     }
 
-    res.json({
+    const srkResponse = {
       ok: this.ok,
       error:
         this.error instanceof SrkError
@@ -56,6 +57,8 @@ export default class SrkResponse {
             }
           : undefined,
       payload: this.payload,
-    });
+    } as ISrkResponse<typeof payload>;
+
+    res.json(srkResponse);
   }
 }

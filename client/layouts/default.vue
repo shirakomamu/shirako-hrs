@@ -24,7 +24,7 @@
 
     <div class="pb-8 flex-grow">
       <transition name="fade" mode="out-in">
-        <Nuxt class="h-full mx-auto mt-8 px-8 max-w-screen-2xl" />
+        <Nuxt class="mx-auto mt-8 px-8 max-w-screen-2xl" />
       </transition>
     </div>
 
@@ -51,23 +51,6 @@ export default Vue.extend({
       updateExists: false as boolean,
     };
   },
-  head() {
-    return {
-      title: "Home | " + this.$config.appinfo.name,
-    };
-  },
-  // watch: {
-  //   updateExists(newValue) {
-  //     if (newValue) {
-  //       notify({
-  //         id: -1,
-  //         title: "An update is available",
-  //         text: "Please refresh the page",
-  //         duration: -1,
-  //       });
-  //     }
-  //   },
-  // },
   mounted() {
     // Listen for our custom event from the SW registration
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

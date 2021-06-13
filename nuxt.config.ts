@@ -1,5 +1,6 @@
 import { NuxtConfig } from "@nuxt/types";
-// import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import { gitDescribeSync } from "git-describe";
+import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import appinfo from "./appinfo";
 
 const serverConfig = {
@@ -91,6 +92,15 @@ export default {
         additionalHeaders: true, // x-frame-options, x-xss-protection, x-content-type-options
       },
     ],
+    [
+      "nuxt-vuex-localstorage",
+      {
+        localStorage: ["auth/token"], // If not entered, “localStorage” is the default value
+        sessionStorage: [], // If not entered, “sessionStorage” is the default value
+        keyMixTimes: 64, // number of repetitions of the hash function. Default is set to 64
+        KeyLength: 64, // length of the digest. Default is set to 64.
+      },
+    ],
   ],
 
   publicRuntimeConfig: {
@@ -98,6 +108,7 @@ export default {
       browserBaseURL: process.env.BROWSER_BASE_URL || "/",
     },
     appinfo,
+    build: gitDescribeSync().hash,
     fcSitekey: appinfo.fcSitekey,
   },
 
@@ -131,18 +142,23 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    extend(_config) {
+    extend(config) {
       // config.externals = {
       //   knex: "commonjs knex",
       //   "mikro-orm": "commonjs mikro-orm",
       // };
-      // config.resolve = {
-      //   plugins: [
-      //     new TsconfigPathsPlugin({
-      //       configFile: "./tsconfig.json",
-      //     }),
-      //   ],
-      // };
+      if (!config.resolve) {
+        config.resolve = {};
+      }
+      if (!config.resolve.plugins) {
+        config.resolve.plugins = [];
+      }
+
+      config.resolve.plugins.push(
+        new TsConfigPathsPlugin({
+          configFile: "./tsconfig.json",
+        })
+      );
     },
   },
 

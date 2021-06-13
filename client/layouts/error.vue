@@ -6,8 +6,8 @@
       class="mx-auto h-64"
     />
     <article class="space-y-4">
-      <h4 class="text-4xl dark:text-white">404 - Page not found</h4>
-      <p>
+      <h4 class="text-4xl dark:text-white">{{ statusCode }} - {{ message }}</h4>
+      <p v-if="statusCode === 404">
         The page at <code>{{ $route.path }}</code> could not be found.
       </p>
     </article>
@@ -28,10 +28,24 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "Error",
+  props: {
+    error: {
+      type: Object,
+      default: () => null,
+    },
+  },
   head() {
     return {
       title: "Error | " + this.$config.appinfo.name,
     };
+  },
+  computed: {
+    statusCode() {
+      return (this.error && this.error.statusCode) || 500;
+    },
+    message() {
+      return this.error.message || "Internal error";
+    },
   },
 });
 </script>

@@ -70,3 +70,14 @@ export const EmailRegistrationParamSchema: ParamSchema = {
     errorMessage: "Email address is not valid",
   },
 };
+
+// replace trailing slash
+export const PageCheckElementParamSchema: ParamSchema = {
+  in: ["body"],
+  isString: { errorMessage: "Page must be a string", bail: true },
+  customSanitizer: {
+    options: (value: string) => {
+      return value.replace(/\/$/, "");
+    },
+  },
+};
