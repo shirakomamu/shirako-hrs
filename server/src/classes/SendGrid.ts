@@ -38,26 +38,6 @@ class SendGrid {
       callbackLink: `https://hrs.shirako.dev/register?cb=${options.callbackToken}`,
     };
 
-    console.log(
-      JSON.stringify(
-        {
-          from: {
-            email: "noreply@shirako.dev",
-            name: appinfo.name,
-          },
-          personalizations: [
-            {
-              to,
-              dynamic_template_data: templateData,
-            },
-          ],
-          template_id: REGISTRATION_EMAIL_VERIFICATION_TEMPLATE_ID,
-        },
-        undefined,
-        2
-      )
-    );
-
     const [r] = await this.client.request({
       method: "POST",
       url: "/v3/mail/send",
