@@ -1,5 +1,4 @@
 import { NuxtConfig } from "@nuxt/types";
-import { gitDescribeSync } from "git-describe";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import appinfo from "./appinfo";
 
@@ -108,7 +107,7 @@ export default {
       browserBaseURL: process.env.BROWSER_BASE_URL || "/",
     },
     appinfo,
-    build: gitDescribeSync().hash,
+    build: process.env.COMMIT_HASH,
   },
 
   privateRuntimeConfig: {
