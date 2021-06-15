@@ -12,6 +12,8 @@ module.exports = {
   plugins: [],
   // add your custom rules here
   rules: {
+    "no-redeclare": "off",
+    "@typescript-eslint/no-redeclare": ["error"],
     "vue/component-name-in-template-casing": [
       "error",
       "PascalCase",
@@ -21,4 +23,5 @@ module.exports = {
       },
     ],
   },
+  ignorePatterns: ["**/migrations/Migration*.js"],
 };

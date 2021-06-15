@@ -1,5 +1,6 @@
 import { NuxtConfig } from "@nuxt/types";
-// import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import { gitDescribeSync } from "git-describe";
+import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import appinfo from "./appinfo";
 
 const serverConfig = {
@@ -59,7 +60,7 @@ export default {
     // https://go.nuxtjs.dev/tailwindcss
     "@nuxtjs/tailwindcss",
     // https://go.nuxtjs.dev/pwa
-    "@nuxtjs/pwa",
+    // "@nuxtjs/pwa",
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -79,9 +80,9 @@ export default {
         csp: {
           directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "unsafe-inline"], // inline required by vue2
+            scriptSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             objectSrc: ["'self'"],
-            styleSrc: ["'self'", "unsafe-inline"], // inline required by vue2
+            styleSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             // fontSrc: ["'self'"],
             // imgSrc: ["'self'"],
           },
@@ -91,6 +92,15 @@ export default {
         additionalHeaders: true, // x-frame-options, x-xss-protection, x-content-type-options
       },
     ],
+    [
+      "nuxt-vuex-localstorage",
+      {
+        localStorage: ["auth/token"], // If not entered, “localStorage” is the default value
+        sessionStorage: [], // If not entered, “sessionStorage” is the default value
+        keyMixTimes: 64, // number of repetitions of the hash function. Default is set to 64
+        KeyLength: 64, // length of the digest. Default is set to 64.
+      },
+    ],
   ],
 
   publicRuntimeConfig: {
@@ -98,6 +108,7 @@ export default {
       browserBaseURL: process.env.BROWSER_BASE_URL || "/",
     },
     appinfo,
+    build: gitDescribeSync().hash,
   },
 
   privateRuntimeConfig: {
@@ -130,15 +141,24 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    // extend(config) {
-    //   config.resolve = {
-    //     plugins: [
-    //       new TsconfigPathsPlugin({
-    //         configFile: "./tsconfig.json",
-    //       }),
-    //     ],
-    //   };
-    // },
+    extend(config) {
+      // config.externals = {
+      //   knex: "commonjs knex",
+      //   "mikro-orm": "commonjs mikro-orm",
+      // };
+      if (!config.resolve) {
+        config.resolve = {};
+      }
+      if (!config.resolve.plugins) {
+        config.resolve.plugins = [];
+      }
+
+      config.resolve.plugins.push(
+        new TsConfigPathsPlugin({
+          configFile: "./tsconfig.json",
+        })
+      );
+    },
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
@@ -154,4 +174,6 @@ export default {
     viewer: false,
     config: {},
   },
+
+  ignore: ["**/*.test.*", ["./migrations/*.*"]],
 } as NuxtConfig;

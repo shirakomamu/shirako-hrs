@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
-import { enums as JwtEnums, types as JwtTypes } from "src/services/jwt";
+import { SrkCookie, AuthType } from "src/services/jwt";
 import SrkError from "src/classes/SrkError";
 
-function assert(_jwt: any): asserts _jwt is JwtTypes.SrkCookie {}
+function assert(_jwt: any): asserts _jwt is SrkCookie {}
 
-export default function (req: Request, res: Response, next: NextFunction) {
+export default (req: Request, res: Response, next: NextFunction) => {
   // if no jwt is provided in signed cookie
   if (!req.signedCookies?.jwt) {
     res.locals.authResult = {
-      authType: JwtEnums.AuthType.none,
-    } as JwtTypes.SrkCookie;
+      authType: AuthType.none,
+    } as SrkCookie;
     return next();
   }
 
@@ -31,6 +31,6 @@ export default function (req: Request, res: Response, next: NextFunction) {
   res.locals.authResult = {
     authType: jwtData.authType,
     actor: jwtData.actor,
-  } as JwtTypes.SrkCookie;
+  } as SrkCookie;
   return next();
-}
+};

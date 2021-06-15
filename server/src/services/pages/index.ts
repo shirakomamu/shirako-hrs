@@ -1,15 +1,4 @@
-import * as types from "./pages.types";
-import { enums as GuardEnums } from "src/services/guard";
-import { enums as HrbacEnums } from "src/services/hrbac";
+import { PAGE_MAP } from "src/config/pages";
 
-const pageMap: types.PageMap = {
-  "/": {},
-  "/profile": {
-    roles: [HrbacEnums.Role._self_profile],
-    guards: [],
-    mode: GuardEnums.GuardBehavior.all,
-  },
-};
-
-export default pageMap;
-export { types };
+export default PAGE_MAP;
+export * from "./pages.types";

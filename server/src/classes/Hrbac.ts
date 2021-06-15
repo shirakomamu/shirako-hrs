@@ -1,33 +1,33 @@
 import memoize from "memoizee";
-import { enums as HrbacEnums, types as HrbacTypes } from "src/services/hrbac";
-import { enums as GuardEnums, types as GuardTypes } from "src/services/guard";
+import { Role, RoleGroup, HrbacOptions } from "src/services/hrbac";
+import { Guard, GuardBehavior } from "src/services/guard";
 import Actor from "./Actor";
 
 type ResolvedRbacOptions = {
-  [key in keyof HrbacEnums.RoleGroup as string]: HrbacEnums.Role[];
+  [key in keyof RoleGroup as string]: Role[];
 };
 
-const DEFAULT_CHECK_BEHAVIOR = GuardEnums.GuardBehavior.all;
+const DEFAULT_CHECK_BEHAVIOR = GuardBehavior.all;
 
 interface Check {
-  rgs: HrbacEnums.RoleGroup[];
-  roles: HrbacEnums.Role[];
+  rgs: RoleGroup[];
+  roles: Role[];
 
   // all = all roles must be accessible, by any of the rgs
   // any = any of the roles can be accessible, by any of the rgs
-  mode?: GuardEnums.GuardBehavior;
+  mode?: GuardBehavior;
 }
 
 export default class Hrbac {
   public rro: Promise<ResolvedRbacOptions>;
   private memoizedCan: (check: Check) => boolean;
 
-  constructor(ro: HrbacTypes.HrbacOptions | Promise<HrbacTypes.HrbacOptions>) {
+  constructor(ro: HrbacOptions | Promise<HrbacOptions>) {
     this.rro = new Promise((resolve) => resolve(this._initializeOptions(ro)));
     this.memoizedCan = this._getMemoizee();
   }
 
-  public can(guard: GuardTypes.Guard, actor?: Actor): boolean {
+  public can(guard: Guard, actor?: Actor): boolean {
     const roleResult = this.memoizedCan({
       rgs: actor?.rgs || [],
       roles: guard.roles || [],
@@ -46,7 +46,7 @@ export default class Hrbac {
 
     // else, try to resolve the guards
     let guardResult = false;
-    if (guard.mode === GuardEnums.GuardBehavior.all) {
+    if (guard.mode === GuardBehavior.all) {
       guardResult = guard.guards.every((e) => this.can(e, actor));
     } else {
       guardResult = guard.guards.some((e) => this.can(e, actor));
@@ -55,27 +55,19 @@ export default class Hrbac {
     return guardResult;
   }
 
-  public reinitialize(
-    ro: HrbacTypes.HrbacOptions | Promise<HrbacTypes.HrbacOptions>
-  ) {
+  public reinitialize(ro: HrbacOptions | Promise<HrbacOptions>) {
     this.rro = new Promise((resolve) => resolve(this._initializeOptions(ro)));
     this.memoizedCan = this._getMemoizee();
   }
 
   private async _initializeOptions(
-    ro: HrbacTypes.HrbacOptions | Promise<HrbacTypes.HrbacOptions>
+    ro: HrbacOptions | Promise<HrbacOptions>
   ): Promise<ResolvedRbacOptions> {
     const roRes = await ro;
     const rgs: ResolvedRbacOptions = {};
     for (const rg in ro) {
-      const rga = [
-        rg,
-        ...this._getAllChildren(rg as HrbacEnums.RoleGroup, roRes),
-      ];
-      const resolvedRoles = this._resolveRoleGroups(
-        rga as HrbacEnums.RoleGroup[],
-        roRes
-      );
+      const rga = [rg, ...this._getAllChildren(rg as RoleGroup, roRes)];
+      const resolvedRoles = this._resolveRoleGroups(rga as RoleGroup[], roRes);
       rgs[rg] = resolvedRoles;
     }
 
@@ -89,17 +81,11 @@ export default class Hrbac {
     });
   }
 
-  private _getChildren(
-    rg: HrbacEnums.RoleGroup,
-    ro: HrbacTypes.HrbacOptions
-  ): HrbacEnums.RoleGroup[] {
+  private _getChildren(rg: RoleGroup, ro: HrbacOptions): RoleGroup[] {
     return ro[rg].inherits || [];
   }
 
-  private _getChildrenWithSelf(
-    rg: HrbacEnums.RoleGroup,
-    ro: HrbacTypes.HrbacOptions
-  ): HrbacEnums.RoleGroup[] {
+  private _getChildrenWithSelf(rg: RoleGroup, ro: HrbacOptions): RoleGroup[] {
     return [
       rg,
       ...this._getChildren(rg, ro).flatMap((e) =>
@@ -108,25 +94,19 @@ export default class Hrbac {
     ];
   }
 
-  private _getAllChildren(
-    rg: HrbacEnums.RoleGroup,
-    ro: HrbacTypes.HrbacOptions
-  ): HrbacEnums.RoleGroup[] {
+  private _getAllChildren(rg: RoleGroup, ro: HrbacOptions): RoleGroup[] {
     return this._getChildren(rg, ro)
       .flatMap((e) => this._getChildrenWithSelf(e, ro))
       .filter((e, i, a) => a.indexOf(e) === i);
   }
 
-  private _resolveRoleGroups(
-    rga: HrbacEnums.RoleGroup[],
-    ro: HrbacTypes.HrbacOptions
-  ): HrbacEnums.Role[] {
+  private _resolveRoleGroups(rga: RoleGroup[], ro: HrbacOptions): Role[] {
     return rga
       .flatMap((e) => ro[e].roles)
       .filter((e, i, a) => a.indexOf(e) === i);
   }
 
-  private async _validate(rg: HrbacEnums.RoleGroup, role: HrbacEnums.Role) {
+  private async _validate(rg: RoleGroup, role: Role) {
     const rroRes = await this.rro;
     return rroRes[rg].includes(role);
   }
@@ -142,9 +122,9 @@ export default class Hrbac {
     }
     return rgs.some((e) => {
       switch (mode) {
-        case GuardEnums.GuardBehavior.all:
+        case GuardBehavior.all:
           return roles.every((f) => this._validate(e, f));
-        case GuardEnums.GuardBehavior.some:
+        case GuardBehavior.some:
           return roles.some((f) => this._validate(e, f));
         default:
           return false;

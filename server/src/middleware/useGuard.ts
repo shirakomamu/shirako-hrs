@@ -1,19 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import hrbac from "src/services/hrbac";
-import { types as GuardTypes } from "src/services/guard";
-import { interfaces as JwtInterfaces } from "src/services/jwt";
+import { Guard } from "src/services/guard";
+import { SrkExpressResponse } from "src/services/jwt";
 import SrkError from "src/classes/SrkError";
 
-function assert(
-  _res: unknown
-): asserts _res is JwtInterfaces.SrkExpressResponse {}
+function assert(_res: unknown): asserts _res is SrkExpressResponse {}
 
-export default (guard: GuardTypes.Guard) =>
-  (
-    _req: Request,
-    res: Response | JwtInterfaces.SrkExpressResponse,
-    next: NextFunction
-  ) => {
+export default (guard: Guard) =>
+  (_req: Request, res: Response | SrkExpressResponse, next: NextFunction) => {
     let result: boolean;
     if (!res.locals.authResult) {
       result = hrbac.can(guard);
