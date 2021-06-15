@@ -1,7 +1,6 @@
 export default {
-  name: "HRBAC Demo",
-  description: "Demo for the HRBAC system.",
+  name: "Shirako Eats",
+  description: "Having trouble picking a restaurant? Let us choose for you.",
   favicon: "./favicon.png",
   version: process.env.npm_package_version || "unknown",
-  fcSitekey: "FCML9E15G9RE9DFH",
 };

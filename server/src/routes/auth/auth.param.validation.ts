@@ -9,7 +9,7 @@ export const UsernameParamSchema: ParamSchema = {
   },
   trim: true,
   isLength: {
-    errorMessage: "Username must be 1~24 characters long",
+    errorMessage: "Username must be 1 to 24 characters long",
     options: {
       min: 1,
       max: 24,
@@ -17,6 +17,21 @@ export const UsernameParamSchema: ParamSchema = {
   },
   isAlphanumeric: {
     errorMessage: "Username must consist of letters and numbers",
+  },
+};
+
+export const DisplayNameParamSchema: ParamSchema = {
+  in: ["body"],
+  isString: {
+    errorMessage: "Display name must be a string",
+  },
+  trim: true,
+  isLength: {
+    errorMessage: "Display name must be 1 to 24 characters long",
+    options: {
+      min: 1,
+      max: 24,
+    },
   },
 };
 

@@ -3,26 +3,14 @@
     <div class="max-w-prose w-full bg-gray-200 dark:bg-gray-700 p-8">
       <form name="login" class="grid gap-4 w-full" @submit.prevent="onSubmit">
         <h5 class="text-2xl dark:text-white">
-          Sign in to your {{ $config.appinfo.name }} account
+          Recover your {{ $config.appinfo.name }} account
         </h5>
         <div class="grid gap-1">
-          <label :for="userUid" class="text-sm"
-            >Username or email address</label
-          >
+          <label :for="userUid" class="text-sm">Email address</label>
           <input
             :id="userUid"
-            type="text"
-            name="user"
-            class="p-2 text-sm w-full"
-            required
-          />
-        </div>
-        <div class="grid gap-1">
-          <label :for="passwordUid" class="text-sm">Password</label>
-          <input
-            :id="passwordUid"
-            type="password"
-            name="password"
+            type="email"
+            name="email"
             class="p-2 text-sm w-full"
             required
           />
@@ -33,11 +21,11 @@
             type="submit"
             class="bg-black dark:bg-white text-white dark:text-black"
           >
-            Sign in
+            Send recovery email
           </button>
           <div class="grid gap-2">
             <nuxt-link
-              to="/recover"
+              to="/login"
               class="
                 text-sm text-gray-400
                 hover:text-black
@@ -45,18 +33,7 @@
                 dark:hover:text-white dark:focus:text-white
                 transition-colors
               "
-              >Forgot password?</nuxt-link
-            >
-            <nuxt-link
-              to="/register"
-              class="
-                text-sm text-gray-400
-                hover:text-black
-                focus:text-black
-                dark:hover:text-white dark:focus:text-white
-                transition-colors
-              "
-              >Create an account</nuxt-link
+              >Sign in to existing account</nuxt-link
             >
           </div>
         </div>
@@ -77,7 +54,7 @@ export default Vue.extend({
   },
   head() {
     return {
-      title: "Sign in | " + this.$config.appinfo.name,
+      title: "Recover account | " + this.$config.appinfo.name,
     };
   },
   computed: {

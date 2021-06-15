@@ -109,7 +109,6 @@ export default {
     },
     appinfo,
     build: gitDescribeSync().hash,
-    fcSitekey: appinfo.fcSitekey,
   },
 
   privateRuntimeConfig: {

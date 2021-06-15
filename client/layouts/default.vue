@@ -22,9 +22,9 @@
       "
     />
 
-    <div class="pb-8 flex-grow">
+    <div class="pt-8 pb-8 flex flex-col flex-grow justify-center">
       <transition name="fade" mode="out-in">
-        <Nuxt class="mx-auto mt-8 px-8 max-w-screen-2xl" />
+        <Nuxt class="flex-1 w-full mx-auto px-8 max-w-screen-2xl" />
       </transition>
     </div>
 

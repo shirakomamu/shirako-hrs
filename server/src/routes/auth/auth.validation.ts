@@ -1,18 +1,18 @@
 import { checkSchema, body } from "express-validator";
 import {
   UsernameParamSchema,
-  DiscriminatorParamSchema,
-  PasswordRegistrationParamSchema,
+  DisplayNameParamSchema,
   EmailRegistrationParamSchema,
+  PasswordRegistrationParamSchema,
   PageCheckElementParamSchema,
 } from "./auth.param.validation";
 
 export const RegisterNewMemberValidators = [
   checkSchema({
     username: UsernameParamSchema,
-    discriminator: DiscriminatorParamSchema,
-    password: PasswordRegistrationParamSchema,
+    displayName: DisplayNameParamSchema,
     email: EmailRegistrationParamSchema,
+    password: PasswordRegistrationParamSchema,
   }),
 ];
 

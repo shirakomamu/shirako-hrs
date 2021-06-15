@@ -10,12 +10,6 @@
     </div>
     <div class="flex-grow" />
     <div class="space-x-8 ml-4 mr-8 flex items-center align-middle text-sm">
-      <nuxt-link
-        v-if="!user"
-        to="/register"
-        class="dark:text-gray-100 link-underline-animate"
-        >Register</nuxt-link
-      >
       <nuxt-link v-if="!user" v-slot="{ navigate }" to="/login" custom>
         <button
           type="button"
@@ -25,8 +19,6 @@
             dark:bg-white
             text-white
             dark:text-black
-            py-1
-            px-4
             font-semibold
           "
           @click="navigate"
