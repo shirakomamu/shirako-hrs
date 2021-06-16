@@ -1,6 +1,6 @@
 import { Request } from "express";
 import SrkResponse from "src/classes/SrkResponse";
-import { sendResponse, SrkExpressResponse } from "src/services/jwt";
+import { declareResponse, SrkExpressResponse } from "src/services/jwt";
 // import sendgrid from "src/services/sendgrid";
 
 export default class {
@@ -21,12 +21,12 @@ export default class {
 
     // console.log(payload);
 
-    sendResponse(res, new SrkResponse({ payload }));
+    declareResponse(res, new SrkResponse({ payload }));
   };
 
   public createCat = (_req: Request, res: SrkExpressResponse) => {
     const payload = "Cat was created";
 
-    sendResponse(res, new SrkResponse({ payload }));
+    declareResponse(res, new SrkResponse({ payload }));
   };
 }

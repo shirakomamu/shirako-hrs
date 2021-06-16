@@ -1,10 +1,7 @@
 import { Router } from "express";
-
 import { route } from "src/middleware/route";
-
 import { authFail, authSlow } from "src/services/sub-rate-limiter";
 import subRateLimiterFactory from "src/services/sub-rate-limiter-factory";
-import subRateLimiterRebateFactory from "src/services/sub-rate-limiter-rebate-factory";
 import AuthController from "./auth.controller";
 import {
   NameCheckValidators,
@@ -26,8 +23,6 @@ const router: Router = Router();
 //   },
 // ]);
 
-// router.use("/ncheck", );
-
 router.post(
   "/pages",
   ...PageAuthValidators,
@@ -37,23 +32,9 @@ router.post(
 router.post(
   "/register",
   ...RegisterNewMemberValidators,
-  subRateLimiterFactory([
-    {
-      rateLimiter: authSlow,
-      ckGen: ({ req }) => req.ip,
-    },
-    {
-      rateLimiter: authFail,
-      ckGen: ({ req }) => req.ip + "_un_" + req.body.username,
-    },
-    {
-      rateLimiter: authFail,
-      ckGen: ({ req }) => req.ip + "_dn_" + req.body.displayName,
-    },
-  ]),
   route(
     authController.registerNewMember,
-    subRateLimiterRebateFactory([
+    subRateLimiterFactory([
       {
         rateLimiter: authSlow,
         ckGen: ({ req }) => req.ip,
@@ -73,19 +54,9 @@ router.post(
 router.post(
   "/ncheck",
   ...NameCheckValidators,
-  subRateLimiterFactory([
-    {
-      rateLimiter: authSlow,
-      ckGen: ({ req }) => req.ip,
-    },
-    {
-      rateLimiter: authFail,
-      ckGen: ({ req }) => req.ip + "_" + req.body.type + "_" + req.body.name,
-    },
-  ]),
   route(
     authController.isNameAvailable,
-    subRateLimiterRebateFactory([
+    subRateLimiterFactory([
       {
         rateLimiter: authSlow,
         ckGen: ({ req }) => req.ip,

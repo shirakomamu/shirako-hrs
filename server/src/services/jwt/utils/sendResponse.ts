@@ -38,11 +38,6 @@ function sendResponse(
   return res.json(srkResponse);
 }
 
-export default (
-  res: Response | SrkExpressResponse,
-  srkResponse: SrkResponse
-) => {
-  (res as WithSrkExpressResponse).locals.controllerResult = srkResponse;
-
-  return sendResponse(res, srkResponse);
+export default (res: WithSrkExpressResponse) => {
+  return sendResponse(res, res.locals.controllerResult);
 };

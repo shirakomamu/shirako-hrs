@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { NextFunction, Request, Response } from "express";
 import { SrkExpressResponse } from "src/services/jwt";
-import errorHandler from "./errorHandler";
+import finalHandler from "./finalHandler";
 
 export default (
   err: Error | null,
@@ -10,7 +10,7 @@ export default (
   next: NextFunction
 ) => {
   if (err) {
-    return errorHandler(err, req, res, next);
+    return finalHandler(err, req, res, next);
   }
   next();
 };

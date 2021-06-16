@@ -4,7 +4,7 @@ import { Router } from "express";
 import baseRateLimiter from "src/middleware/baseRateLimiter";
 
 // Error catcher
-import errorHandler from "src/middleware/errorHandler";
+import finalHandler from "src/middleware/finalHandler";
 
 // API routes
 import auth from "src/routes/auth";
@@ -17,6 +17,6 @@ router.use(baseRateLimiter);
 router.use("/auth", auth);
 router.use("/cats", cats);
 router.use(catchall);
-router.use(errorHandler);
+router.use(finalHandler);
 
 export default router;

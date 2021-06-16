@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { RateLimiterStoreAbstract } from "rate-limiter-flexible";
 
 type ConsumptionKeyGenerator = ({
@@ -15,10 +15,12 @@ interface SubRateLimiterFactoryOptions {
 }
 
 export default (opts: SubRateLimiterFactoryOptions[]) => {
-  return async (req: Request, res: Response) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     const limiters = opts.map((e) => e.rateLimiter);
     await Promise.allSettled(
       limiters.map((e, i) => e.reward(opts[i].ckGen({ req, res })))
     );
+
+    next();
   };
 };
