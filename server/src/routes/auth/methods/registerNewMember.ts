@@ -11,7 +11,7 @@ export default async function (
   _authResult: SrkCookie,
   { username, displayName, password, email }: MemberRegistrationDto
 ): Promise<IMemberRegisterPayload> {
-  if (await DI.memberRepo.find({ username })) {
+  if (await DI.memberRepo.findOne({ username })) {
     throw new SrkError("usernameNotAvailable");
   }
 

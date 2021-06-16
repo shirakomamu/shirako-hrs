@@ -35,6 +35,36 @@ export const DisplayNameParamSchema: ParamSchema = {
   },
 };
 
+export const NameCheckTypeIsUsernameParamSchema: ParamSchema = {
+  in: ["body"],
+  isString: {
+    errorMessage: "Name type must be a string",
+    bail: true,
+  },
+  trim: true,
+  custom: {
+    errorMessage: "Invalid name type",
+    options: (value: string) => {
+      return value === "un";
+    },
+  },
+};
+
+export const NameCheckTypeIsDisplayNameParamSchema: ParamSchema = {
+  in: ["body"],
+  isString: {
+    errorMessage: "Name type must be a string",
+    bail: true,
+  },
+  trim: true,
+  custom: {
+    errorMessage: "Invalid name type",
+    options: (value: string) => {
+      return value === "dn";
+    },
+  },
+};
+
 export const DiscriminatorParamSchema: ParamSchema = {
   in: ["body"],
   optional: true,
@@ -76,11 +106,6 @@ export const PasswordRegistrationParamSchema: ParamSchema = {
 
 export const EmailRegistrationParamSchema: ParamSchema = {
   in: ["body"],
-  optional: {
-    options: {
-      nullable: true,
-    },
-  },
   isEmail: {
     errorMessage: "Email address is not valid",
   },

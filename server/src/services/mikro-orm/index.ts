@@ -12,6 +12,7 @@ import {
 } from "mikro-orm-cache-adapter-redis";
 import SrkError from "src/classes/SrkError";
 import createRedis from "src/services/redis";
+import { MIKRO_ORM_PREFIX } from "src/config/redis";
 import { BaseEntity, ApiKey, Member } from "./entities";
 
 const storage = new AsyncLocalStorage<EntityManager>();
@@ -33,7 +34,7 @@ const orm = MikroORM.init({
     adapter: RedisCacheAdapter,
     options: {
       client: createRedis({
-        keyPrefix: "mikro-orm:",
+        keyPrefix: MIKRO_ORM_PREFIX,
       }),
       debug: process.env.NODE_ENV !== "production",
     } as RedisCacheAdapterOptions,

@@ -12,9 +12,9 @@ export const actions: ActionTree<ModuleState, ModuleState> = {
     { ...requestArgs }: AxiosRequestConfig
   ): Promise<ISrkResponse> {
     try {
-      const response = (await this.$axios({
+      const response: AxiosResponse<ISrkResponse> = await this.$axios({
         ...requestArgs,
-      })) as AxiosResponse<ISrkResponse>;
+      });
 
       return response.data;
     } catch (error: any) {

@@ -11,6 +11,7 @@
           >
           <input
             :id="userUid"
+            v-model="user"
             type="text"
             name="user"
             class="p-2 text-sm w-full"
@@ -21,6 +22,7 @@
           <label :for="passwordUid" class="text-sm">Password</label>
           <input
             :id="passwordUid"
+            v-model="password"
             type="password"
             name="password"
             class="p-2 text-sm w-full"
@@ -47,17 +49,6 @@
               "
               >Forgot password?</nuxt-link
             >
-            <nuxt-link
-              to="/register"
-              class="
-                text-sm text-gray-400
-                hover:text-black
-                focus:text-black
-                dark:hover:text-white dark:focus:text-white
-                transition-colors
-              "
-              >Create an account</nuxt-link
-            >
           </div>
         </div>
       </form>
@@ -73,6 +64,8 @@ export default Vue.extend({
   data() {
     return {
       uid: uniqueId() as string,
+      user: null as string | null,
+      password: null as string | null,
     };
   },
   head() {

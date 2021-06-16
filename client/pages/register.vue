@@ -34,9 +34,7 @@
         </div>
 
         <div class="grid gap-1">
-          <label :for="emailUid" class="text-sm"
-            >Email address <span class="opacity-50">(optional)</span></label
-          >
+          <label :for="emailUid" class="text-sm">Email address</label>
           <Input
             :id="emailUid"
             v-model="email"
@@ -44,6 +42,7 @@
             name="email"
             classes="p-2 text-sm w-full"
             passive-text="Email address is only used to verify and recover your account."
+            required
           />
         </div>
 
@@ -65,7 +64,7 @@
           >
             Create account
           </button>
-          <div class="grid gap-2">
+          <!-- <div class="grid gap-2">
             <nuxt-link
               to="/login"
               class="
@@ -77,7 +76,7 @@
               "
               >Sign in to existing account</nuxt-link
             >
-          </div>
+          </div> -->
         </div>
       </form>
     </div>
@@ -86,7 +85,10 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { mapActions } from "vuex";
 import uniqueId from "@@/common/utils/uniqueId";
+import ISrkResponse, { INameCheckPayload } from "@@/common/interfaces/api";
+import { MemberRegistrationDto, NameCheckDto } from "@@/common/dto/auth";
 
 export default Vue.extend({
   data() {
@@ -96,6 +98,7 @@ export default Vue.extend({
       displayName: null as string | null,
       email: null as string | null,
       password: null as string | null,
+      dnTimer: null as any, // timeout object
     };
   },
   head() {
@@ -118,22 +121,72 @@ export default Vue.extend({
     },
   },
   methods: {
-    usernameValidator(value: string) {
+    async usernameValidator(value: string) {
       if (value.length < 1 || value.length > 24) {
         return "Username must be 1 to 24 characters long.";
       }
       if (!/^[A-z0-9]+$/.test(value)) {
         return "Username must consist of letters and numbers only.";
       }
+
+      const response: ISrkResponse<INameCheckPayload> = await this.api({
+        method: "post",
+        url: "/api/auth/ncheck",
+        data: {
+          type: "un",
+          name: this.username,
+        } as NameCheckDto,
+      });
+
+      if (!response.ok) {
+        return response.error.message || response.error.name;
+      }
+
+      if (!response.payload.isAvailable) {
+        return "Username is not available.";
+      }
+
       return "";
     },
-    displayNameValidator(value: string) {
+    async displayNameValidator(value: string) {
       if (value.length < 1 || value.length > 24) {
         return "Display name must be 1 to 24 characters long.";
       }
+
+      const response: ISrkResponse<INameCheckPayload> = await this.api({
+        method: "post",
+        url: "/api/auth/ncheck",
+        data: {
+          type: "dn",
+          name: this.displayName,
+        } as NameCheckDto,
+      });
+
+      if (!response.ok) {
+        return response.error.message || response.error.name;
+      }
+
+      if (!response.payload.isAvailable) {
+        return "Display name is not available.";
+      }
+
       return "";
     },
-    onSubmit() {},
+    async onSubmit() {
+      const response = await this.api({
+        method: "post",
+        url: "/api/auth/register",
+        data: {
+          username: this.username,
+          displayName: this.displayName,
+          email: this.email,
+          password: this.password,
+        } as MemberRegistrationDto,
+      });
+
+      console.log(response);
+    },
+    ...mapActions({ api: "api/send" }),
   },
 });
 </script>

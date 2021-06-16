@@ -4,7 +4,7 @@ import { SrkExpressResponse } from "src/services/jwt";
 import errorHandler from "./errorHandler";
 
 export default (
-  err: Error,
+  err: Error | null,
   req: Request,
   res: Response | SrkExpressResponse,
   next: NextFunction

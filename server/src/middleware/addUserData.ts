@@ -2,8 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { SrkCookie, AuthType } from "src/services/jwt";
 import SrkError from "src/classes/SrkError";
-
-function assert(_jwt: any): asserts _jwt is SrkCookie {}
+import assert from "@@/common/utils/assert";
 
 export default (req: Request, res: Response, next: NextFunction) => {
   // if no jwt is provided in signed cookie
@@ -27,7 +26,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     throw new SrkError("internalError");
   }
 
-  assert(jwtData);
+  assert<SrkCookie>(jwtData);
   res.locals.authResult = {
     authType: jwtData.authType,
     actor: jwtData.actor,

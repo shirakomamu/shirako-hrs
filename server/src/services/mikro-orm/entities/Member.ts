@@ -31,9 +31,9 @@ export default new EntitySchema<IMember, IBaseEntity>({
   extends: "BaseEntity",
   properties: {
     username: { type: "string", unique: true },
-    displayName: { type: "string", default: "" },
+    displayName: { type: "string" },
     discriminator: { type: "number" },
-    email: { type: "string", nullable: true },
+    email: { type: "string" },
     pwHash: { type: "string" },
     apiKeys: {
       entity: "ApiKey",

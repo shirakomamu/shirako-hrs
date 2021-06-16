@@ -9,8 +9,9 @@
       >
     </div>
     <div class="flex-grow" />
-    <div class="space-x-8 ml-4 mr-8 flex items-center align-middle text-sm">
-      <nuxt-link v-if="!user" v-slot="{ navigate }" to="/login" custom>
+    <div class="space-x-4 ml-4 mr-8 flex items-center align-middle text-sm">
+      <nuxt-link v-if="!user" to="/login">Sign in</nuxt-link>
+      <nuxt-link v-if="!user" v-slot="{ navigate }" to="/register" custom>
         <button
           type="button"
           class="
@@ -24,7 +25,7 @@
           @click="navigate"
           @keypress.enter="navigate"
         >
-          Sign in
+          Sign up
         </button>
       </nuxt-link>
     </div>

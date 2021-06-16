@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import SrkError from "src/classes/SrkError";
 import { SrkExpressResponse } from "src/services/jwt";
 
-export const route = (func: Function) => {
+export const route = (func: Function, cb?: Function) => {
   return async (
     req: Request,
     res: Response | SrkExpressResponse,
@@ -18,6 +18,12 @@ export const route = (func: Function) => {
 
     try {
       await func(req, res, next);
+
+      if (cb) {
+        cb(req, res, next);
+      }
+
+      return;
     } catch (e) {
       return next(e);
     }

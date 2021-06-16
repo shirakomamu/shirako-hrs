@@ -1,10 +1,10 @@
 import { Request } from "express";
 import SrkResponse from "src/classes/SrkResponse";
-import { SrkExpressResponse } from "src/services/jwt";
+import { sendResponse, SrkExpressResponse } from "src/services/jwt";
 // import sendgrid from "src/services/sendgrid";
 
 export default class {
-  public listCats = async (_req: Request, res: SrkExpressResponse) => {
+  public listCats = (_req: Request, res: SrkExpressResponse) => {
     const payload = ["Cat 1", "Cat 2"];
 
     // console.log(await sendgrid.checkQuota());
@@ -21,12 +21,12 @@ export default class {
 
     // console.log(payload);
 
-    return new SrkResponse(res, { payload });
+    sendResponse(res, new SrkResponse({ payload }));
   };
 
   public createCat = (_req: Request, res: SrkExpressResponse) => {
     const payload = "Cat was created";
 
-    return new SrkResponse(res, { payload });
+    sendResponse(res, new SrkResponse({ payload }));
   };
 }

@@ -44,6 +44,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { mapActions } from "vuex";
 import uniqueId from "@@/common/utils/uniqueId";
 
 export default Vue.extend({
@@ -66,7 +67,13 @@ export default Vue.extend({
     },
   },
   methods: {
-    onSubmit() {},
+    async onSubmit() {
+      // await this.api({
+      //   method: "post",
+      //   url: "/api/auth/recover",
+      // });
+    },
+    ...mapActions({ api: "api/send" }),
   },
 });
 </script>

@@ -3,8 +3,7 @@ import hrbac from "src/services/hrbac";
 import { Guard } from "src/services/guard";
 import { SrkExpressResponse } from "src/services/jwt";
 import SrkError from "src/classes/SrkError";
-
-function assert(_res: unknown): asserts _res is SrkExpressResponse {}
+import assert from "@@/common/utils/assert";
 
 export default (guard: Guard) =>
   (_req: Request, res: Response | SrkExpressResponse, next: NextFunction) => {
@@ -12,7 +11,7 @@ export default (guard: Guard) =>
     if (!res.locals.authResult) {
       result = hrbac.can(guard);
     } else {
-      assert(res);
+      assert<SrkExpressResponse>(res);
       result = hrbac.can(guard, res.locals.authResult.actor);
     }
 

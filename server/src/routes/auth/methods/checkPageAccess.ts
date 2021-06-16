@@ -3,10 +3,7 @@ import hrbac from "src/services/hrbac";
 import { SrkCookie } from "src/services/jwt";
 import { IPageGuardPayload } from "@@/common/interfaces/api";
 
-export default function (
-  authResult: SrkCookie,
-  paths: string[]
-): IPageGuardPayload {
+export default (authResult: SrkCookie, paths: string[]): IPageGuardPayload => {
   const results = paths.map((e) => {
     const guard = pageConfig[e];
 
@@ -23,4 +20,4 @@ export default function (
   });
 
   return results;
-}
+};

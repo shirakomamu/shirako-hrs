@@ -2,5 +2,10 @@ export interface MemberRegistrationDto {
   username: string;
   displayName: string;
   password: string;
-  email?: string | null;
+  email: string;
+}
+
+export interface NameCheckDto {
+  type: "un" | "dn";
+  name: string;
 }

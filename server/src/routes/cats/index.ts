@@ -3,6 +3,7 @@ import { query } from "express-validator";
 
 import { route } from "src/middleware/route";
 import useSimpleGuard from "src/middleware/useSimpleGuard";
+
 import { Role } from "src/services/hrbac";
 import CatsController from "./cats.controller";
 
