@@ -31,6 +31,11 @@ export default async function (
     pwHash: await hash(password),
   });
 
+  const verification = DI.memberVerificationRepo.create({
+    member,
+  });
+
+  member.verificationKeys.add(verification);
   await DI.memberRepo.persistAndFlush(member);
 
   return {

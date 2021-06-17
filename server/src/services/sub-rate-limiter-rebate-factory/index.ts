@@ -15,12 +15,12 @@ interface SubRateLimiterFactoryOptions {
 }
 
 export default (opts: SubRateLimiterFactoryOptions[]) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next?: NextFunction) => {
     const limiters = opts.map((e) => e.rateLimiter);
     await Promise.allSettled(
       limiters.map((e, i) => e.reward(opts[i].ckGen({ req, res })))
     );
 
-    next();
+    if (next) next();
   };
 };

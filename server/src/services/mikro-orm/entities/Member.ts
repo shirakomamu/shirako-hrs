@@ -1,6 +1,7 @@
 import { Collection, EntitySchema } from "@mikro-orm/core";
 import { IApiKey } from "./ApiKey";
 import { IBaseEntity } from "./BaseEntity";
+import { IMemberVerification } from "./MemberVerification";
 
 export class IMember extends IBaseEntity {
   username: string;
@@ -9,6 +10,7 @@ export class IMember extends IBaseEntity {
   email: string | null;
   pwHash: string;
   apiKeys = new Collection<IApiKey>(this);
+  verificationKeys = new Collection<IMemberVerification>(this);
 
   constructor(
     username: string,
@@ -37,6 +39,12 @@ export default new EntitySchema<IMember, IBaseEntity>({
     pwHash: { type: "string" },
     apiKeys: {
       entity: "ApiKey",
+      reference: "1:m",
+      mappedBy: "member",
+      orphanRemoval: true,
+    },
+    verificationKeys: {
+      entity: "MemberVerification",
       reference: "1:m",
       mappedBy: "member",
       orphanRemoval: true,

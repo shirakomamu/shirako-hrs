@@ -7,6 +7,9 @@ import { EntityManager } from "@mikro-orm/postgresql";
 // Require orm to init
 import ormService from "src/services/mikro-orm";
 import Member, { IMember } from "src/services/mikro-orm/entities/Member";
+import MemberVerification, {
+  IMemberVerification,
+} from "src/services/mikro-orm/entities/MemberVerification";
 
 // Require middlewares
 import preErrorHandler from "src/middleware/preErrorHandler";
@@ -22,6 +25,7 @@ export const DI = {} as {
   orm: Promise<MikroORM>;
   em: EntityManager;
   memberRepo: EntityRepository<IMember>;
+  memberVerificationRepo: EntityRepository<IMemberVerification>;
 };
 
 (async () => {
@@ -32,6 +36,7 @@ export const DI = {} as {
 
   DI.em = (await DI.orm).em as EntityManager;
   DI.memberRepo = DI.em.getRepository(Member);
+  DI.memberVerificationRepo = DI.em.getRepository(MemberVerification);
 })();
 app.use(initializeDb);
 

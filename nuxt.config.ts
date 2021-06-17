@@ -107,7 +107,7 @@ export default {
       browserBaseURL: process.env.BROWSER_BASE_URL || "/",
     },
     appinfo,
-    build: process.env.COMMIT_HASH,
+    build: process.env.HEROKU_SLUG_COMMIT?.slice(0, 7),
   },
 
   privateRuntimeConfig: {

@@ -5,7 +5,6 @@ import {
   IPrimaryKey,
   Dictionary,
 } from "@mikro-orm/core";
-import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
 import {
   RedisCacheAdapter,
   RedisCacheAdapterOptions,
@@ -13,13 +12,12 @@ import {
 import SrkError from "src/classes/SrkError";
 import createRedis from "src/services/redis";
 import { MIKRO_ORM_PREFIX } from "src/config/redis";
-import { BaseEntity, ApiKey, Member } from "./entities";
+import { BaseEntity, ApiKey, Member, MemberVerification } from "./entities";
 
 const storage = new AsyncLocalStorage<EntityManager>();
 
 const orm = MikroORM.init({
-  entities: [BaseEntity, ApiKey, Member],
-  metadataProvider: TsMorphMetadataProvider,
+  entities: [BaseEntity, ApiKey, Member, MemberVerification],
   type: "postgresql", // or 'sqlite' or 'postgresql' or 'mariadb'
   clientUrl: process.env.DATABASE_URL,
   pool: {

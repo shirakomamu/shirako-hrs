@@ -16,7 +16,7 @@ interface SubRateLimiterFactoryOptions {
 }
 
 export default (opts: SubRateLimiterFactoryOptions[]) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next?: NextFunction) => {
     const limiters = opts.map((e) => e.rateLimiter);
 
     const results = await Promise.allSettled(
@@ -32,10 +32,10 @@ export default (opts: SubRateLimiterFactoryOptions[]) => {
           (Math.round(result.reason.msBeforeNext / 1000) || 1).toString()
         );
 
-        return next(new SrkError("rateLimited"));
+        if (next) return next(new SrkError("rateLimited"));
       }
     }
 
-    next();
+    if (next) return next();
   };
 };

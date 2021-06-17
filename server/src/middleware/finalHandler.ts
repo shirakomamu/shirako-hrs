@@ -14,25 +14,15 @@ export default (
   res: Response | SrkExpressResponse | WithSrkExpressResponse,
   _next: NextFunction
 ) => {
-  if (res.locals.controllerResult instanceof SrkResponse) {
-    return sendResponse(res as WithSrkExpressResponse);
-  } else if (error instanceof SrkError) {
+  if (error instanceof SrkError) {
     // if it's a managed error, then return it to user
     declareResponse(res, new SrkResponse({ error }));
     return sendResponse(res);
   } else if (error instanceof SyntaxError) {
+    // if it was a syntax error, then return it to user
     declareResponse(
       res,
       new SrkResponse({ error: new SrkError("syntaxError") })
-    );
-    return sendResponse(res);
-  } else if (!res.locals.controllerResult) {
-    // if it's an undeclared error, also throw a generic internal
-    // eslint-disable-next-line no-console
-    console.error("No result error");
-    declareResponse(
-      res,
-      new SrkResponse({ error: new SrkError("internalError") })
     );
     return sendResponse(res);
   }
