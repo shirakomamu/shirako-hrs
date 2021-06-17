@@ -51,6 +51,7 @@
           <PasswordInput
             :id="passwordUid"
             v-model="password"
+            :dict="pwDict"
             name="password"
             classes="p-2 text-sm w-full"
             required
@@ -87,6 +88,7 @@
 import Vue from "vue";
 import { mapActions } from "vuex";
 import uniqueId from "@@/common/utils/uniqueId";
+import createZxcvbnDictForRegistration from "@@/common/utils/createZxcvbnDictForRegistration";
 import ISrkResponse, { INameCheckPayload } from "@@/common/interfaces/api";
 import { MemberRegistrationDto, NameCheckDto } from "@@/common/dto/auth";
 
@@ -118,6 +120,13 @@ export default Vue.extend({
     },
     passwordUid(): string {
       return "password-" + this.uid;
+    },
+    pwDict(): string[] {
+      return createZxcvbnDictForRegistration({
+        username: this.username,
+        displayName: this.displayName,
+        email: this.email,
+      });
     },
   },
   methods: {

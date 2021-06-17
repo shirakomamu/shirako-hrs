@@ -11,7 +11,7 @@
             classes,
             'pr-10',
             {
-              invalid: validationError,
+              invalid: indicatorState === 'failure',
               'pr-20': !['failure', 'none'].includes(indicatorState),
             },
           ]"
@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue, { PropOptions } from "vue";
 import zxcvbn, { ZXCVBNResult } from "zxcvbn";
 import Loader from "client/components/icons/Loader.vue";
 import Check from "client/components/icons/Check.vue";
@@ -74,6 +74,7 @@ import Error from "client/components/icons/Error.vue";
 import Visibility from "client/components/icons/Visibility.vue";
 import VisibilityOff from "client/components/icons/VisibilityOff.vue";
 import uniqueId from "@@/common/utils/uniqueId";
+import endWithString from "@@/common/utils/endWithString";
 
 export default Vue.extend({
   name: "PasswordInput",
@@ -98,6 +99,10 @@ export default Vue.extend({
       type: Number,
       default: 1000,
     },
+    dict: {
+      type: Array,
+      default: (): string[] => [],
+    } as PropOptions<string[]>,
   },
   data() {
     return {
@@ -124,7 +129,7 @@ export default Vue.extend({
       if (!this.value) {
         return null;
       }
-      return zxcvbn(this.value);
+      return zxcvbn(this.value, this.dict);
     },
     passwordText(): string {
       if (!this.pwResult) {
@@ -135,6 +140,18 @@ export default Vue.extend({
       if (pwStrength >= 3) return "Strong password.";
       if (pwStrength >= 2) return "Weak password.";
       return "Very weak password.";
+    },
+  },
+  watch: {
+    dict() {
+      this.touching = true;
+      const uid = uniqueId();
+      this.context = uid;
+      clearTimeout(this.timer);
+
+      this.timer = setTimeout(async () => {
+        await this.doValidate(uid);
+      }, this.debounceMs);
     },
   },
   methods: {
@@ -157,33 +174,41 @@ export default Vue.extend({
       this.$emit("input", value);
 
       this.timer = setTimeout(async () => {
-        this.validating = true;
-        this.touching = false;
-        if (uid !== this.context) return;
-        this.setValidationError("");
+        await this.doValidate(uid);
+      }, this.debounceMs);
+    },
+    async doValidate(uid: string) {
+      this.validating = true;
+      this.touching = false;
+      if (uid !== this.context) return;
+      this.setValidationError("");
 
-        await this.$nextTick();
+      await this.$nextTick();
 
-        if (uid !== this.context) return;
-        if (this.pwResult) {
-          if (this.value && Math.max(this.pwResult.score, 1) < 3) {
-            if (this.pwResult.feedback.warning) {
-              this.setValidationError(this.pwResult.feedback.warning + ".");
-            } else if (this.pwResult.feedback.suggestions.length) {
-              this.setValidationError(
-                this.pwResult.feedback.suggestions.join(" ")
-              );
-            }
+      if (uid !== this.context) return;
+      if (this.pwResult) {
+        if (this.value && Math.max(this.pwResult.score, 1) < 3) {
+          if (this.pwResult.feedback.warning) {
+            this.setValidationError(
+              endWithString(this.pwResult.feedback.warning, ".")
+            );
+          } else if (this.pwResult.feedback.suggestions.length) {
+            this.setValidationError(
+              this.pwResult.feedback.suggestions
+                .map((e) => endWithString(e, "."))
+                .join(" ")
+            );
           }
         }
+      }
 
-        await this.$nextTick();
+      await this.$nextTick();
 
-        if (uid !== this.context) return;
-        if (!this.validationError) elem.checkValidity();
+      if (uid !== this.context) return;
+      if (!this.validationError)
+        (this.$refs.inputElem as HTMLInputElement).checkValidity();
 
-        this.validating = false;
-      }, this.debounceMs);
+      this.validating = false;
     },
     onInvalid(el: Event) {
       this.setValidationError(
