@@ -5,6 +5,7 @@ import subRateLimiterFactory from "src/services/sub-rate-limiter-factory";
 import AuthController from "./auth.controller";
 import {
   NameCheckValidators,
+  OtpTokenValidators,
   PageAuthValidators,
   RegisterNewMemberValidators,
 } from "./auth.validation";
@@ -46,6 +47,20 @@ router.post(
       {
         rateLimiter: authFail,
         ckGen: ({ req }) => req.ip + "_dn_" + req.body.displayName,
+      },
+    ])
+  )
+);
+
+router.post(
+  "/register/token",
+  ...OtpTokenValidators,
+  route(
+    authController.checkOtpToken,
+    subRateLimiterFactory([
+      {
+        rateLimiter: authSlow,
+        ckGen: ({ req }) => req.ip,
       },
     ])
   )

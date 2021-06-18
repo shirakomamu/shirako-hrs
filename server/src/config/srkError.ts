@@ -76,6 +76,16 @@ const config = {
     status: 400,
     message: "This discriminator is not available.",
   },
+  tokenExpired: {
+    name: "token_expired",
+    status: 400,
+    message: "This token has already expired.",
+  },
+  invalidOtpCode: {
+    name: "otp_code_invalid",
+    status: 400,
+    message: "Invalid OTP code.",
+  },
 };
 
 export default config as { [k in keyof typeof config]: SrkErrorInstance };

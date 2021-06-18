@@ -1,7 +1,12 @@
 import { Request } from "express";
 import SrkResponse from "src/classes/SrkResponse";
 import { SrkExpressResponse } from "src/services/jwt";
-import { registerNewMember, isNameAvailable, checkPageAccess } from "./methods";
+import {
+  registerNewMember,
+  isNameAvailable,
+  checkPageAccess,
+  checkOtpToken,
+} from "./methods";
 
 export default class {
   public registerNewMember = async (req: Request, res: SrkExpressResponse) => {
@@ -18,6 +23,12 @@ export default class {
 
   public checkPageAccess = (req: Request, res: SrkExpressResponse) => {
     const payload = checkPageAccess(res.locals.authResult, req.body);
+
+    return new SrkResponse({ payload });
+  };
+
+  public checkOtpToken = (req: Request, res: SrkExpressResponse) => {
+    const payload = checkOtpToken(res.locals.authResult, req.body);
 
     return new SrkResponse({ payload });
   };

@@ -2,13 +2,18 @@
   <div class="sign-in space-y-8 flex justify-center items-center">
     <div class="max-w-prose w-full bg-gray-200 dark:bg-gray-700 p-8">
       <form name="login" class="grid gap-4 w-full" @submit.prevent="onSubmit">
-        <h5 class="text-2xl dark:text-white">
-          Recover your {{ $config.appinfo.name }} account
-        </h5>
+        <h5 class="text-2xl dark:text-white">Verify your account</h5>
+        <div class="grid gap-1 text-sm">
+          <p>
+            An email was just sent to t**@e****.***. Don't see it?
+            <span>Resend email message.</span>
+          </p>
+        </div>
+
         <div class="grid gap-1">
-          <label :for="emailUid" class="text-sm">Email address</label>
+          <label :for="otpCodeUid" class="text-sm">OTP code</label>
           <input
-            :id="emailUid"
+            :id="otpCodeUid"
             type="email"
             name="email"
             class="p-2 text-sm w-full"
@@ -45,9 +50,49 @@
 <script lang="ts">
 import Vue from "vue";
 import { mapActions } from "vuex";
+import { validate } from "uuid";
 import uniqueId from "@@/common/utils/uniqueId";
+import { OtpTokenCheckDto } from "@@/common/dto/auth";
+import { NUM_TOKEN_DIGITS } from "src/config/memberVerification";
 
 export default Vue.extend({
+  async asyncData({ route, store, redirect }) {
+    const query = route.query;
+
+    if (
+      !query.otpToken ||
+      typeof query.otpToken !== "string" ||
+      !validate(query.otpToken)
+    ) {
+      return redirect("/");
+    }
+
+    if (
+      query.otpCode &&
+      typeof query.otpCode !== "string" &&
+      query.otpCode.length !== NUM_TOKEN_DIGITS
+    ) {
+      return redirect("/");
+    }
+
+    try {
+      const response = await store.dispatch("api/send", {
+        method: "post",
+        url: "/api/auth/register/token",
+        data: {
+          otpToken: query.otpToken,
+          otpCode: query.otpCode,
+        } as OtpTokenCheckDto,
+      });
+
+      console.log(JSON.stringify(response, undefined, 2));
+    } catch (e) {
+      console.log("ERROR");
+      console.log(e);
+    }
+
+    return {};
+  },
   data() {
     return {
       uid: uniqueId() as string,
@@ -55,12 +100,12 @@ export default Vue.extend({
   },
   head() {
     return {
-      title: "Recover account | " + this.$config.appinfo.name,
+      title: "Verify account | " + this.$config.appinfo.name,
     };
   },
   computed: {
-    emailUid(): string {
-      return "email-" + this.uid;
+    otpCodeUid(): string {
+      return "username-" + this.uid;
     },
   },
   methods: {

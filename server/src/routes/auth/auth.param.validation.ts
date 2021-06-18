@@ -1,5 +1,7 @@
+import createZxcvbnDictForRegistration from "@@/common/utils/createZxcvbnDictForRegistration";
 import { ParamSchema } from "express-validator";
 import { NUM_AVAILABLE_DISCRIMINATORS } from "src/config/discriminator";
+import { NUM_TOKEN_DIGITS } from "src/config/memberVerification";
 import zxcvbn from "zxcvbn";
 
 export const UsernameParamSchema: ParamSchema = {
@@ -87,8 +89,22 @@ export const PasswordRegistrationParamSchema: ParamSchema = {
   },
   custom: {
     errorMessage: "Password is too weak",
-    options: (value: string) => {
-      const result = zxcvbn(value);
+    options: (value: string, { req }) => {
+      const dictObj: {
+        username?: string;
+        email?: string;
+        displayName?: string;
+      } = {};
+
+      if (req?.body) {
+        if (req.body?.username) dictObj.username = req.body.username;
+        if (req.body?.email) dictObj.email = req.body.email;
+        if (req.body?.displayName) dictObj.displayName = req.body.displayName;
+      }
+
+      const dict = createZxcvbnDictForRegistration(dictObj);
+
+      const result = zxcvbn(value, dict);
 
       if (result.score <= 2) {
         if (result.feedback.warning) {
@@ -108,6 +124,31 @@ export const EmailRegistrationParamSchema: ParamSchema = {
   in: ["body"],
   isEmail: {
     errorMessage: "Email address is not valid",
+  },
+};
+
+export const OtpTokenCheckParamSchema: ParamSchema = {
+  in: ["body"],
+  isUUID: {
+    errorMessage: "OTP token is not valid",
+  },
+};
+
+export const OtpCodeCheckParamSchema: ParamSchema = {
+  in: ["body"],
+  optional: true,
+  isString: {
+    errorMessage: "OTP code is not valid",
+  },
+  isLength: {
+    errorMessage: "OTP code is not the correct length",
+    options: {
+      min: NUM_TOKEN_DIGITS,
+      max: NUM_TOKEN_DIGITS,
+    },
+  },
+  isNumeric: {
+    errorMessage: "OTP code is not valid",
   },
 };
 

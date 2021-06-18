@@ -8,7 +8,7 @@ import {
 } from "src/config/cookie";
 import { SrkExpressResponse, WithSrkExpressResponse } from "../jwt.interfaces";
 
-function sendResponse(
+async function sendResponse(
   res: Response | SrkExpressResponse | WithSrkExpressResponse,
   srk: SrkResponse
 ) {
@@ -34,6 +34,10 @@ function sendResponse(
         : undefined,
     payload: srk.payload,
   } as ISrkResponse<typeof srk.payload>;
+
+  if (res.locals.controllerResult.payload) {
+    await res.locals.controllerResult.payload;
+  }
 
   return res.json(srkResponse);
 }

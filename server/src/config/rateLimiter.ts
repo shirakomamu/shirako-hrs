@@ -16,4 +16,4 @@ export const AUTH_SLOW_BLOCK_DURATION = 60 * 60 * 24; // block for 1 day
 export const AUTH_FAIL_SUBPREFIX = "ip/user";
 export const AUTH_FAIL_POINTS = 10; // 10 attempts
 export const AUTH_FAIL_DURATION = 60 * 60 * 24; // 1 day
-export const AUTH_FAIL_BLOCK_DURATION = 60 * 60; // block for 1 hour
+export const AUTH_FAIL_BLOCK_DURATION = 60 * 60 * 24; // block for 1 day

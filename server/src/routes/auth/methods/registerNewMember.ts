@@ -5,7 +5,6 @@ import SrkError from "src/classes/SrkError";
 import { hash } from "src/services/bcrypt";
 import { SrkCookie } from "src/services/jwt";
 import chooseRandomDiscriminator from "./utils/chooseRandomDiscriminator";
-// import isDiscriminatorAvailable from "./utils/isDiscriminatorAvailable";
 
 export default async function (
   _authResult: SrkCookie,
@@ -15,13 +14,7 @@ export default async function (
     throw new SrkError("usernameNotAvailable");
   }
 
-  // if (typeof discriminator !== "undefined") {
-  //   if (!(await isDiscriminatorAvailable({ displayName, discriminator }))) {
-  //     throw new SrkError("discriminatorNotAvailable");
-  //   }
-  // } else {
   const discriminator = await chooseRandomDiscriminator({ displayName });
-  // }
 
   const member = DI.memberRepo.create({
     username,
@@ -39,6 +32,7 @@ export default async function (
   await DI.memberRepo.persistAndFlush(member);
 
   return {
-    id: member.id,
+    verificationRequired: true,
+    otpToken: verification.otpToken,
   };
 }

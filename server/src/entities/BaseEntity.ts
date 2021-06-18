@@ -1,14 +1,14 @@
 import { BigIntType, EntitySchema } from "@mikro-orm/core";
 import snowflake from "src/services/snowflake";
 
-export class IBaseEntity {
+export class BaseEntity {
   id!: string;
   createdAt!: Date;
   updatedAt!: Date;
 }
 
-export default new EntitySchema<IBaseEntity>({
-  name: "BaseEntity",
+export default new EntitySchema<BaseEntity>({
+  class: BaseEntity,
   abstract: true,
   properties: {
     id: {
@@ -16,9 +16,9 @@ export default new EntitySchema<IBaseEntity>({
       primary: true,
       onCreate: () => snowflake.generate(),
     },
-    createdAt: { type: "date", onCreate: () => new Date(), nullable: true },
+    createdAt: { type: Date, onCreate: () => new Date(), nullable: true },
     updatedAt: {
-      type: "date",
+      type: Date,
       onCreate: () => new Date(),
       onUpdate: () => new Date(),
       nullable: true,

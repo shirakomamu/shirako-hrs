@@ -7,6 +7,8 @@ import {
   PageCheckElementParamSchema,
   NameCheckTypeIsUsernameParamSchema,
   NameCheckTypeIsDisplayNameParamSchema,
+  OtpTokenCheckParamSchema,
+  OtpCodeCheckParamSchema,
 } from "./auth.param.validation";
 
 export const RegisterNewMemberValidators = [
@@ -15,6 +17,13 @@ export const RegisterNewMemberValidators = [
     displayName: DisplayNameParamSchema,
     email: EmailRegistrationParamSchema,
     password: PasswordRegistrationParamSchema,
+  }),
+];
+
+export const OtpTokenValidators = [
+  checkSchema({
+    otpToken: OtpTokenCheckParamSchema,
+    otpCode: OtpCodeCheckParamSchema,
   }),
 ];
 

@@ -9,3 +9,8 @@ export interface NameCheckDto {
   type: "un" | "dn";
   name: string;
 }
+
+export interface OtpTokenCheckDto {
+  otpToken: string;
+  otpCode?: string;
+}

@@ -6,10 +6,8 @@ import { EntityManager } from "@mikro-orm/postgresql";
 
 // Require orm to init
 import ormService from "src/services/mikro-orm";
-import Member, { IMember } from "src/services/mikro-orm/entities/Member";
-import MemberVerification, {
-  IMemberVerification,
-} from "src/services/mikro-orm/entities/MemberVerification";
+import { Member } from "src/entities/Member";
+import { MemberVerification } from "src/entities/MemberVerification";
 
 // Require middlewares
 import preErrorHandler from "src/middleware/preErrorHandler";
@@ -24,8 +22,8 @@ const app: express.Application = express();
 export const DI = {} as {
   orm: Promise<MikroORM>;
   em: EntityManager;
-  memberRepo: EntityRepository<IMember>;
-  memberVerificationRepo: EntityRepository<IMemberVerification>;
+  memberRepo: EntityRepository<Member>;
+  memberVerificationRepo: EntityRepository<MemberVerification>;
 };
 
 (async () => {
