@@ -11,22 +11,21 @@
     <div class="flex-grow" />
     <div class="space-x-4 ml-4 mr-8 flex items-center align-middle text-sm">
       <nuxt-link v-if="!user" to="/login">Sign in</nuxt-link>
-      <nuxt-link v-if="!user" v-slot="{ navigate }" to="/register" custom>
-        <button
-          type="button"
-          class="
-            rounded-full
-            bg-black
-            dark:bg-white
-            text-white
-            dark:text-black
-            font-semibold
-          "
-          @click="navigate"
-          @keypress.enter="navigate"
-        >
-          Sign up
-        </button>
+      <nuxt-link
+        v-if="!user"
+        to="/register"
+        class="
+          rounded-full
+          bg-black
+          dark:bg-white
+          text-white
+          dark:text-black
+          font-semibold
+          px-4
+          py-1
+        "
+      >
+        Sign up
       </nuxt-link>
     </div>
   </div>

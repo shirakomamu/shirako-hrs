@@ -81,10 +81,10 @@ const config = {
     status: 400,
     message: "This token has already expired.",
   },
-  invalidOtpCode: {
-    name: "otp_code_invalid",
+  failedLogin: {
+    name: "failed_login",
     status: 400,
-    message: "Invalid OTP code.",
+    message: "Login credentials are incorrect. Check them and try again.",
   },
 };
 

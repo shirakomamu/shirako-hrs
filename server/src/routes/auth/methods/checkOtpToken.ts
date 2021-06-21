@@ -7,7 +7,7 @@ import { SrkCookie } from "src/services/jwt";
 
 export default async function (
   _authResult: SrkCookie,
-  { otpToken, otpCode: _otpCode }: OtpTokenCheckDto
+  { otpToken, otpCode }: OtpTokenCheckDto
 ): Promise<IOtpTokenCheckPayload> {
   const member = await DI.memberRepo.findOne(
     {
@@ -21,39 +21,42 @@ export default async function (
   );
 
   if (!member) {
-    throw new SrkError("resourceInvalid");
+    throw new SrkError("tokenExpired");
   }
 
-  // const [status, key] = [member.verificationStatus, member.activeKey];
+  if (
+    member?.activeKey?.otpToken !== otpToken ||
+    member.verificationStatus !== VerificationStatus.verifying
+  ) {
+    throw new SrkError("tokenExpired");
+  }
 
-  // // console.log(member);
+  const censoredEmail = member.email.replace(
+    /^(.)(.*)@(.)(.*)\.(.*)$/,
+    (...a) =>
+      a[1] +
+      "*".repeat(a[2].length) +
+      "@" +
+      a[3] +
+      "*".repeat(a[4].length) +
+      "." +
+      "*".repeat(a[5].length)
+  );
 
-  // if (
-  //   status === VerificationStatus.inactive ||
-  //   status === VerificationStatus.verified
-  // ) {
-  //   throw new SrkError("tokenExpired");
-  // }
+  let otpCodeError: boolean = false;
+  if (otpCode) {
+    if (member.activeKey?.otpCode === otpCode) {
+      member.activeKey.claimed = true;
 
-  // let returnStatus: "verifying" | "verified" = "verifying";
-  // if (otpCode) {
-  //   if (key?.otpCode === otpCode) {
-  //     // verify user here
-  //     returnStatus = "verified";
-  //   } else {
-  //     throw new SrkError("invalidOtpCode");
-  //   }
-  // }
-
-  // console.log("Return status", returnStatus);
-  console.log(member);
-  console.log(member.activeKey);
-  console.log(VerificationStatus[member.verificationStatus]);
-  console.log(member.verificationKeys[0].isFresh);
+      await DI.memberRepo.persistAndFlush(member);
+    } else {
+      otpCodeError = true;
+    }
+  }
 
   return {
-    status: VerificationStatus[member.verificationStatus] as
-      | "verifying"
-      | "verified",
+    otpCodeError,
+    status: member.verificationStatus,
+    emailHint: censoredEmail,
   };
 }

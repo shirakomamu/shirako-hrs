@@ -27,8 +27,8 @@ export default class {
     return new SrkResponse({ payload });
   };
 
-  public checkOtpToken = (req: Request, res: SrkExpressResponse) => {
-    const payload = checkOtpToken(res.locals.authResult, req.body);
+  public checkOtpToken = async (req: Request, res: SrkExpressResponse) => {
+    const payload = await checkOtpToken(res.locals.authResult, req.body);
 
     return new SrkResponse({ payload });
   };

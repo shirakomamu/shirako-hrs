@@ -13,16 +13,8 @@ import {
 const authController = new AuthController();
 const router: Router = Router();
 
-// const loginRateLimiter = subRateLimiterFactory([
-//   {
-//     rateLimiter: authSlow,
-//     ckGen: ({ req }) => req.ip,
-//   },
-//   {
-//     rateLimiter: authFail,
-//     ckGen: ({ req }) => req.ip + "_" + req.body.user,
-//   },
-// ]);
+router.get("/login", (_req, res) => res.oidc.login({ returnTo: "/" }));
+router.get("/logout", (_req, res) => res.oidc.logout({ returnTo: "/" }));
 
 router.post(
   "/pages",

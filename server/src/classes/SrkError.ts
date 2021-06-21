@@ -1,13 +1,13 @@
 import configuration from "src/config/srkError";
 import { SrkErrorInstance } from "src/services/srk-error";
 
-export default class SrkError implements SrkErrorInstance {
+export default class SrkError<T = any> implements SrkErrorInstance {
   public name: string;
   public status: number;
   public message?: string;
-  public data?: any;
+  public data?: T;
 
-  constructor(id: keyof typeof configuration, data?: any) {
+  constructor(id: keyof typeof configuration, data?: T) {
     const error = configuration[id] || configuration.internalError;
 
     this.name = error.name;

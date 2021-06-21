@@ -44,13 +44,16 @@ textarea,
 select {
   outline: 2px solid transparent;
   outline-offset: 2px;
-  transition: box-shadow 0.15s ease;
+  transition: box-shadow 0.15s ease, opacity 0.15s ease;
 
   &:focus,
   &:focus-visible {
     box-shadow: var(--tw-ring-inset) 0 0 0
       calc(2px + var(--tw-ring-offset-width)) #008aff;
   }
+
+  border-color: rgb(243, 244, 256);
+  background-color: rgb(255, 255, 255);
 
   @media (prefers-color-scheme: dark) {
     border-color: rgb(55, 65, 81);
@@ -66,6 +69,10 @@ select {
     box-shadow: var(--tw-ring-inset) 0 0 0
       calc(1px + var(--tw-ring-offset-width)) #f37510;
   }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
 .text-blue-srk {
@@ -79,7 +86,10 @@ button {
   padding-left: 1rem;
   padding-right: 1rem;
   transition: outline 0.15s ease;
+}
 
+a,
+button {
   &:focus-visible {
     outline: 2px dotted black;
     outline-offset: 2px;

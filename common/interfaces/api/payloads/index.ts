@@ -1,10 +1,14 @@
+import { VerificationStatus } from "src/entities/Member";
+
 export interface IMemberRegisterPayload {
   verificationRequired: boolean;
   otpToken: string;
 }
 
 export interface IOtpTokenCheckPayload {
-  status: "verifying" | "verified";
+  otpCodeError: boolean;
+  status: VerificationStatus;
+  emailHint: string;
 }
 
 export interface IMemberRegisterVerifiedPayload {
@@ -23,3 +27,5 @@ interface IPageGuardSingleton {
 }
 
 export interface IPageGuardPayload extends Array<IPageGuardSingleton> {}
+
+export interface ILoginPayload {}

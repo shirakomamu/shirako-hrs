@@ -1,7 +1,17 @@
 <template>
   <div class="register space-y-8 flex justify-center items-center">
     <div class="max-w-prose w-full bg-gray-200 dark:bg-gray-700 p-8">
-      <form name="login" class="grid gap-4 w-full" @submit.prevent="onSubmit">
+      <button type="button" @click="isLoading = !isLoading">
+        Toggle loading {{ isLoading }}
+      </button>
+      <button type="button" @click="isDisabled = !isDisabled">
+        Toggle disabled {{ isDisabled }}
+      </button>
+      <form
+        name="register"
+        class="grid gap-4 w-full"
+        @submit.prevent="onSubmit"
+      >
         <h5 class="text-2xl dark:text-white">
           Create your {{ $config.appinfo.name }} account
         </h5>
@@ -16,6 +26,7 @@
             classes="p-2 text-sm w-full"
             passive-text="Username is used to log into your account."
             required
+            :disabled="isDisabled || isLoading"
           />
         </div>
 
@@ -30,6 +41,7 @@
             classes="p-2 text-sm w-full"
             passive-text="Display name is how you will be identified to other users."
             required
+            :disabled="isDisabled || isLoading"
           />
         </div>
 
@@ -43,6 +55,7 @@
             classes="p-2 text-sm w-full"
             passive-text="Email address is only used to verify and recover your account."
             required
+            :disabled="isDisabled || isLoading"
           />
         </div>
 
@@ -55,16 +68,19 @@
             name="password"
             classes="p-2 text-sm w-full"
             required
+            :disabled="isDisabled || isLoading"
           />
         </div>
 
         <div class="grid gap-4 mt-4">
-          <button
+          <ComboButton
             type="submit"
             class="bg-black dark:bg-white text-white dark:text-black"
+            :disabled="isDisabled"
+            :loading="isLoading"
           >
             Create account
-          </button>
+          </ComboButton>
           <!-- <div class="grid gap-2">
             <nuxt-link
               to="/login"
@@ -89,7 +105,10 @@ import Vue from "vue";
 import { mapActions } from "vuex";
 import uniqueId from "@@/common/utils/uniqueId";
 import createZxcvbnDictForRegistration from "@@/common/utils/createZxcvbnDictForRegistration";
-import ISrkResponse, { INameCheckPayload } from "@@/common/interfaces/api";
+import ISrkResponse, {
+  IMemberRegisterPayload,
+  INameCheckPayload,
+} from "@@/common/interfaces/api";
 import { MemberRegistrationDto, NameCheckDto } from "@@/common/dto/auth";
 
 export default Vue.extend({
@@ -101,6 +120,8 @@ export default Vue.extend({
       email: null as string | null,
       password: null as string | null,
       dnTimer: null as any, // timeout object
+      isDisabled: false as boolean,
+      isLoading: false as boolean,
     };
   },
   head() {
@@ -182,7 +203,8 @@ export default Vue.extend({
       return "";
     },
     async onSubmit() {
-      const response = await this.api({
+      this.isLoading = true;
+      const response: ISrkResponse<IMemberRegisterPayload> = await this.api({
         method: "post",
         url: "/api/auth/register",
         data: {
@@ -193,7 +215,25 @@ export default Vue.extend({
         } as MemberRegistrationDto,
       });
 
-      console.log(response);
+      this.isLoading = false;
+
+      if (response.ok) {
+        if (response.payload.verificationRequired) {
+          this.$router.push({
+            path: "/verify/token",
+            query: {
+              otpToken: response.payload.otpToken,
+            },
+          });
+        } else {
+          return this.$router.redirect({
+            path: "/verify/success",
+            params: {
+              otpToken: response.payload.otpToken,
+            },
+          });
+        }
+      }
     },
     ...mapActions({ api: "api/send" }),
   },

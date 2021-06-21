@@ -14,3 +14,8 @@ export interface OtpTokenCheckDto {
   otpToken: string;
   otpCode?: string;
 }
+
+export interface LoginDto {
+  user: string; // email or username
+  password: string;
+}

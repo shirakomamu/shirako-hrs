@@ -11,6 +11,10 @@
 import Vue from "vue";
 
 export default Vue.extend({
+  asyncData({ res, req }) {
+    console.log(res.locals);
+    console.log(req.oidc.user);
+  },
   data() {
     return {};
   },

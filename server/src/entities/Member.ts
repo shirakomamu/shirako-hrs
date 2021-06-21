@@ -4,16 +4,16 @@ import { BaseEntity } from "./BaseEntity";
 import { MemberVerification } from "./MemberVerification";
 
 export enum VerificationStatus {
-  verified,
-  verifying,
-  inactive,
+  inactive = "inactive", // user has never verified
+  verified = "verified", // user is active
+  verifying = "verifying", // user is actively verifying (initial or re-verifying, check hasVerified)
 }
 
 export class Member extends BaseEntity {
   username: string;
   displayName: string;
   discriminator: number;
-  email: string | null;
+  email: string;
   pwHash: string;
   apiKeys = new Collection<ApiKey>(this);
   verificationKeys = new Collection<MemberVerification>(this);
@@ -23,7 +23,7 @@ export class Member extends BaseEntity {
     displayName: string,
     discriminator: number,
     pwHash: string,
-    email: string | null
+    email: string
   ) {
     super();
     this.username = username;
@@ -31,6 +31,12 @@ export class Member extends BaseEntity {
     this.discriminator = discriminator;
     this.pwHash = pwHash;
     this.email = email;
+  }
+
+  get hasVerified(): boolean {
+    const keyArray = this.verificationKeys.getItems();
+
+    return keyArray.some((e) => e.claimed);
   }
 
   get activeKey(): MemberVerification | null {
@@ -42,15 +48,11 @@ export class Member extends BaseEntity {
   get verificationStatus(): VerificationStatus {
     const key = this.activeKey;
 
-    if (!key) {
-      return VerificationStatus.inactive;
-    }
-
-    if (key.claimed) {
+    if (key?.claimed) {
       return VerificationStatus.verified;
     }
 
-    if (key.isFresh) {
+    if (key?.isFresh) {
       return VerificationStatus.verifying;
     }
 
@@ -80,6 +82,11 @@ export default new EntitySchema<Member, BaseEntity>({
       orderBy: {
         createdAt: QueryOrder.DESC,
       },
+    },
+    hasVerified: {
+      entity: "method",
+      persist: false,
+      getter: true,
     },
     activeKey: {
       entity: "method",
