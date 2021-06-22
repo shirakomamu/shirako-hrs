@@ -1,4 +1,9 @@
+import { ActorDto } from "@@/common/dto/auth";
 import { VerificationStatus } from "src/entities/Member";
+
+export interface ISelfIdentifyPayload {
+  actor?: ActorDto;
+}
 
 export interface IMemberRegisterPayload {
   verificationRequired: boolean;
@@ -20,12 +25,3 @@ export interface INameCheckPayload {
   type: "un" | "dn";
   name: string;
 }
-
-interface IPageGuardSingleton {
-  path: string;
-  result: boolean;
-}
-
-export interface IPageGuardPayload extends Array<IPageGuardSingleton> {}
-
-export interface ILoginPayload {}

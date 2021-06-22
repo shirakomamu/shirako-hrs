@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import initializeDi, { DI } from "src/middleware/initializeDi";
 import initializeDb from "src/middleware/initializeDb";
 import auth0 from "src/middleware/auth0";
+// import jwt from "src/middleware/jwt";
 import addUserData from "src/middleware/addUserData";
 import preErrorHandler from "src/middleware/preErrorHandler";
 
@@ -29,6 +30,7 @@ app.use(cookieParser()); // for unsigned cookies
 
 // Add authentication data
 app.use(auth0);
+// app.use(jwt);
 app.use(addUserData);
 app.use(preErrorHandler);
 

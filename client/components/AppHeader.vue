@@ -10,10 +10,10 @@
     </div>
     <div class="flex-grow" />
     <div class="space-x-4 ml-4 mr-8 flex items-center align-middle text-sm">
-      <nuxt-link v-if="!user" to="/login">Sign in</nuxt-link>
-      <nuxt-link
+      <a
         v-if="!user"
-        to="/register"
+        key="sign-in-link"
+        href="/api/auth/login"
         class="
           rounded-full
           bg-black
@@ -25,15 +25,22 @@
           py-1
         "
       >
-        Sign up
-      </nuxt-link>
+        Sign in
+      </a>
+      <a
+        v-else
+        key="profile-button"
+        href="/api/auth/logout"
+        class="font-semibold px-4 py-1"
+      >
+        Sign out, {{ user.username }}
+      </a>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { mapGetters } from "vuex";
 
 // dark:text-gray-100
 // text-sm
@@ -47,9 +54,9 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapGetters({
-      user: "auth/user",
-    }),
+    user() {
+      return this.$store.getters["auth/actor"];
+    },
   },
   methods: {
     isRouteMatched(to: string) {

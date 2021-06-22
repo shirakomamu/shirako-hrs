@@ -51,6 +51,9 @@ export default Vue.extend({
       updateExists: false as boolean,
     };
   },
+  created() {
+    this.$store.dispatch("auth/fetch");
+  },
   mounted() {
     // Listen for our custom event from the SW registration
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -60,7 +63,7 @@ export default Vue.extend({
     });
 
     // Prevent multiple refreshes
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
+    navigator.serviceWorker?.addEventListener("controllerchange", () => {
       if (this.refreshing) return;
       this.refreshing = true;
       // Here the actual reload of the page occurs

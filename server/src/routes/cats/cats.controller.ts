@@ -7,6 +7,8 @@ export default class {
   public listCats = (_req: Request, _res: SrkExpressResponse) => {
     const payload = ["Cat 1", "Cat 2"];
 
+    console.log(_res.locals.authResult);
+
     return new SrkResponse({ payload });
   };
 

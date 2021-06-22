@@ -15,24 +15,25 @@ interface Check {
 
   // all = all roles must be accessible, by any of the rgs
   // any = any of the roles can be accessible, by any of the rgs
-  mode?: GuardBehavior;
+  mode: GuardBehavior;
 }
 
 export default class Hrbac {
   public rro: Promise<ResolvedRbacOptions>;
-  private memoizedCan: (check: Check) => boolean;
+  private memoizedCan: (check: Check) => Promise<boolean>;
 
   constructor(ro: HrbacOptions | Promise<HrbacOptions>) {
     this.rro = new Promise((resolve) => resolve(this._initializeOptions(ro)));
     this.memoizedCan = this._getMemoizee();
   }
 
-  public can(guard: Guard, actor?: Actor): boolean {
-    const roleResult = this.memoizedCan({
+  public async can(guard: Guard, actor?: Actor): Promise<boolean> {
+    const canArgs = {
       rgs: actor?.rgs || [],
       roles: guard.roles || [],
-      mode: guard.mode,
-    });
+      mode: guard.mode || DEFAULT_CHECK_BEHAVIOR,
+    };
+    const roleResult = await this.memoizedCan(canArgs);
 
     // if simple roles checking fails, immediately return
     if (!roleResult) {
@@ -78,6 +79,7 @@ export default class Hrbac {
     return memoize(this._can, {
       length: 1,
       primitive: true,
+      normalizer: (args) => JSON.stringify(args[0]),
     });
   }
 
@@ -106,12 +108,13 @@ export default class Hrbac {
       .filter((e, i, a) => a.indexOf(e) === i);
   }
 
-  private async _validate(rg: RoleGroup, role: Role) {
+  private async _validate(rg: RoleGroup, role: Role): Promise<boolean> {
     const rroRes = await this.rro;
+
     return rroRes[rg].includes(role);
   }
 
-  private _can({ rgs, roles, mode = DEFAULT_CHECK_BEHAVIOR }: Check) {
+  private async _can({ rgs, roles, mode }: Check): Promise<boolean> {
     if (!roles.length) {
       // if no roles are checked, always true
       return true;
@@ -120,15 +123,23 @@ export default class Hrbac {
       // if no rgs are present, always false
       return false;
     }
-    return rgs.some((e) => {
-      switch (mode) {
-        case GuardBehavior.all:
-          return roles.every((f) => this._validate(e, f));
-        case GuardBehavior.some:
-          return roles.some((f) => this._validate(e, f));
-        default:
-          return false;
-      }
-    });
+
+    const rgsResults = await Promise.all(
+      rgs.map(async (e) => {
+        const validationResults = await Promise.all(
+          roles.map((f) => this._validate(e, f))
+        );
+        switch (mode) {
+          case GuardBehavior.all:
+            return validationResults.every((e) => e);
+          case GuardBehavior.some:
+            return validationResults.some((e) => e);
+          default:
+            return false;
+        }
+      })
+    );
+
+    return rgsResults.some((e) => e);
   }
 }

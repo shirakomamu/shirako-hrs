@@ -1,6 +1,6 @@
 import { Model } from "@vuex-orm/core";
 import { AxiosResponse } from "axios";
-import ISrkResponse, { IPageGuardPayload } from "@@/common/interfaces/api";
+import ISrkResponse from "@@/common/interfaces/api";
 
 const ROUTE_CACHE_DURATION_SECONDS = 600;
 const LOGIN_PATH = "/login";
@@ -44,7 +44,7 @@ class RouteModel extends Model {
       return [];
     }
 
-    const { data }: AxiosResponse<ISrkResponse<IPageGuardPayload>> =
+    const { data }: AxiosResponse<ISrkResponse<any>> =
       await this.store().dispatch("api/send", {
         method: "get",
         url: "/api/auth/check",
@@ -52,7 +52,7 @@ class RouteModel extends Model {
       });
 
     if (data.ok) {
-      data.payload.forEach((e) => {
+      data.payload.forEach((e: any) => {
         this.update({
           where: e.path,
           data: {

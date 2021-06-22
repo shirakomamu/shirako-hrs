@@ -1,12 +1,6 @@
 <template>
   <div class="register space-y-8 flex justify-center items-center">
     <div class="max-w-prose w-full bg-gray-200 dark:bg-gray-700 p-8">
-      <button type="button" @click="isLoading = !isLoading">
-        Toggle loading {{ isLoading }}
-      </button>
-      <button type="button" @click="isDisabled = !isDisabled">
-        Toggle disabled {{ isDisabled }}
-      </button>
       <form
         name="register"
         class="grid gap-4 w-full"
