@@ -1,12 +1,19 @@
 <template>
   <div class="nav flex items-center">
     <div class="justify-start ml-8 mr-4 items-center">
-      <nuxt-link to="/" class="space-x-4 flex items-center">
-        <img class="app-icon" alt="shirako-hrs logo" width="32" height="32" />
-        <span class="font-semibold show-when-wide dark:text-white">{{
-          appName
-        }}</span></nuxt-link
+      <nuxt-link
+        v-slot="{ navigate }"
+        to="/"
+        class="space-x-4 flex items-center"
+        custom
       >
+        <div class="pointer" @click="navigate" @keypress.enter="navigate">
+          <img class="app-icon" alt="shirako-hrs logo" width="32" height="32" />
+          <span class="font-semibold show-when-wide dark:text-white">{{
+            appName
+          }}</span>
+        </div>
+      </nuxt-link>
     </div>
     <div class="flex-grow" />
     <div class="space-x-4 ml-4 mr-8 flex items-center align-middle text-sm">
@@ -27,14 +34,17 @@
       >
         Sign in
       </a>
-      <a
-        v-else
-        key="profile-button"
-        href="/api/auth/logout"
-        class="font-semibold px-4 py-1"
-      >
-        Sign out, {{ user.username }}
-      </a>
+      <nuxt-link v-else v-slot="{ navigate }" class="p-0" to="/me" custom>
+        <img
+          :src="user && user.avatar"
+          class="profile-avatar rounded-full pointer"
+          alt="profile"
+          width="32"
+          height="32"
+          @click="navigate"
+          @keypress.enter="navigate"
+        />
+      </nuxt-link>
     </div>
   </div>
 </template>
@@ -67,29 +77,8 @@ export default Vue.extend({
 </script>
 
 <style lang="less" scoped>
-.link-underline-animate {
-  position: relative;
-  text-decoration: none;
-
-  &:after {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    height: 1px;
-    transition: width 0.3s ease 0s, left 0.3s ease 0s;
-    width: 0;
-    background: rgba(0, 0, 0, var(--tw-text-opacity));
-    @media (prefers-color-scheme: dark) {
-      background: rgba(243, 244, 246, var(--tw-text-opacity));
-    }
-  }
-  &:hover:after,
-  &:focus:after {
-    width: 100%;
-    left: 0;
-  }
+.pointer {
+  cursor: pointer;
 }
 
 .app-icon {

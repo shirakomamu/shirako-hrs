@@ -3,8 +3,9 @@ import jwt, { JwtHeader } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 import { SrkCookie, AuthType } from "src/services/jwt";
 import Actor from "src/classes/Actor";
-import { RoleGroup } from "src/services/hrbac";
+import hrbac, { RoleGroup } from "src/services/hrbac";
 import SrkError from "src/classes/SrkError";
+import { Auth0UserMetadataDto } from "@@/common/dto/auth";
 
 // .getUserInfo()
 // {
@@ -85,7 +86,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
   // console.log(req.oidc.accessToken);
   // console.log(req.headers);
-  if (!req.oidc.isAuthenticated || !req.oidc.user || !req.oidc.accessToken) {
+  if (
+    !req.oidc.isAuthenticated() ||
+    !req.oidc.user ||
+    !req.oidc.accessToken ||
+    !req.oidc.idTokenClaims
+  ) {
     res.locals.authResult = {
       authType: AuthType.none,
     } as SrkCookie;
@@ -109,13 +115,25 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         audience: process.env.AUTH0_API_IDENTIFIER,
         issuer: process.env.AUTH0_ISSUER_BASE_URL,
       },
-      (err, result) => {
+      async (err, result) => {
         if (err) {
           throw err;
         }
 
+        if (
+          !req.oidc.isAuthenticated() ||
+          !req.oidc.user ||
+          !req.oidc.accessToken ||
+          !req.oidc.idTokenClaims
+        ) {
+          res.locals.authResult = {
+            authType: AuthType.none,
+          } as SrkCookie;
+          return next();
+        }
+
         const user = req.oidc.user as {
-          nickname?: string;
+          nickname: string;
           name: string;
           picture: string;
           // eslint-disable-next-line camelcase
@@ -130,20 +148,32 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           throw new SrkError("failedLogin");
         }
 
+        const rro = await hrbac.rro;
+
         res.locals.authResult = {
           authType: AuthType.auth0,
-          actor: new Actor({
-            id: AuthType.auth0 + "://" + user.sub,
-            username: user.name,
-            email: user.email,
-            avatar: user.picture,
-            cohort: null,
-            key: null,
-            rgs: user.email_verified
-              ? [RoleGroup.member_verified]
-              : [RoleGroup.member],
-            roles: [],
-          }),
+          actor: new Actor(
+            {
+              id: AuthType.auth0 + "://" + user.sub,
+              username:
+                (req.oidc.idTokenClaims[
+                  `${process.env.CUSTOM_CLAIM_NAMESPACE}username`
+                ] as string | undefined) || user.name,
+              nickname: user.nickname,
+              email: user.email,
+              avatar: user.picture,
+              cohort: null,
+              key: null,
+              rgs: user.email_verified
+                ? [RoleGroup.member_verified]
+                : [RoleGroup.member],
+              meta:
+                (req.oidc.idTokenClaims[
+                  `${process.env.CUSTOM_CLAIM_NAMESPACE}user_metadata`
+                ] as Auth0UserMetadataDto) || {},
+            },
+            rro
+          ),
         } as SrkCookie;
         next();
       }

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-1">
+  <div class="grid grid-cols-1 gap-1">
     <div class="flex flex-row items-center container">
       <div class="flex-grow">
         <input

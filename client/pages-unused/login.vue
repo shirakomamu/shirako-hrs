@@ -1,11 +1,15 @@
 <template>
   <div class="sign-in space-y-8 flex justify-center items-center">
     <div class="max-w-prose w-full bg-gray-200 dark:bg-gray-700 p-8">
-      <form name="login" class="grid gap-4 w-full" @submit.prevent="onSubmit">
+      <form
+        name="login"
+        class="grid grid-cols-1 gap-4 w-full"
+        @submit.prevent="onSubmit"
+      >
         <h5 class="text-2xl dark:text-white">
           Sign in to your {{ $config.appinfo.name }} account
         </h5>
-        <div class="grid gap-1">
+        <div class="grid grid-cols-1 gap-1">
           <label :for="userUid" class="text-sm"
             >Username or email address</label
           >
@@ -18,7 +22,7 @@
             required
           />
         </div>
-        <div class="grid gap-1">
+        <div class="grid grid-cols-1 gap-1">
           <label :for="passwordUid" class="text-sm">Password</label>
           <input
             :id="passwordUid"
@@ -30,14 +34,14 @@
           />
         </div>
 
-        <div class="grid gap-4 mt-4">
+        <div class="grid grid-cols-1 gap-4 mt-4">
           <button
             type="submit"
             class="bg-black dark:bg-white text-white dark:text-black"
           >
             Sign in
           </button>
-          <div class="grid gap-2">
+          <div class="grid grid-cols-1 gap-2">
             <nuxt-link
               to="/recover"
               class="

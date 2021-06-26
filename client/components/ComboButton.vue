@@ -2,8 +2,10 @@
   <button
     :type="type"
     :disabled="disabled"
-    class="transition-opacity"
-    :class="{ 'opacity-50': loading || disabled }"
+    :class="{
+      'opacity-50': loading || disabled,
+      'disable-pointer': loading || disabled,
+    }"
     v-on="$listeners"
   >
     <Loader v-show="loading" ref="loader" />
@@ -50,4 +52,8 @@ export default Vue.extend({
 });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.disable-pointer {
+  cursor: not-allowed;
+}
+</style>

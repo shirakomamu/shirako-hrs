@@ -6,17 +6,13 @@ import SrkError from "src/classes/SrkError";
 import assert from "@@/common/utils/assert";
 
 export default (guard: Guard) =>
-  async (
-    _req: Request,
-    res: Response | SrkExpressResponse,
-    next: NextFunction
-  ) => {
+  (_req: Request, res: Response | SrkExpressResponse, next: NextFunction) => {
     let result: boolean;
     if (!res.locals.authResult) {
-      result = await hrbac.can(guard);
+      result = hrbac.can(guard);
     } else {
       assert<SrkExpressResponse>(res);
-      result = await hrbac.can(guard, res.locals.authResult.actor);
+      result = hrbac.can(guard, res.locals.authResult.actor);
     }
 
     if (!result) {

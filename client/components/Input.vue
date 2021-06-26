@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-1">
+  <div class="grid grid-cols-1 gap-1">
     <div class="flex flex-row items-center container">
       <div class="flex-grow">
         <input
@@ -13,9 +13,12 @@
               'pr-10': !['failure', 'none'].includes(indicatorState),
             },
           ]"
-          @input="onInput"
           @input.once="setTouched"
           @invalid="onInvalid"
+          v-on="{
+            ...$listeners,
+            input: (event) => onInput(event),
+          }"
         />
       </div>
       <div class="check-mark px-2 w-10">

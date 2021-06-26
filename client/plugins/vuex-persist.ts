@@ -8,7 +8,11 @@ export default ({ store }: Context) => {
     storage: {
       getItem: (key: string) => get(key) as any,
       setItem: (key: string, data: any) =>
-        set(key, data, { expires: 3, secure: true, sameSite: "strict" }) as any,
+        set(key, data, {
+          expires: 3,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        }) as any,
       removeItem: (key: string) => remove(key) as any,
     } as any, // default is window.localStorage
     modules: ["auth"], // modules to save

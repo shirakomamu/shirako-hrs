@@ -4,7 +4,7 @@
       <form
         v-if="tokenResult.ok"
         name="verify"
-        class="grid gap-4"
+        class="grid grid-cols-1 gap-4"
         @submit.prevent="onSubmit"
       >
         <template
@@ -17,14 +17,14 @@
             <p class="text-red-500">Invalid OTP code.</p>
           </div>
           <h5 class="text-2xl dark:text-white">Verify your account</h5>
-          <div class="grid gap-1 text-sm">
+          <div class="grid grid-cols-1 gap-1 text-sm">
             <p>
               An email was sent to {{ tokenResult.payload.emailHint }}. Don't
               see it? <span>Resend email message.</span>
             </p>
           </div>
 
-          <div class="grid gap-1">
+          <div class="grid grid-cols-1 gap-1">
             <label :for="otpCodeUid" class="text-sm">OTP code</label>
             <Input
               :id="otpCodeUid"
@@ -39,7 +39,7 @@
             />
           </div>
 
-          <div class="grid gap-4 mt-4">
+          <div class="grid grid-cols-1 gap-4 mt-4">
             <button
               type="submit"
               class="bg-black dark:bg-white text-white dark:text-black"
@@ -50,20 +50,20 @@
         </template>
         <template v-else-if="tokenResult.payload.status === 'verified'">
           <h5 class="text-2xl dark:text-white">Account verified</h5>
-          <div class="grid gap-1 text-sm">
+          <div class="grid grid-cols-1 gap-1 text-sm">
             <p>Congratulations! Your account has been verified.</p>
             <nuxt-link to="/login">Please sign in.</nuxt-link>
           </div>
         </template>
       </form>
-      <div v-else class="grid gap-4">
+      <div v-else class="grid grid-cols-1 gap-4">
         <h5 class="text-2xl dark:text-white">Cannot verify account</h5>
-        <div class="grid gap-1 text-sm">
+        <div class="grid grid-cols-1 gap-1 text-sm">
           <p>{{ tokenResult.error.message || tokenResult.error.name }}</p>
         </div>
       </div>
 
-      <div class="grid gap-2">
+      <div class="grid grid-cols-1 gap-2">
         <nuxt-link
           to="/login"
           class="
