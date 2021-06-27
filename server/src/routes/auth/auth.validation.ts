@@ -1,14 +1,24 @@
-// import { checkSchema, body, oneOf } from "express-validator";
-// import {} from "./auth.param.validation";
+import { checkSchema, oneOf } from "express-validator";
+import {
+  UsernameParamSchema,
+  NicknameParamSchema,
+  EmailParamSchema,
+} from "./auth.param.validation";
 
-// export const RegisterNewMemberValidators = [
-//   checkSchema({
-//     username: UsernameParamSchema,
-//     displayName: DisplayNameParamSchema,
-//     email: EmailRegistrationParamSchema,
-//     password: PasswordRegistrationParamSchema,
-//   }),
-// ];
+// additional check is done in method for _email_verified role if username or displayName
+export const UpdateUserValidators = [
+  oneOf([
+    checkSchema({
+      username: UsernameParamSchema,
+    }),
+    checkSchema({
+      nickname: NicknameParamSchema,
+    }),
+    checkSchema({
+      email: EmailParamSchema,
+    }),
+  ]),
+];
 
 // export const OtpTokenValidators = [
 //   checkSchema({

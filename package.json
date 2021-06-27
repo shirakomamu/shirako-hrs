@@ -18,6 +18,7 @@
     "@mikro-orm/postgresql": "^4.5.6-dev.6",
     "@mikro-orm/reflection": "^4.5.6-dev.6",
     "@nuxtjs/axios": "^5.13.1",
+    "@nuxtjs/composition-api": "^0.23.4",
     "@nuxtjs/pwa": "^3.3.5",
     "@sendgrid/client": "^7.4.3",
     "@sendgrid/mail": "^7.4.4",

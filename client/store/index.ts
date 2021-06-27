@@ -13,19 +13,21 @@ export const mutations: MutationTree<RootState> = {};
 export const actions: ActionTree<RootState, RootState> = {
   // executed on server before browser loads
   // this looks for a cookie and loads it so that user is presumed authenticated as before
-  nuxtServerInit(
-    { commit },
+  async nuxtServerInit(
+    { commit, dispatch },
     { req, res: _res }: { req: Request; res: Response }
   ) {
     const cookies = req.headers.cookie;
 
     if (!cookies) {
+      await dispatch("auth/fetch");
       return;
     }
 
     const cookieResult = cookie.parse(cookies);
     const savedStoreString = cookieResult["hrs-vuex"];
     if (!savedStoreString) {
+      await dispatch("auth/fetch");
       return;
     }
 
@@ -33,10 +35,12 @@ export const actions: ActionTree<RootState, RootState> = {
     try {
       savedStore = JSON.parse(savedStoreString);
     } catch (e) {
+      await dispatch("auth/fetch");
       return;
     }
 
     if (!savedStore.auth?.actor) {
+      await dispatch("auth/fetch");
       return;
     }
 

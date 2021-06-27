@@ -1,27 +1,5 @@
 import { Role, RoleGroup } from "src/services/hrbac";
 
-export type MemberRegistrationDto = {
-  username: string;
-  displayName: string;
-  password: string;
-  email: string;
-};
-
-export type NameCheckDto = {
-  type: "un" | "dn";
-  name: string;
-};
-
-export type OtpTokenCheckDto = {
-  otpToken: string;
-  otpCode?: string;
-};
-
-export type LoginDto = {
-  user: string; // email or username
-  password: string;
-};
-
 export type Auth0UserMetadataDto = {
   privacySettings?: {
     friendRequestPrivacy?: string;
@@ -43,4 +21,34 @@ export type ActorConstructorDto = {
 
 export type ActorDto = ActorConstructorDto & {
   roles: Role[];
+};
+
+export type UpdateUserDto = {
+  username?: string;
+  nickname?: string;
+  email?: string;
+};
+
+// unused below
+
+export type MemberRegistrationDto = {
+  username: string;
+  displayName: string;
+  password: string;
+  email: string;
+};
+
+export type NameCheckDto = {
+  type: "un" | "dn";
+  name: string;
+};
+
+export type OtpTokenCheckDto = {
+  otpToken: string;
+  otpCode?: string;
+};
+
+export type LoginDto = {
+  user: string; // email or username
+  password: string;
 };

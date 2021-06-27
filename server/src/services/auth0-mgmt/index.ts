@@ -9,12 +9,17 @@ interface TokenResponse {
   token_type: "Bearer";
 }
 
+interface SendOptions {
+  includeAccessToken?: boolean;
+}
+
 const store = createRedis({
   keyPrefix: GENERAL_USAGE_PREFIX,
 });
 
 export async function getAccessToken() {
   const response = await axios.request<TokenResponse>({
+    method: "post",
     url: process.env.AUTH0_ISSUER_BASE_URL + "oauth/token",
     data: {
       client_id: process.env.AUTH0_CLIENT_ID,
@@ -37,24 +42,28 @@ export async function getAccessToken() {
 export async function send<T = any>(
   endpoint: string,
   method: Method,
-  payload: any
+  payload: any,
+  options?: SendOptions
 ) {
-  let accessToken = await store.get(GEN_ACCESS_TOKEN_KEY);
+  const includeAccessToken = options?.includeAccessToken || true;
 
-  if (!accessToken) {
-    accessToken = await getAccessToken();
+  const headers: { [key: string]: string } = {};
+  if (includeAccessToken) {
+    let accessToken = await store.get(GEN_ACCESS_TOKEN_KEY);
+
+    if (!accessToken) {
+      accessToken = await getAccessToken();
+    }
+
+    headers.Authorization = "Bearer " + accessToken;
   }
 
   const response = await axios.request<T>({
-    url: process.env.AUTH0_ISSUER_BASE_URL + endpoint,
     method,
-    headers: {
-      Authorization: "Bearer " + accessToken,
-    },
+    url: process.env.AUTH0_ISSUER_BASE_URL + endpoint,
+    headers,
     data: payload,
   });
 
   return response.data;
 }
-
-// --------------------------------- utilities

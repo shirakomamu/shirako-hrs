@@ -115,17 +115,14 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent, useContext, useMeta } from "@nuxtjs/composition-api";
 
-export default Vue.extend({
-  data() {
-    return {};
+export default defineComponent({
+  setup() {
+    const context = useContext();
+    useMeta({ title: "Privacy policy | " + context.$config.appinfo.name });
   },
-  head() {
-    return {
-      title: "Privacy policy | " + this.$config.appinfo.name,
-    };
-  },
+  head: {},
 });
 </script>
 

@@ -24,13 +24,13 @@
         class="
           visibility-button
           px-2
+          w-20
           flex flex-row
           items-center
           justify-end
-          gap-2
         "
       >
-        <div class="">
+        <div class="px-2 w-10">
           <Loader v-if="indicatorState === 'loading'" />
           <Error
             v-else-if="indicatorState === 'failure'"
@@ -66,7 +66,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropOptions } from "vue";
+import {
+  computed,
+  defineComponent,
+  PropOptions,
+  ref,
+  watch,
+  nextTick,
+} from "@nuxtjs/composition-api";
 import zxcvbn, { ZXCVBNResult } from "zxcvbn";
 import Loader from "client/components/icons/Loader.vue";
 import Check from "client/components/icons/Check.vue";
@@ -76,7 +83,7 @@ import VisibilityOff from "client/components/icons/VisibilityOff.vue";
 import uniqueId from "@@/common/utils/uniqueId";
 import endWithString from "@@/common/utils/endWithString";
 
-export default Vue.extend({
+export default defineComponent({
   name: "PasswordInput",
   components: {
     Loader,
@@ -104,97 +111,108 @@ export default Vue.extend({
       default: (): string[] => [],
     } as PropOptions<string[]>,
   },
-  data() {
-    return {
-      context: "0" as string,
-      validating: false as boolean,
-      touching: false as boolean,
-      touched: false as boolean,
-      validationChecked: false as boolean,
-      timer: null as any, // timeout object
-      validationError: "" as string,
-      show: false as boolean,
-    };
-  },
-  computed: {
-    indicatorState(): "success" | "loading" | "failure" | "none" {
-      if (!this.touched || !this.validationChecked || this.touching)
-        return "none";
-      if (this.validating) return "loading";
-      if (this.validationError) return "failure";
+  setup(props, { emit }) {
+    // refs
+    const inputElem = ref<HTMLInputElement | null>(null);
 
-      return "success";
-    },
-    pwResult(): ZXCVBNResult | null {
-      if (!this.value) {
+    // data
+    const inputContext = ref<string>("0");
+    const validating = ref<boolean>(false);
+    const touching = ref<boolean>(false);
+    const touched = ref<boolean>(false);
+    const validationChecked = ref<boolean>(false);
+    const timer = ref<any>(null);
+    const validationError = ref<string>("");
+    const show = ref<boolean>(false);
+
+    // computed
+    const indicatorState = computed(
+      (): "success" | "loading" | "failure" | "none" => {
+        if (!touched.value || !validationChecked.value || touching.value)
+          return "none";
+        if (validating.value) return "loading";
+        if (validationError.value) return "failure";
+
+        return "success";
+      }
+    );
+
+    const pwResult = computed((): ZXCVBNResult | null => {
+      if (!props.value) {
         return null;
       }
-      return zxcvbn(this.value, this.dict);
-    },
-    passwordText(): string {
-      if (!this.pwResult) {
+      return zxcvbn(props.value, props.dict);
+    });
+
+    const passwordText = computed((): string => {
+      if (!pwResult.value) {
         return "Enter a password.";
       }
-      const pwStrength = Math.max(this.pwResult.score, 1);
+      const pwStrength = Math.max(pwResult.value.score, 1);
       if (pwStrength >= 4) return "Very strong password.";
       if (pwStrength >= 3) return "Strong password.";
       if (pwStrength >= 2) return "Weak password.";
       return "Very weak password.";
-    },
-  },
-  watch: {
-    dict() {
-      this.touching = true;
-      const uid = uniqueId();
-      this.context = uid;
-      clearTimeout(this.timer);
+    });
 
-      this.timer = setTimeout(async () => {
-        await this.doValidate(uid);
-      }, this.debounceMs);
-    },
-  },
-  methods: {
-    setValidationError(newValue: string) {
-      (this.$refs.inputElem as HTMLInputElement)?.setCustomValidity(newValue);
-      this.validationError = newValue;
-      this.validationChecked = true;
-    },
-    setTouched() {
-      this.touched = true;
-    },
-    onInput(el: Event) {
-      this.touching = true;
+    watch(
+      () => props.dict,
+      () => {
+        touching.value = true;
+        const uid = uniqueId();
+        inputContext.value = uid;
+        clearTimeout(timer.value);
+
+        timer.value = setTimeout(async () => {
+          await doValidate(uid);
+        }, props.debounceMs);
+      }
+    );
+
+    // methods
+    const setValidationError = (newValue: string) => {
+      (inputElem.value as HTMLInputElement)?.setCustomValidity(newValue);
+      validationError.value = newValue;
+      validationChecked.value = true;
+    };
+
+    const setTouched = () => {
+      touched.value = true;
+    };
+
+    const onInput = (el: Event) => {
+      touching.value = true;
       const uid = uniqueId();
-      this.context = uid;
-      clearTimeout(this.timer);
+      inputContext.value = uid;
+      clearTimeout(timer);
 
       const elem = el.target as HTMLInputElement;
       const value = elem.value;
-      this.$emit("input", value);
+      emit("input", value);
 
-      this.timer = setTimeout(async () => {
-        await this.doValidate(uid);
-      }, this.debounceMs);
-    },
-    async doValidate(uid: string) {
-      this.validating = true;
-      this.touching = false;
-      if (uid !== this.context) return;
-      this.setValidationError("");
+      timer.value = setTimeout(async () => {
+        await doValidate(uid);
+      }, props.debounceMs);
+    };
 
-      await this.$nextTick();
+    const doValidate = async (uid: string) => {
+      validating.value = true;
+      touching.value = false;
+      if (uid !== inputContext.value) return;
+      setValidationError("");
 
-      if (uid !== this.context) return;
-      if (this.pwResult) {
-        if (this.value && Math.max(this.pwResult.score, 1) < 3) {
-          if (this.pwResult.feedback.warning) {
-            this.setValidationError(
-              endWithString(this.pwResult.feedback.warning, ".")
+      await nextTick();
+
+      if (uid !== inputContext.value) return;
+      if (pwResult.value) {
+        if (props.value && Math.max(pwResult.value.score, 1) < 3) {
+          if (pwResult.value.feedback.warning) {
+            setValidationError(
+              endWithString(pwResult.value.feedback.warning, ".")
             );
-          } else if (this.pwResult.feedback.suggestions.length) {
-            this.setValidationError(
-              this.pwResult.feedback.suggestions
+          } else if (pwResult.value.feedback.suggestions.length) {
+            setValidationError(
+              pwResult.value.feedback.suggestions
                 .map((e) => endWithString(e, "."))
                 .join(" ")
             );
@@ -202,22 +220,44 @@ export default Vue.extend({
         }
       }
 
-      await this.$nextTick();
+      await nextTick();
 
-      if (uid !== this.context) return;
-      if (!this.validationError)
-        (this.$refs.inputElem as HTMLInputElement).checkValidity();
+      if (uid !== inputContext.value) return;
+      if (!validationError.value)
+        (inputElem.value as HTMLInputElement).checkValidity();
 
-      this.validating = false;
-    },
-    onInvalid(el: Event) {
-      this.setValidationError(
-        (el.target as HTMLInputElement).validationMessage
-      );
-    },
-    togglePasswordVisibility() {
-      this.show = !this.show;
-    },
+      validating.value = false;
+    };
+
+    const onInvalid = (el: Event) => {
+      setValidationError((el.target as HTMLInputElement).validationMessage);
+    };
+
+    const togglePasswordVisibility = () => {
+      show.value = !show.value;
+    };
+
+    return {
+      inputElem,
+
+      inputContext,
+      validating,
+      touching,
+      touched,
+      validationChecked,
+      timer,
+      validationError,
+      show,
+
+      indicatorState,
+      pwResult,
+      passwordText,
+
+      onInput,
+      setTouched,
+      onInvalid,
+      togglePasswordVisibility,
+    };
   },
 });
 </script>

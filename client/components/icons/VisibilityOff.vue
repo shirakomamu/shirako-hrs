@@ -17,9 +17,9 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from "@nuxtjs/composition-api";
 
-export default Vue.extend({
+export default defineComponent({
   name: "VisibilityOff",
 });
 </script>

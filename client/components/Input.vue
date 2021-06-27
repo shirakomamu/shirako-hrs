@@ -1,5 +1,7 @@
 <template>
   <div class="grid grid-cols-1 gap-1">
+    {{ indicatorState }}
+    {{ touched }} {{ validationChecked }} {{ touching }}
     <div class="flex flex-row items-center container">
       <div class="flex-grow">
         <input
@@ -44,13 +46,19 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {
+  defineComponent,
+  ref,
+  computed,
+  PropOptions,
+  nextTick,
+} from "@nuxtjs/composition-api";
 import Loader from "client/components/icons/Loader.vue";
 import Check from "client/components/icons/Check.vue";
 import Error from "client/components/icons/Error.vue";
 import uniqueId from "@@/common/utils/uniqueId";
 
-export default Vue.extend({
+export default defineComponent({
   name: "Input",
   components: { Loader, Check, Error },
   inheritAttrs: false,
@@ -72,83 +80,108 @@ export default Vue.extend({
     // if it's false, then it will be invalid without a validation error
     validator: {
       type: Function,
-      default: undefined,
-    },
+      default: () => "",
+    } as PropOptions<(...args: any) => Promise<string>>,
     passiveText: {
       type: String,
       default: "",
     },
+    doValidation: {
+      type: Boolean,
+      default: false,
+    },
   },
-  data() {
-    return {
-      context: "0" as string,
-      validating: false as boolean,
-      touching: false as boolean,
-      touched: false as boolean,
-      validationChecked: false as boolean,
-      timer: null as any, // timeout object
-      validationError: "" as string,
-    };
-  },
-  computed: {
-    indicatorState(): "success" | "loading" | "failure" | "none" {
-      if (!this.touched || !this.validationChecked || this.touching)
-        return "none";
-      if (this.validating) return "loading";
-      if (this.validationError) return "failure";
+  setup(props, { emit }) {
+    // refs
+    const inputElem = ref<HTMLInputElement | null>(null);
 
-      return "success";
-    },
-  },
-  methods: {
-    setValidationError(newValue: string) {
-      (this.$refs.inputElem as HTMLInputElement)?.setCustomValidity(newValue);
-      this.validationError = newValue;
-      this.validationChecked = true;
-    },
-    setTouched() {
-      this.touched = true;
-    },
-    onInput(el: Event) {
-      this.touching = true;
+    // data
+    const inputContext = ref("0");
+    const validating = ref(false);
+    const touching = ref(false);
+    const touched = ref(false);
+    const validationChecked = ref(false);
+    const timer = ref<any>(null);
+    const validationError = ref("");
+
+    const indicatorState = computed(
+      (): "success" | "loading" | "failure" | "none" => {
+        if (!touched.value || !validationChecked.value || touching.value)
+          return "none";
+        if (validating.value) return "loading";
+        if (validationError.value) return "failure";
+        return "success";
+      }
+    );
+
+    // methods
+    const setValidationError = (newValue: string) => {
+      (inputElem.value as HTMLInputElement)?.setCustomValidity(newValue);
+      validationError.value = newValue;
+      validationChecked.value = true;
+    };
+
+    const setTouched = () => {
+      touched.value = true;
+    };
+
+    const onInput = (el: Event) => {
+      touching.value = true;
       const uid = uniqueId();
-      this.context = uid;
-      clearTimeout(this.timer);
+      inputContext.value = uid;
+      clearTimeout(timer.value);
 
       const elem = el.target as HTMLInputElement;
       const value = elem.value;
-      this.$emit("input", value);
+      emit("input", value);
 
-      this.timer = setTimeout(async () => {
-        this.validating = true;
-        this.touching = false;
-        if (uid !== this.context) return;
-        this.setValidationError("");
+      if (props.doValidation) {
+        timer.value = setTimeout(async () => {
+          validating.value = true;
+          touching.value = false;
+          if (uid !== inputContext.value) return;
+          setValidationError("");
 
-        await this.$nextTick();
+          await nextTick();
 
-        if (this.validator) {
-          const validatorValue = (await this.validator(value)) || "";
-          if (uid !== this.context) return;
-          this.setValidationError(validatorValue);
+          if (props.validator) {
+            const validatorValue = (await props.validator(value)) || "";
+            if (uid !== inputContext.value) return;
+            setValidationError(validatorValue);
 
-          await this.$nextTick();
+            await nextTick();
 
-          if (uid !== this.context) return;
-          if (!this.validationError) elem.checkValidity();
-        } else {
-          if (uid !== this.context) return;
-          elem.checkValidity();
-        }
+            if (uid !== inputContext.value) return;
+            if (!validationError.value) elem.checkValidity();
+          } else {
+            if (uid !== inputContext.value) return;
+            elem.checkValidity();
+          }
 
-        this.validating = false;
-      }, this.debounceMs);
-    },
-    onInvalid(el: Event) {
-      this.setValidationError(
-        (el.target as HTMLInputElement).validationMessage
-      );
-    },
+          validating.value = false;
+        }, props.debounceMs);
+      }
+    };
+
+    const onInvalid = (el: Event) => {
+      setValidationError((el.target as HTMLInputElement).validationMessage);
+    };
+
+    return {
+      inputElem,
+      inputContext,
+      validating,
+      touching,
+      touched,
+      validationChecked,
+      timer,
+      validationError,
+      indicatorState,
+
+      setTouched,
+      onInput,
+      onInvalid,
+    };
   },
 });
 </script>
@@ -160,5 +193,6 @@ export default Vue.extend({
 .check-mark {
   position: absolute;
   right: 0;
+  outline: none;
 }
 </style>

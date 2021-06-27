@@ -130,6 +130,10 @@ export default class Hrbac {
         return validationResults.every((e) => e);
       case GuardBehavior.some:
         return validationResults.some((e) => e);
+      case GuardBehavior.notAll:
+        return !validationResults.every((e) => e);
+      case GuardBehavior.notSome:
+        return !validationResults.some((e) => e);
       default:
         return false;
     }

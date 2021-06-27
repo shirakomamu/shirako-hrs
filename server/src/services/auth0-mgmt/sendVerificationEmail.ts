@@ -1,12 +1,20 @@
 /* eslint-disable camelcase */
 import { send } from ".";
 
-interface EmailVerificationResponse {
+export interface EmailVerificationResponse {
   status: string;
   type: string;
   created_at: string;
   id: string;
 }
+
+// response format
+// {
+//   type: "verification_email",
+//   status: "pending",
+//   created_at: "2021-06-26T04:29:34.965Z",
+//   id: "job_Yq9miFMnKHOB8SpW",
+// }
 
 export default async ({
   id,
@@ -15,8 +23,8 @@ export default async ({
 }: {
   id: string;
   identity: {
-    user_id: string;
     provider: string;
+    user_id: string;
   };
   organizationId?: string;
 }) => {

@@ -5,6 +5,18 @@ export interface ISelfIdentifyPayload {
   actor?: ActorDto;
 }
 
+export interface IVerifyEmailPayload {}
+
+export interface IResetPasswordPayload {}
+
+export interface IUpdateUserPayload {
+  username?: string;
+  nickname?: string;
+  email?: string;
+}
+
+// unused below
+
 export interface IMemberRegisterPayload {
   verificationRequired: boolean;
   otpToken: string;

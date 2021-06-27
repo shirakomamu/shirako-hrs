@@ -41,53 +41,57 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  useStore,
+} from "@nuxtjs/composition-api";
 
-export default Vue.extend({
-  data() {
-    return {
-      refreshing: false as boolean,
-      registration: null as null | ServiceWorkerRegistration,
-      updateExists: false as boolean,
-    };
-  },
-  created() {
-    this.$store.dispatch("auth/fetch");
-  },
-  mounted() {
-    // Listen for our custom event from the SW registration
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    document.addEventListener("swUpdated", this.updateAvailable, {
-      once: true,
-    });
+export default defineComponent({
+  setup() {
+    const refreshing = ref<boolean>(false);
+    const registration = ref<null | ServiceWorkerRegistration>(null);
+    const updateExists = ref<boolean>(false);
 
-    // Prevent multiple refreshes
-    navigator.serviceWorker?.addEventListener("controllerchange", () => {
-      if (this.refreshing) return;
-      this.refreshing = true;
-      // Here the actual reload of the page occurs
-      window.location.reload();
-    });
-  },
-  methods: {
+    const store = useStore();
+    store.dispatch("auth/fetch");
+
     // Store the SW registration so we can send it a message
     // We use `updateExists` to control whatever alert, toast, dialog, etc we want to use
     // To alert the user there is an update they need to refresh for
-    updateAvailable(event: { detail: ServiceWorkerRegistration }) {
-      this.registration = event.detail;
-      this.updateExists = true;
-    },
+    const updateAvailable = (event: { detail: ServiceWorkerRegistration }) => {
+      registration.value = event.detail;
+      updateExists.value = true;
+    };
 
     // Called when the user accepts the update
-    refreshApp() {
-      this.updateExists = false;
+    const refreshApp = () => {
+      updateExists.value = false;
       // Make sure we only send a 'skip waiting' message if the SW is waiting
-      if (!this.registration || !this.registration.waiting) return;
+      if (!registration.value || !registration.value.waiting) return;
 
       // send message to SW to skip the waiting and activate the new SW
-      this.registration.waiting.postMessage({ type: "SKIP_WAITING" });
-    },
+      registration.value.waiting.postMessage({ type: "SKIP_WAITING" });
+    };
+
+    onMounted(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      document.addEventListener("swUpdated", updateAvailable, {
+        once: true,
+      });
+
+      // Prevent multiple refreshes
+      navigator.serviceWorker?.addEventListener("controllerchange", () => {
+        if (refreshing.value) return;
+        refreshing.value = true;
+        // Here the actual reload of the page occurs
+        window.location.reload();
+      });
+    });
+
+    return { refreshing, registration, updateExists, refreshApp };
   },
 });
 </script>

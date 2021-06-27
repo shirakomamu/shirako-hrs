@@ -38,14 +38,15 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent, useContext } from "@nuxtjs/composition-api";
 
-export default Vue.extend({
+export default defineComponent({
   name: "AppFooter",
-  data() {
-    return {
-      hash: (this.$config.build || "n/a") as string,
-    };
+  setup() {
+    const context = useContext();
+    const hash = context.$config.build || "n/a";
+
+    return { hash };
   },
 });
 </script>

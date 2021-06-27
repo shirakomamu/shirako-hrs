@@ -84,17 +84,14 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent, useContext, useMeta } from "@nuxtjs/composition-api";
 
-export default Vue.extend({
-  data() {
-    return {};
+export default defineComponent({
+  setup() {
+    const context = useContext();
+    useMeta({ title: "Contact us | " + context.$config.appinfo.name });
   },
-  head() {
-    return {
-      title: "Contact us | " + this.$config.appinfo.name,
-    };
-  },
+  head: {},
 });
 </script>
 

@@ -2,23 +2,25 @@
   <button
     :type="type"
     :disabled="disabled"
+    class="button-container"
     :class="{
       'opacity-50': loading || disabled,
       'disable-pointer': loading || disabled,
     }"
     v-on="$listeners"
   >
-    <Loader v-show="loading" ref="loader" />
-    <slot v-if="!loading" />
+    <Loader v-if="loading" class="loader" />
+    <div :class="{ hide: loading }">
+      <slot />
+    </div>
   </button>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from "@nuxtjs/composition-api";
 import Loader from "client/components/icons/Loader.vue";
-import assert from "@@/common/utils/assert";
 
-export default Vue.extend({
+export default defineComponent({
   name: "ComboButton",
   components: {
     Loader,
@@ -37,23 +39,26 @@ export default Vue.extend({
       default: () => false,
     },
   },
-  mounted() {
-    const loader = this.$refs.loader;
-    if (loader) {
-      assert<Vue>(loader);
-
-      const loaderEl = loader.$el;
-      assert<HTMLElement>(loaderEl);
-
-      const computedStyle = window.getComputedStyle(loaderEl);
-      loaderEl.style.height = computedStyle.lineHeight;
-    }
-  },
 });
 </script>
 
 <style lang="less" scoped>
 .disable-pointer {
   cursor: not-allowed;
+}
+
+.button-container {
+  position: relative;
+}
+
+.loader {
+  height: 1.5em;
+  position: absolute;
+  left: calc(50% - 0.75em);
+  top: calc(50% - 0.75em);
+}
+
+.hide {
+  opacity: 0;
 }
 </style>

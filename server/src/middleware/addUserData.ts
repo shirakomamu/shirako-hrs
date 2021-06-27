@@ -46,6 +46,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   if (
     !req.oidc.isAuthenticated() ||
     !req.oidc.user ||
+    !req.oidc.accessToken ||
     !req.oidc.idTokenClaims
   ) {
     res.locals.authResult = {
@@ -55,39 +56,28 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const user = req.oidc.user as {
-      nickname: string;
-      name: string;
-      picture: string;
-      // eslint-disable-next-line camelcase
-      updated_at: string;
-      email: string;
-      // eslint-disable-next-line camelcase
-      email_verified: boolean;
-      sub: string;
-    };
-
+    const userinfo = await req.oidc.fetchUserInfo();
     const rro = await hrbac.rro;
 
     res.locals.authResult = {
       authType: AuthType.auth0,
       actor: new Actor(
         {
-          id: user.sub,
+          id: userinfo.sub,
           username:
-            (req.oidc.idTokenClaims[
-              `${process.env.CUSTOM_CLAIM_NAMESPACE}username`
-            ] as string | undefined) || user.name,
-          nickname: user.nickname,
-          email: user.email,
-          avatar: user.picture,
+            (userinfo[`${process.env.CUSTOM_CLAIM_NAMESPACE}username`] as
+              | string
+              | undefined) || "N/A",
+          nickname: userinfo.nickname || "N/A",
+          email: userinfo.email || "N/A",
+          avatar: userinfo.picture || "",
           cohort: null,
           key: null,
-          rgs: user.email_verified
+          rgs: userinfo.email_verified
             ? [RoleGroup.member_verified]
             : [RoleGroup.member],
           meta:
-            (req.oidc.idTokenClaims[
+            (userinfo[
               `${process.env.CUSTOM_CLAIM_NAMESPACE}user_metadata`
             ] as Auth0UserMetadataDto) || {},
         },

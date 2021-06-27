@@ -1,6 +1,6 @@
-import { Context } from "@nuxt/types";
+import { defineNuxtPlugin } from "@nuxtjs/composition-api";
 
-export default ({ $axios, error: _error }: Context) => {
+export default defineNuxtPlugin(({ $axios, error: _error }) => {
   $axios.defaults.timeout = 60000;
 
   // $axios.onError((e) => {
@@ -13,4 +13,4 @@ export default ({ $axios, error: _error }: Context) => {
   //     });
   //   }
   // });
-};
+});

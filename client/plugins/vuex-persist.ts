@@ -1,8 +1,8 @@
-import { Context } from "@nuxt/types";
+import { defineNuxtPlugin } from "@nuxtjs/composition-api";
 import VuexPersistence from "vuex-persist";
 import { get, set, remove } from "js-cookie";
 
-export default ({ store }: Context) => {
+export default defineNuxtPlugin(({ store }) => {
   new VuexPersistence({
     key: "hrs-vuex", // default is "vuex"
     storage: {
@@ -17,4 +17,4 @@ export default ({ store }: Context) => {
     } as any, // default is window.localStorage
     modules: ["auth"], // modules to save
   }).plugin(store);
-};
+});

@@ -50,28 +50,23 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {
+  computed,
+  defineComponent,
+  useContext,
+  useStore,
+} from "@nuxtjs/composition-api";
 
-// dark:text-gray-100
-// text-sm
-// link-underline-animate
-
-export default Vue.extend({
+export default defineComponent({
   name: "AppHeader",
-  data() {
-    return {
-      appName: this.$config.appinfo.name as string,
-    };
-  },
-  computed: {
-    user() {
-      return this.$store.getters["auth/actor"];
-    },
-  },
-  methods: {
-    isRouteMatched(to: string) {
-      return this.$route.matched.some(({ path }) => path === to);
-    },
+  setup() {
+    const context = useContext();
+    const store = useStore();
+
+    const appName = context.$config.appinfo.name;
+    const user = computed(() => store.getters["auth/actor"]);
+
+    return { appName, user };
   },
 });
 </script>
