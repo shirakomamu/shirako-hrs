@@ -13,7 +13,9 @@ export const getters: GetterTree<ModuleState, ModuleState> = {
 };
 
 export const mutations: MutationTree<ModuleState> = {
-  setActor: (state, actor?: ActorDto) => (state.actor = actor || null),
+  setActor: (state, actor?: ActorDto) => {
+    state.actor = actor || null;
+  },
 };
 
 export const actions: ActionTree<ModuleState, ModuleState> = {

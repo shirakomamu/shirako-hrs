@@ -12,7 +12,7 @@
             'pr-10',
             {
               invalid: indicatorState === 'failure',
-              'pr-20': !['failure', 'none'].includes(indicatorState),
+              'pr-18': !['failure', 'none'].includes(indicatorState),
             },
           ]"
           @input="onInput"
@@ -20,17 +20,8 @@
           @invalid="onInvalid"
         />
       </div>
-      <div
-        class="
-          visibility-button
-          px-2
-          w-20
-          flex flex-row
-          items-center
-          justify-end
-        "
-      >
-        <div class="px-2 w-10">
+      <div class="visibility-button flex flex-row items-center justify-end">
+        <div v-if="indicatorState !== 'none'" class="w-8 pl-2">
           <Loader v-if="indicatorState === 'loading'" />
           <Error
             v-else-if="indicatorState === 'failure'"
@@ -43,7 +34,7 @@
         </div>
         <button
           type="button"
-          class="p-0"
+          class="p-0 px-2"
           :title="show ? 'Hide password' : 'Show password'"
           @click="togglePasswordVisibility"
         >
@@ -270,5 +261,8 @@ export default defineComponent({
   position: absolute;
   right: 0;
   outline: none;
+}
+.pr-18 {
+  padding-right: 4.5rem;
 }
 </style>

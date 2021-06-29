@@ -3,6 +3,8 @@ import {
   UsernameParamSchema,
   NicknameParamSchema,
   EmailParamSchema,
+  FriendRequestPrivacyParamSchema,
+  DefaultListVisibilityParamSchema,
 } from "./auth.param.validation";
 
 // additional check is done in method for _email_verified role if username or displayName
@@ -16,6 +18,17 @@ export const UpdateUserValidators = [
     }),
     checkSchema({
       email: EmailParamSchema,
+    }),
+  ]),
+];
+
+export const UpdateUserPreferencesValidators = [
+  oneOf([
+    checkSchema({
+      friendRequestPrivacy: FriendRequestPrivacyParamSchema,
+    }),
+    checkSchema({
+      defaultListVisibility: DefaultListVisibilityParamSchema,
     }),
   ]),
 ];

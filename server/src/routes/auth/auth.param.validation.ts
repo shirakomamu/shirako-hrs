@@ -1,9 +1,11 @@
 import { ParamSchema } from "express-validator";
+import { DefaultListVisibility, FriendRequestPrivacy } from "@@/common/enums";
 
 export const UsernameParamSchema: ParamSchema = {
   in: ["body"],
   isString: {
     errorMessage: "Username must be a string",
+    bail: true,
   },
   trim: true,
   isLength: {
@@ -13,8 +15,17 @@ export const UsernameParamSchema: ParamSchema = {
       max: 24,
     },
   },
-  isAlphanumeric: {
-    errorMessage: "Username must consist of letters and numbers",
+  custom: {
+    errorMessage:
+      "Username is limited to alphanumeric characters and these symbols: @, ^, $, ., !, `, -, #, +, ', ~, _",
+    options: (value: string) => {
+      // https://auth0.com/docs/connections/database/require-username
+      return /^[A-z0-9@^$.!`\-#+'~_]+$/.test(value);
+    },
+  },
+  isEmail: {
+    errorMessage: "Username cannot be an email address",
+    negated: true,
   },
 };
 
@@ -37,5 +48,25 @@ export const EmailParamSchema: ParamSchema = {
   in: ["body"],
   isEmail: {
     errorMessage: "Email address is not valid",
+  },
+};
+
+export const FriendRequestPrivacyParamSchema: ParamSchema = {
+  in: ["body"],
+  custom: {
+    errorMessage: "Option is invalid",
+    options: (value: any) => {
+      return Object.values(FriendRequestPrivacy).includes(value);
+    },
+  },
+};
+
+export const DefaultListVisibilityParamSchema: ParamSchema = {
+  in: ["body"],
+  custom: {
+    errorMessage: "Option is invalid",
+    options: (value: any) => {
+      return Object.values(DefaultListVisibility).includes(value);
+    },
   },
 };

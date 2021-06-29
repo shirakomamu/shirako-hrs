@@ -45,7 +45,7 @@ import {
   defineComponent,
   onMounted,
   ref,
-  useStore,
+  // useStore,
 } from "@nuxtjs/composition-api";
 
 export default defineComponent({
@@ -54,8 +54,8 @@ export default defineComponent({
     const registration = ref<null | ServiceWorkerRegistration>(null);
     const updateExists = ref<boolean>(false);
 
-    const store = useStore();
-    store.dispatch("auth/fetch");
+    // const store = useStore();
+    // store.dispatch("auth/fetch");
 
     // Store the SW registration so we can send it a message
     // We use `updateExists` to control whatever alert, toast, dialog, etc we want to use

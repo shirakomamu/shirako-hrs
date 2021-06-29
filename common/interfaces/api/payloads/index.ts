@@ -1,5 +1,6 @@
 import { ActorDto } from "@@/common/dto/auth";
 import { VerificationStatus } from "src/entities/Member";
+import { UpdateUserResponse } from "src/services/auth0-mgmt/updateUser";
 
 export interface ISelfIdentifyPayload {
   actor?: ActorDto;
@@ -9,11 +10,9 @@ export interface IVerifyEmailPayload {}
 
 export interface IResetPasswordPayload {}
 
-export interface IUpdateUserPayload {
-  username?: string;
-  nickname?: string;
-  email?: string;
-}
+export interface IUpdateUserPayload extends UpdateUserResponse {}
+
+export interface IUpdateUserPrivacyPayload extends UpdateUserResponse {}
 
 // unused below
 

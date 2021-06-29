@@ -1,7 +1,5 @@
 <template>
   <div class="grid grid-cols-1 gap-1">
-    {{ indicatorState }}
-    {{ touched }} {{ validationChecked }} {{ touching }}
     <div class="flex flex-row items-center container">
       <div class="flex-grow">
         <input

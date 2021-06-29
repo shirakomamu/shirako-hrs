@@ -1,9 +1,11 @@
 import { defineNuxtPlugin } from "@nuxtjs/composition-api";
 import VuexPersistence from "vuex-persist";
-import { get, set, remove } from "js-cookie";
+import Cookies, { get, set, remove } from "js-cookie";
 
 export default defineNuxtPlugin(({ store }) => {
   new VuexPersistence({
+    restoreState: (key, _storage) =>
+      process.client ? Cookies.getJSON(key) : null,
     key: "hrs-vuex", // default is "vuex"
     storage: {
       getItem: (key: string) => get(key) as any,

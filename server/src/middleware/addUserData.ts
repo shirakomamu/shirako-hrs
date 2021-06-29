@@ -5,6 +5,7 @@ import { SrkCookie, AuthType } from "src/services/jwt";
 import Actor from "src/classes/Actor";
 import hrbac, { RoleGroup } from "src/services/hrbac";
 import { Auth0UserMetadataDto } from "@@/common/dto/auth";
+import getUserCached from "src/services/auth0-mgmt/getUserCached";
 
 // .getUserInfo()
 // {
@@ -56,18 +57,16 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const userinfo = await req.oidc.fetchUserInfo();
+    const userinfo = await getUserCached(req.oidc.user.sub);
+    // const userinfo = await req.oidc.fetchUserInfo();
     const rro = await hrbac.rro;
 
     res.locals.authResult = {
       authType: AuthType.auth0,
       actor: new Actor(
         {
-          id: userinfo.sub,
-          username:
-            (userinfo[`${process.env.CUSTOM_CLAIM_NAMESPACE}username`] as
-              | string
-              | undefined) || "N/A",
+          id: userinfo.user_id || "N/A",
+          username: userinfo.username || "N/A",
           nickname: userinfo.nickname || "N/A",
           email: userinfo.email || "N/A",
           avatar: userinfo.picture || "",
@@ -76,10 +75,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           rgs: userinfo.email_verified
             ? [RoleGroup.member_verified]
             : [RoleGroup.member],
-          meta:
-            (userinfo[
-              `${process.env.CUSTOM_CLAIM_NAMESPACE}user_metadata`
-            ] as Auth0UserMetadataDto) || {},
+          meta: (userinfo.user_metadata as Auth0UserMetadataDto) || {},
         },
         rro
       ),

@@ -74,7 +74,9 @@
           </div>
 
           <div class="grid grid-cols-1 gap-1">
-            <label :for="userUid" class="text-lg font-semibold dark:text-white"
+            <label
+              :for="usernameUid"
+              class="text-lg font-semibold dark:text-white"
               >Username</label
             >
             <div v-if="!isUsernameEditing" class="text-sm w-full">
@@ -89,9 +91,9 @@
               </button>
             </div>
             <Input
-              v-else
-              :id="userUid"
-              ref="userInput"
+              v-show="isUsernameEditing"
+              :id="usernameUid"
+              ref="usernameInput"
               v-model="usernameDraft"
               type="text"
               name="username"
@@ -103,10 +105,6 @@
               @keyup.enter.prevent="showUsernameEditor(false)"
               @blur.prevent="showUsernameEditor(false)"
             />
-            <p v-if="isUsernameEditing" class="text-xs text-red-500">
-              If you change your username, your browsing session will be
-              refreshed.
-            </p>
           </div>
 
           <div class="grid grid-cols-1 gap-1">
@@ -127,7 +125,7 @@
               </button>
             </div>
             <Input
-              v-else
+              v-show="isNicknameEditing"
               :id="nicknameUid"
               ref="nicknameInput"
               v-model="nicknameDraft"
@@ -159,7 +157,7 @@
               </button>
             </div>
             <Input
-              v-else
+              v-show="isEmailEditing"
               :id="emailUid"
               ref="emailInput"
               v-model="emailDraft"
@@ -239,6 +237,7 @@
               Choose who can add you as a friend using your username.
             </p>
           </div>
+          <p class="text-sm">{{ friendRequestPrivacyMessage }}</p>
           <select
             :id="friendRequestPrivacyUid"
             v-model="friendRequestPrivacySelection"
@@ -266,6 +265,7 @@
               Choose the default visibility setting for newly-created lists.
             </p>
           </div>
+          <p class="text-sm">{{ defaultListVisibilityMessage }}</p>
           <select
             :id="defaultListVisibilityUid"
             v-model="defaultListVisibilitySelection"
@@ -331,15 +331,21 @@ import {
   useContext,
   computed,
   useStore,
+  nextTick,
+  ComponentRenderProxy,
 } from "@nuxtjs/composition-api";
 import { mapActions } from "vuex";
-import uniqueId from "@@/common/utils/uniqueId";
 import Edit from "client/components/icons/Edit.vue";
+import uniqueId from "@@/common/utils/uniqueId";
 import ISrkResponse, {
   IResetPasswordPayload,
+  IUpdateUserPayload,
+  IUpdateUserPrivacyPayload,
   IVerifyEmailPayload,
 } from "@@/common/interfaces/api";
 import { Role } from "src/services/hrbac";
+import { DefaultListVisibility, FriendRequestPrivacy } from "@@/common/enums";
+import { ActorDto } from "@@/common/dto/auth";
 
 export default defineComponent({
   components: {
@@ -349,8 +355,17 @@ export default defineComponent({
     const context = useContext();
     useMeta({ title: "My account | " + context.$config.appinfo.name });
 
+    // refs
+    const usernameInput = ref<null | ComponentRenderProxy<HTMLInputElement>>(
+      null
+    );
+    const nicknameInput = ref<null | ComponentRenderProxy<HTMLInputElement>>(
+      null
+    );
+    const emailInput = ref<null | ComponentRenderProxy<HTMLInputElement>>(null);
+
     const uid = uniqueId();
-    const userUid = "username-" + uid;
+    const usernameUid = "username-" + uid;
     const nicknameUid = "nickname-" + uid;
     const emailUid = "email-" + uid;
     const friendRequestPrivacyUid = "friend-privacy-" + uid;
@@ -379,67 +394,268 @@ export default defineComponent({
     const nicknameDraft = ref<string | null>(null);
     const emailDraft = ref<string | null>(null);
 
+    const friendRequestPrivacyMessage = ref<string>("");
+    const defaultListVisibilityMessage = ref<string>("");
+
     const friendRequestPrivacyOptions = [
       {
         text: "No one",
-        value: "none",
+        value: FriendRequestPrivacy.none,
       },
       {
-        text: "Anyone (default)",
-        value: "anyone",
+        text: "Anyone",
+        value: FriendRequestPrivacy.anyone,
       },
     ];
 
     const defaultListVisibilityOptions = [
       {
-        text: "List members (default)",
-        value: "list",
+        text: "List members",
+        value: DefaultListVisibility.list,
       },
       {
         text: "Friends",
-        value: "friends",
+        value: DefaultListVisibility.friends,
       },
       {
         text: "Anyone",
-        value: "anyone",
+        value: DefaultListVisibility.anyone,
       },
     ];
 
     const store = useStore();
 
-    const user = store.getters["auth/actor"];
+    const user = computed<ActorDto | null>(() => store.getters["auth/actor"]);
 
     // computed
-    const avatar = computed((): string => user?.avatar);
-    const id = computed((): string => user?.id);
-    const username = computed((): string => user?.username);
-    const nickname = computed((): string => user?.nickname);
-    const email = computed((): string => user?.email);
+    const avatar = computed((): string | null => user.value?.avatar || null);
+    const id = computed((): string | null => user.value?.id || null);
+    const username = computed(
+      (): string | null => user.value?.username || null
+    );
+    const nickname = computed(
+      (): string | null => user.value?.nickname || null
+    );
+    const email = computed((): string | null => user.value?.email || null);
     const emailVerified = computed(
-      (): boolean => user?.roles.includes(Role._email_verified) || false
+      (): boolean => user.value?.roles.includes(Role._email_verified) || false
     );
 
     const friendRequestPrivacySelection = computed({
-      get(): string | null {
-        return user?.meta.privacySettings?.friendRequestPrivacy || null;
+      get(): FriendRequestPrivacy | null {
+        return user.value?.meta.privacySettings?.friendRequestPrivacy || null;
       },
-      set(): void {
-        console.log("Setting");
+      async set(newValue: FriendRequestPrivacy | null): Promise<void> {
+        store.commit(
+          "auth/setActor",
+          Object.assign({}, user.value, {
+            meta: {
+              ...user.value?.meta,
+              privacySettings: {
+                ...user.value?.meta.privacySettings,
+                friendRequestPrivacy: newValue,
+              },
+            },
+          })
+        );
+        const response: ISrkResponse<IUpdateUserPrivacyPayload> =
+          await store.dispatch("api/send", {
+            method: "patch",
+            url: "/api/auth/me/preferences",
+            data: {
+              friendRequestPrivacy: newValue,
+            },
+          });
+
+        if (response.ok) {
+          friendRequestPrivacyMessage.value = "saved!";
+          setTimeout(() => {
+            friendRequestPrivacyMessage.value = "";
+          }, 5000);
+        }
+        await store.dispatch("auth/fetch");
       },
     });
 
     const defaultListVisibilitySelection = computed({
-      get(): string | null {
-        return user?.meta.privacySettings?.defaultListVisibility || null;
+      get(): DefaultListVisibility | null {
+        return user.value?.meta.privacySettings?.defaultListVisibility || null;
       },
-      set(): void {
-        console.log("Setting");
+      async set(newValue: DefaultListVisibility | null): Promise<void> {
+        store.commit(
+          "auth/setActor",
+          Object.assign({}, user.value, {
+            meta: {
+              ...user.value?.meta,
+              privacySettings: {
+                ...user.value?.meta.privacySettings,
+                defaultListVisibility: newValue,
+              },
+            },
+          })
+        );
+        const response: ISrkResponse<IUpdateUserPrivacyPayload> =
+          await store.dispatch("api/send", {
+            method: "patch",
+            url: "/api/auth/me/preferences",
+            data: {
+              defaultListVisibility: newValue,
+            },
+          });
+
+        if (response.ok) {
+          defaultListVisibilityMessage.value = "saved!";
+          setTimeout(() => {
+            defaultListVisibilityMessage.value = "";
+          }, 5000);
+        }
+        await store.dispatch("auth/fetch");
       },
     });
 
+    // methods
+    const showUsernameEditor = async (state: boolean = true) => {
+      isUsernameEditing.value = state;
+      if (state) {
+        usernameDraft.value = username.value;
+        await nextTick();
+        if (!usernameInput.value?.$refs.inputElem) return;
+        (usernameInput.value.$refs.inputElem as HTMLInputElement)?.focus();
+      } else if (usernameDraft.value !== username.value) {
+        const response: ISrkResponse<IUpdateUserPayload> = await store.dispatch(
+          "api/send",
+          {
+            method: "patch",
+            url: "/api/auth/me",
+            data: {
+              username: usernameDraft.value,
+            },
+          }
+        );
+
+        if (response.ok) {
+          await store.dispatch("auth/fetch");
+        }
+      }
+    };
+
+    const showNicknameEditor = async (state: boolean = true) => {
+      isNicknameEditing.value = state;
+      if (state) {
+        nicknameDraft.value = nickname.value;
+        await nextTick();
+        if (!nicknameInput.value?.$refs.inputElem) return;
+        (nicknameInput.value.$refs.inputElem as HTMLInputElement)?.focus();
+      } else if (nicknameDraft.value !== nickname.value) {
+        const response: ISrkResponse<IUpdateUserPayload> = await store.dispatch(
+          "api/send",
+          {
+            method: "patch",
+            url: "/api/auth/me",
+            data: {
+              nickname: nicknameDraft.value,
+            },
+          }
+        );
+
+        if (response.ok) {
+          await store.dispatch("auth/fetch");
+        }
+      }
+    };
+
+    const showEmailEditor = async (state: boolean = true) => {
+      isEmailEditing.value = state;
+      if (state) {
+        emailDraft.value = email.value;
+        await nextTick();
+        if (!emailInput.value?.$refs.inputElem) return;
+        (emailInput.value.$refs.inputElem as HTMLInputElement)?.focus();
+      } else if (emailDraft.value !== email.value) {
+        const response: ISrkResponse<IUpdateUserPayload> = await store.dispatch(
+          "api/send",
+          {
+            method: "patch",
+            url: "/api/auth/me",
+            data: {
+              email: emailDraft.value,
+            },
+          }
+        );
+
+        if (response.ok) {
+          await store.dispatch("auth/fetch");
+        }
+      }
+    };
+
+    const resendVerificationEmail = async () => {
+      isSendingVerificationEmail.value = true;
+
+      const response: ISrkResponse<IVerifyEmailPayload> = await store.dispatch(
+        "api/send",
+        {
+          method: "post",
+          url: "/api/auth/me/verify_email",
+        }
+      );
+
+      isSendingVerificationEmail.value = false;
+
+      if (response.ok) {
+        verificationEmailMessage.value = `Verification email sent.`;
+      } else {
+        verificationEmailMessage.value = `Error: ${response.error.message}`;
+      }
+    };
+
+    const requestPasswordReset = async () => {
+      isSendingPasswordReset.value = true;
+
+      const response: ISrkResponse<IResetPasswordPayload> =
+        await store.dispatch("api/send", {
+          method: "post",
+          url: "/api/auth/me/reset_password",
+        });
+
+      isSendingPasswordReset.value = false;
+
+      if (response.ok) {
+        passwordResetMessage.value = `Password reset email sent.`;
+      } else {
+        passwordResetMessage.value = `Error: ${response.error.message}`;
+      }
+    };
+
+    const requestAccountDelete = async () => {
+      isAccountDeleteLoading.value = true;
+
+      const response: ISrkResponse<undefined> = await store.dispatch(
+        "api/send",
+        {
+          method: "delete",
+          url: "/api/auth/me",
+        }
+      );
+
+      isAccountDeleteLoading.value = false;
+
+      if (response.ok) {
+        signOut();
+      }
+    };
+
+    const signOut = () => {
+      window.location.href = "/api/auth/logout";
+    };
+
     return {
+      usernameInput,
+      nicknameInput,
+      emailInput,
+
       // static
-      userUid,
+      usernameUid,
       nicknameUid,
       emailUid,
       friendRequestPrivacyUid,
@@ -461,10 +677,13 @@ export default defineComponent({
       usernameDraft,
       nicknameDraft,
       emailDraft,
+      friendRequestPrivacyMessage,
+      defaultListVisibilityMessage,
       friendRequestPrivacyOptions,
       defaultListVisibilityOptions,
 
       // computed
+      user,
       avatar,
       id,
       username,
@@ -473,113 +692,20 @@ export default defineComponent({
       emailVerified,
       friendRequestPrivacySelection,
       defaultListVisibilitySelection,
+
+      // methods
+      showUsernameEditor,
+      showNicknameEditor,
+      showEmailEditor,
+      resendVerificationEmail,
+      requestPasswordReset,
+      requestAccountDelete,
+      signOut,
     };
   },
   // required for useMeta to work
   head: {},
   methods: {
-    async showUsernameEditor(state: boolean = true) {
-      this.isUsernameEditing = state;
-      if (state) {
-        this.usernameDraft = this.username;
-        await this.$nextTick();
-        (this.$refs.usernameInput as HTMLInputElement)?.focus();
-      } else if (this.usernameDraft !== this.username) {
-        const response = await this.api({
-          method: "patch",
-          url: "/api/auth/me",
-          data: {
-            username: this.usernameDraft,
-          },
-        });
-
-        if (response.ok) {
-          window.location.href = "/api/auth/login";
-        }
-      }
-    },
-    async showNicknameEditor(state: boolean = true) {
-      this.isNicknameEditing = state;
-      if (state) {
-        this.nicknameDraft = this.nickname;
-        await this.$nextTick();
-        (
-          document.querySelector("#" + this.nicknameUid) as HTMLInputElement
-        )?.focus();
-      } else if (this.nicknameDraft !== this.nickname) {
-        const response = await this.api({
-          method: "patch",
-          url: "/api/auth/me",
-          data: {
-            nickname: this.nicknameDraft,
-          },
-        });
-
-        if (response.ok) {
-          await this.reidentify();
-        }
-      }
-    },
-    async showEmailEditor(state: boolean = true) {
-      this.isEmailEditing = state;
-      if (state) {
-        this.emailDraft = this.email;
-        await this.$nextTick();
-        (
-          document.querySelector("#" + this.emailUid) as HTMLInputElement
-        )?.focus();
-      } else if (this.emailDraft !== this.email) {
-        const response = await this.api({
-          method: "patch",
-          url: "/api/auth/me",
-          data: {
-            email: this.emailDraft,
-          },
-        });
-
-        if (response.ok) {
-          await this.reidentify();
-        }
-      }
-    },
-    async resendVerificationEmail() {
-      this.isSendingVerificationEmail = true;
-
-      const response: ISrkResponse<IVerifyEmailPayload> = await this.api({
-        method: "post",
-        url: "/api/auth/me/verify_email",
-      });
-
-      this.isSendingVerificationEmail = false;
-
-      if (response.ok) {
-        this.verificationEmailMessage = `Verification email sent.`;
-      } else {
-        this.verificationEmailMessage = `Error: ${response.error.message}`;
-      }
-    },
-    async requestPasswordReset() {
-      this.isSendingPasswordReset = true;
-
-      const response: ISrkResponse<IResetPasswordPayload> = await this.api({
-        method: "post",
-        url: "/api/auth/me/reset_password",
-      });
-
-      this.isSendingPasswordReset = false;
-
-      if (response.ok) {
-        this.passwordResetMessage = `Password reset email sent.`;
-      } else {
-        this.passwordResetMessage = `Error: ${response.error.message}`;
-      }
-    },
-    requestAccountDelete() {
-      this.isAccountDeleteLoading = true;
-    },
-    signOut() {
-      window.location.href = "/api/auth/logout";
-    },
     ...mapActions({ api: "api/send", reidentify: "auth/fetch" }),
   },
 });

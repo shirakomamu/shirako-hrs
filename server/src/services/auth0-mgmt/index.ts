@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import { Method } from "axios";
-import { GENERAL_USAGE_PREFIX, GEN_ACCESS_TOKEN_KEY } from "src/config/redis";
+import { GEN_ACCESS_TOKEN_KEY } from "src/config/redis";
 import axios from "src/services/axios";
-import createRedis from "src/services/redis";
+import guRedis from "src/services/gu-redis";
 
 interface TokenResponse {
   access_token: string;
@@ -12,10 +12,6 @@ interface TokenResponse {
 interface SendOptions {
   includeAccessToken?: boolean;
 }
-
-const store = createRedis({
-  keyPrefix: GENERAL_USAGE_PREFIX,
-});
 
 export async function getAccessToken() {
   const response = await axios.request<TokenResponse>({
@@ -29,7 +25,7 @@ export async function getAccessToken() {
     },
   });
 
-  await store.set(
+  await guRedis.set(
     GEN_ACCESS_TOKEN_KEY,
     response.data.access_token,
     "ex",
@@ -42,14 +38,14 @@ export async function getAccessToken() {
 export async function send<T = any>(
   endpoint: string,
   method: Method,
-  payload: any,
+  payload?: any,
   options?: SendOptions
 ) {
   const includeAccessToken = options?.includeAccessToken || true;
 
   const headers: { [key: string]: string } = {};
   if (includeAccessToken) {
-    let accessToken = await store.get(GEN_ACCESS_TOKEN_KEY);
+    let accessToken = await guRedis.get(GEN_ACCESS_TOKEN_KEY);
 
     if (!accessToken) {
       accessToken = await getAccessToken();

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { GetterTree, ActionTree, MutationTree } from "vuex";
-import cookie from "cookie";
+// import cookie from "cookie";
+// import ISrkResponse, { ISelfIdentifyPayload } from "@@/common/interfaces/api";
 
 export const state = () => ({});
 
@@ -14,36 +15,42 @@ export const actions: ActionTree<RootState, RootState> = {
   // executed on server before browser loads
   // this looks for a cookie and loads it so that user is presumed authenticated as before
   async nuxtServerInit(
-    { commit, dispatch },
-    { req, res: _res }: { req: Request; res: Response }
+    { commit: _commit, dispatch },
+    { req: _req, res: _res }: { req: Request; res: Response }
   ) {
-    const cookies = req.headers.cookie;
+    // const cookies = req.headers.cookie;
 
-    if (!cookies) {
-      await dispatch("auth/fetch");
-      return;
-    }
+    // if (!cookies) {
+    //   console.log("Exit 1");
+    //   await dispatch("auth/fetch");
+    //   return;
+    // }
 
-    const cookieResult = cookie.parse(cookies);
-    const savedStoreString = cookieResult["hrs-vuex"];
-    if (!savedStoreString) {
-      await dispatch("auth/fetch");
-      return;
-    }
+    // const cookieResult = cookie.parse(cookies);
+    // const savedStoreString = cookieResult["hrs-vuex"];
+    // if (!savedStoreString) {
+    //   console.log("Exit 2");
+    //   await dispatch("auth/fetch");
+    //   return;
+    // }
 
-    let savedStore: { [key: string]: any } = {};
-    try {
-      savedStore = JSON.parse(savedStoreString);
-    } catch (e) {
-      await dispatch("auth/fetch");
-      return;
-    }
+    // let savedStore: { [key: string]: any } = {};
+    // try {
+    //   savedStore = JSON.parse(savedStoreString);
+    // } catch (e) {
+    //   console.log("Exit 3");
+    //   await dispatch("auth/fetch");
+    //   return;
+    // }
 
-    if (!savedStore.auth?.actor) {
-      await dispatch("auth/fetch");
-      return;
-    }
+    // if (!savedStore.auth?.actor) {
+    //   console.log("Exit 4");
+    //   await dispatch("auth/fetch");
+    //   return;
+    // }
 
-    commit("auth/setActor", savedStore.auth.actor);
+    // console.log("Final");
+    // commit("auth/setActor", savedStore.auth.actor);
+    return await dispatch("auth/fetch");
   },
 };

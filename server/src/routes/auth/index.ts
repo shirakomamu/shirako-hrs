@@ -7,7 +7,10 @@ import { Role } from "src/services/hrbac";
 // import { authFail, authSlow } from "src/services/sub-rate-limiter";
 // import subRateLimiterFactory from "src/services/sub-rate-limiter-factory";
 import AuthController from "./auth.controller";
-import { UpdateUserValidators } from "./auth.validation";
+import {
+  UpdateUserPreferencesValidators,
+  UpdateUserValidators,
+} from "./auth.validation";
 // import {} from "./auth.validation";
 
 const authController = new AuthController();
@@ -25,6 +28,16 @@ router.patch(
   "/me",
   [useSimpleGuard([Role._self_profile]), ...UpdateUserValidators],
   route(authController.updateUser)
+);
+router.delete(
+  "/me",
+  [useSimpleGuard([Role._self_profile])],
+  route(authController.deleteUser)
+);
+router.patch(
+  "/me/preferences",
+  [useSimpleGuard([Role._email_verified]), ...UpdateUserPreferencesValidators],
+  route(authController.updateUserPreferences)
 );
 
 router.post(

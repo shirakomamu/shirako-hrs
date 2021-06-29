@@ -1,36 +1,9 @@
 /* eslint-disable camelcase */
+import { GetUserResponse } from "./getUser";
+import { setCache } from "./getUserCached";
 import { send } from ".";
 
-export interface UpdateUserResponse {
-  user_id?: string;
-  email?: string;
-  email_verified?: boolean;
-  username?: string;
-  phone_number?: string;
-  phone_verified?: boolean;
-  created_at?: string;
-  updated_at?: string;
-  identities?: [
-    {
-      connection: string;
-      user_id: string;
-      provider: string;
-      isSocial: boolean;
-    }
-  ];
-  app_metadata?: object;
-  user_metadata?: object;
-  picture?: string;
-  name?: string;
-  nickname?: string;
-  multifactor?: string[];
-  last_ip?: string;
-  last_login?: string;
-  logins_count?: number;
-  blocked?: boolean;
-  given_name?: string;
-  family_name?: string;
-}
+export interface UpdateUserResponse extends GetUserResponse {}
 
 export default async (
   id: string,
@@ -38,10 +11,12 @@ export default async (
     username,
     nickname,
     email,
+    user_metadata,
   }: {
     username?: string;
     nickname?: string;
     email?: string;
+    user_metadata?: object;
   }
 ) => {
   const ENDPOINT = "api/v2/users/" + id; // added onto issuer base url
@@ -50,7 +25,10 @@ export default async (
     username,
     nickname,
     email,
+    user_metadata,
   });
+
+  await setCache(id, response);
 
   return response;
 };

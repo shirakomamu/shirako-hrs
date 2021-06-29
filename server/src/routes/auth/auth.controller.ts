@@ -6,6 +6,8 @@ import {
   resendVerificationEmail,
   sendPasswordResetEmail,
   updateUser,
+  updateUserPreferences,
+  deleteUser,
 } from "./methods";
 
 export default class {
@@ -35,6 +37,24 @@ export default class {
 
   public updateUser = async (req: Request, res: SrkExpressResponse) => {
     const payload = await updateUser(res.locals.authResult, req.body);
+
+    return new SrkResponse({ payload });
+  };
+
+  public updateUserPreferences = async (
+    req: Request,
+    res: SrkExpressResponse
+  ) => {
+    const payload = await updateUserPreferences(
+      res.locals.authResult,
+      req.body
+    );
+
+    return new SrkResponse({ payload });
+  };
+
+  public deleteUser = async (_req: Request, res: SrkExpressResponse) => {
+    const payload = await deleteUser(res.locals.authResult);
 
     return new SrkResponse({ payload });
   };
