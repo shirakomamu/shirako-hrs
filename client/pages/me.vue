@@ -627,6 +627,7 @@ export default defineComponent({
       }
     };
 
+    // todo: add confirmation
     const requestAccountDelete = async () => {
       isAccountDeleteLoading.value = true;
 
