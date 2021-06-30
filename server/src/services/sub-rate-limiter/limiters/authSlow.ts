@@ -5,10 +5,10 @@ import {
   AUTH_SLOW_DURATION,
   AUTH_SLOW_BLOCK_DURATION,
 } from "src/config/rateLimiter";
-import rateLimiterRedisClient from "src/services/rate-limiter-redis-client";
+import redisRl from "src/services/redis-rl";
 
 export default new RateLimiterRedis({
-  storeClient: rateLimiterRedisClient,
+  storeClient: redisRl,
   keyPrefix: AUTH_SLOW_SUBPREFIX,
   points: AUTH_SLOW_POINTS,
   duration: AUTH_SLOW_DURATION,

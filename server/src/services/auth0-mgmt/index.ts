@@ -2,7 +2,7 @@
 import { Method } from "axios";
 import { GEN_ACCESS_TOKEN_KEY } from "src/config/redis";
 import axios from "src/services/axios";
-import guRedis from "src/services/gu-redis";
+import redisGu from "src/services/redis-gu";
 
 interface TokenResponse {
   access_token: string;
@@ -25,7 +25,7 @@ export async function getAccessToken() {
     },
   });
 
-  await guRedis.set(
+  await redisGu.set(
     GEN_ACCESS_TOKEN_KEY,
     response.data.access_token,
     "ex",
@@ -45,7 +45,7 @@ export async function send<T = any>(
 
   const headers: { [key: string]: string } = {};
   if (includeAccessToken) {
-    let accessToken = await guRedis.get(GEN_ACCESS_TOKEN_KEY);
+    let accessToken = await redisGu.get(GEN_ACCESS_TOKEN_KEY);
 
     if (!accessToken) {
       accessToken = await getAccessToken();

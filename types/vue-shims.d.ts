@@ -1,11 +1,3 @@
-// import VueRouter from "vue-router";
-
-// declare module "vue" {
-//   interface Vue {
-//     $router: VueRouter;
-//   }
-// }
-
 import { NuxtAxiosInstance } from "@nuxtjs/axios";
 
 declare module "vue/types/vue" {

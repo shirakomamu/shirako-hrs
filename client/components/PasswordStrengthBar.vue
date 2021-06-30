@@ -16,7 +16,7 @@ export default defineComponent({
   props: {
     strength: {
       type: Number,
-      default: () => 0,
+      default: 0,
     },
   },
 });

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { GENERAL_USAGE_PREFIX, GEN_USER_INFO_PREFIX } from "src/config/redis";
-import guRedis from "src/services/gu-redis";
+import redisGu from "src/services/redis-gu";
 import getUser, { GetUserResponse } from "./getUser";
 
 export default async (id: string): Promise<GetUserResponse> => {
@@ -14,13 +14,13 @@ export default async (id: string): Promise<GetUserResponse> => {
 };
 
 const getCache = async (id: string) => {
-  const r = await guRedis.get(GENERAL_USAGE_PREFIX + GEN_USER_INFO_PREFIX + id);
+  const r = await redisGu.get(GENERAL_USAGE_PREFIX + GEN_USER_INFO_PREFIX + id);
   if (!r) return null;
   return JSON.parse(r) as GetUserResponse;
 };
 
 export const setCache = async (id: string, data: GetUserResponse) => {
-  return await guRedis.set(
+  return await redisGu.set(
     GENERAL_USAGE_PREFIX + GEN_USER_INFO_PREFIX + id,
     JSON.stringify(data),
     "ex",
@@ -29,5 +29,5 @@ export const setCache = async (id: string, data: GetUserResponse) => {
 };
 
 export const clearCache = async (id: string) => {
-  return await guRedis.del(GENERAL_USAGE_PREFIX + GEN_USER_INFO_PREFIX + id);
+  return await redisGu.del(GENERAL_USAGE_PREFIX + GEN_USER_INFO_PREFIX + id);
 };

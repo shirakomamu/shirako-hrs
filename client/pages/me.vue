@@ -21,7 +21,6 @@
         </p>
         <div class="flex flex-row items-center gap-4">
           <ComboButton
-            type="button"
             class="text-sm bg-black dark:bg-white text-white dark:text-black"
             alt="Resend verification email"
             :loading="isSendingVerificationEmail"
@@ -179,7 +178,6 @@
             >
             <div class="w-full space-x-2">
               <ComboButton
-                type="button"
                 class="
                   text-sm
                   bg-black
@@ -205,7 +203,6 @@
         <div class="flex flex-row items-center gap-4 col-span-full">
           <div class="flex-grow" />
           <ComboButton
-            type="button"
             alt="Sign out"
             class="text-sm text-red-500 border border-red-500"
             @click="signOut"
@@ -243,6 +240,7 @@
             v-model="friendRequestPrivacySelection"
             class="p-2 text-sm"
             :disabled="!emailVerified"
+            @click="friendRequestPrivacyMessage = ''"
           >
             <option
               v-for="(option, index) in friendRequestPrivacyOptions"
@@ -271,6 +269,7 @@
             v-model="defaultListVisibilitySelection"
             class="p-2 text-sm"
             :disabled="!emailVerified"
+            @click="defaultListVisibilityMessage = ''"
           >
             <option
               v-for="(option, index) in defaultListVisibilityOptions"
@@ -309,17 +308,68 @@
             </p>
           </div>
           <ComboButton
-            type="button"
             alt="Delete account"
             class="text-sm bg-red-500 text-white"
-            :loading="isAccountDeleteLoading"
-            :disabled="isAccountDeleteDisabled"
-            @click="requestAccountDelete"
+            :loading="showDeleteConfirmationModal"
+            :disabled="showDeleteConfirmationModal"
+            @click="onShowDeleteConfirmationModal"
             >Delete account</ComboButton
           >
         </div>
       </div>
     </div>
+
+    <Modal
+      :visible="showDeleteConfirmationModal"
+      container-class="p-8 w-full max-w-prose"
+      @hide="showDeleteConfirmationModal = false"
+    >
+      <div class="p-8 bg-gray-200 dark:bg-gray-700 grid grid-cols-1 gap-4">
+        <h6 class="text-lg font-semibold dark:text-white">
+          Confirm account deletion
+        </h6>
+        <p>
+          Are you sure you want to delete your account? This action cannot be
+          reversed.
+        </p>
+        <p>
+          Please type
+          <span class="font-mono font-bold dark:text-white">{{
+            username
+          }}</span>
+          to confirm.
+        </p>
+        <p v-if="emailVerified" class="text-sm opacity-50">
+          You will receive a final email at {{ email }} confirming your account
+          deletion.
+        </p>
+        <form @submit.prevent="requestAccountDelete">
+          <Input
+            v-model="deleteConfirmationDraft"
+            type="text"
+            classes="p-2 text-sm w-full"
+          />
+          <div class="grid grid-cols-2 mt-4 gap-4">
+            <ComboButton
+              alt="Cancel"
+              class="text-sm border border-black dark:border-white"
+              @click="showDeleteConfirmationModal = false"
+              >Cancel</ComboButton
+            >
+            <ComboButton
+              type="submit"
+              alt="Confirm account deletion"
+              class="text-sm bg-red-500 text-white"
+              :loading="isAccountDeleteLoading"
+              :disabled="
+                isAccountDeleteDisabled || deleteConfirmationDraft !== username
+              "
+              >Delete account</ComboButton
+            >
+          </div>
+        </form>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -423,8 +473,10 @@ export default defineComponent({
       },
     ];
 
-    const store = useStore();
+    const showDeleteConfirmationModal = ref<boolean>(false);
+    const deleteConfirmationDraft = ref<string | null>(null);
 
+    const store = useStore();
     const user = computed<ActorDto | null>(() => store.getters["auth/actor"]);
 
     // computed
@@ -442,10 +494,11 @@ export default defineComponent({
     );
 
     const friendRequestPrivacySelection = computed({
-      get(): FriendRequestPrivacy | null {
-        return user.value?.meta.privacySettings?.friendRequestPrivacy || null;
+      get(): FriendRequestPrivacy {
+        return user.value?.meta.privacySettings
+          ?.friendRequestPrivacy as FriendRequestPrivacy;
       },
-      async set(newValue: FriendRequestPrivacy | null): Promise<void> {
+      async set(newValue: FriendRequestPrivacy): Promise<void> {
         store.commit(
           "auth/setActor",
           Object.assign({}, user.value, {
@@ -478,10 +531,11 @@ export default defineComponent({
     });
 
     const defaultListVisibilitySelection = computed({
-      get(): DefaultListVisibility | null {
-        return user.value?.meta.privacySettings?.defaultListVisibility || null;
+      get(): DefaultListVisibility {
+        return user.value?.meta.privacySettings
+          ?.defaultListVisibility as DefaultListVisibility;
       },
-      async set(newValue: DefaultListVisibility | null): Promise<void> {
+      async set(newValue: DefaultListVisibility): Promise<void> {
         store.commit(
           "auth/setActor",
           Object.assign({}, user.value, {
@@ -642,8 +696,14 @@ export default defineComponent({
       isAccountDeleteLoading.value = false;
 
       if (response.ok) {
-        signOut();
+        // signOut();
+        showDeleteConfirmationModal.value = false;
       }
+    };
+
+    const onShowDeleteConfirmationModal = () => {
+      showDeleteConfirmationModal.value = true;
+      deleteConfirmationDraft.value = null;
     };
 
     const signOut = () => {
@@ -682,6 +742,8 @@ export default defineComponent({
       defaultListVisibilityMessage,
       friendRequestPrivacyOptions,
       defaultListVisibilityOptions,
+      showDeleteConfirmationModal,
+      deleteConfirmationDraft,
 
       // computed
       user,
@@ -702,6 +764,7 @@ export default defineComponent({
       requestPasswordReset,
       requestAccountDelete,
       signOut,
+      onShowDeleteConfirmationModal,
     };
   },
   // required for useMeta to work

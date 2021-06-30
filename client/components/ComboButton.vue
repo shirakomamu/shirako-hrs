@@ -28,15 +28,15 @@ export default defineComponent({
   props: {
     type: {
       type: String,
-      default: () => "button",
+      default: "button",
     },
     disabled: {
       type: Boolean,
-      default: () => false,
+      default: false,
     },
     loading: {
       type: Boolean,
-      default: () => false,
+      default: false,
     },
   },
 });

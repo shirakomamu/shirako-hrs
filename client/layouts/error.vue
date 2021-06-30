@@ -38,7 +38,7 @@ export default defineComponent({
   props: {
     error: {
       type: Object,
-      default: () => null,
+      default: null,
     },
   },
   setup(props) {
