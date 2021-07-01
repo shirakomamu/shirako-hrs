@@ -35,6 +35,7 @@
         dark:border-gray-600
         bg-white
         dark:bg-gray-800
+        h-12
       "
     />
   </div>

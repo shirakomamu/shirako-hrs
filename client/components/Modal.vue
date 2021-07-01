@@ -91,6 +91,11 @@ export default defineComponent({
             elem.scrollIntoView({ behavior: "smooth" });
           }
         }
+        if (props.overlay) {
+          if (newValue)
+            document.querySelector("body")?.classList.add("no-overflow");
+          else document.querySelector("body")?.classList.remove("no-overflow");
+        }
         setTimeout(() => {
           if (!newValue) visibility.value = false; // remove visibility after it's done
           transition.value = false; // re-enables onClickOutside
@@ -123,7 +128,6 @@ export default defineComponent({
   &.active {
     opacity: 1;
   }
-
   &.visible {
     visibility: visible;
   }

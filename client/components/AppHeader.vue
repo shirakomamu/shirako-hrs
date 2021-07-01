@@ -1,6 +1,6 @@
 <template>
-  <div class="nav flex items-center">
-    <div class="justify-start ml-8 mr-4 items-center">
+  <div class="nav flex items-center px-8">
+    <div class="justify-start items-center">
       <nuxt-link
         v-slot="{ navigate }"
         to="/"
@@ -16,7 +16,7 @@
       </nuxt-link>
     </div>
     <div class="flex-grow" />
-    <div class="space-x-4 ml-4 mr-8 flex items-center align-middle text-sm">
+    <div class="flex items-center align-middle text-sm">
       <a
         v-if="!user"
         key="sign-in-link"
@@ -28,45 +28,122 @@
           text-white
           dark:text-black
           font-semibold
-          px-4
-          py-1
         "
       >
         Sign in
       </a>
-      <nuxt-link v-else v-slot="{ navigate }" class="p-0" to="/me" custom>
-        <img
-          :src="user && user.avatar"
-          class="profile-avatar rounded-full pointer"
-          alt="profile"
-          width="32"
-          height="32"
-          @click="navigate"
-          @keypress.enter="navigate"
-        />
-      </nuxt-link>
+      <Drop
+        v-else
+        :visible="popupVisible"
+        container-class="p-8 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-2xl"
+        @hide="popupVisible = false"
+      >
+        <template #default>
+          <div class="flex flex-row gap-8 items-center">
+            <nuxt-link to="/dashboard" class="text-blue-srk"
+              ><Dashboard class="icon-inline" />
+              <span class="hover:underline focus:underline"
+                >Dashboard</span
+              ></nuxt-link
+            >
+            <button class="p-0" @click="showPopup">
+              <img
+                :src="user && user.avatar"
+                class="profile-avatar rounded-full pointer"
+                alt="profile"
+                width="32"
+                height="32"
+              />
+            </button>
+          </div>
+        </template>
+        <template #tooltip>
+          <div class="grid grid-cols-1 gap-8 min-w-48">
+            <div class="grid grid-cols-1 justify-items-center">
+              <p class="opacity-50">signed in as</p>
+              <p class="font-semibold dark:text-white">{{ nickname }}</p>
+            </div>
+
+            <hr />
+
+            <div class="grid grid-cols-1 gap-4 justify-items-center">
+              <nuxt-link to="/lists" class="text-blue-srk"
+                ><ViewStream class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >My lists</span
+                ></nuxt-link
+              >
+              <nuxt-link to="/friends" class="text-blue-srk"
+                ><People class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >Friends</span
+                ></nuxt-link
+              >
+              <nuxt-link to="/me" class="text-blue-srk"
+                ><Settings class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >My account</span
+                ></nuxt-link
+              >
+            </div>
+
+            <hr />
+
+            <ComboButton
+              alt="Sign out"
+              class="text-sm text-red-500 border border-red-500"
+              @click="signOut"
+              ><Logout class="icon-inline" /> Sign out</ComboButton
+            >
+          </div>
+        </template>
+      </Drop>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { ActorDto } from "@@/common/dto/auth";
 import {
   computed,
   defineComponent,
+  ref,
   useContext,
   useStore,
 } from "@nuxtjs/composition-api";
+import Dashboard from "client/components/icons/Dashboard.vue";
+import Logout from "client/components/icons/Logout.vue";
+import People from "client/components/icons/People.vue";
+import Settings from "client/components/icons/Settings.vue";
+import ViewStream from "client/components/icons/ViewStream.vue";
 
 export default defineComponent({
   name: "AppHeader",
+  components: {
+    Dashboard,
+    Logout,
+    People,
+    Settings,
+    ViewStream,
+  },
   setup() {
     const context = useContext();
     const store = useStore();
 
     const appName = context.$config.appinfo.name;
-    const user = computed(() => store.getters["auth/actor"]);
+    const popupVisible = ref<boolean>(false);
+    const user = computed<ActorDto | null>(() => store.getters["auth/actor"]);
+    const nickname = computed(
+      (): string | null => user.value?.nickname || null
+    );
 
-    return { appName, user };
+    const showPopup = () => (popupVisible.value = true);
+
+    const signOut = () => {
+      window.location.href = "/api/auth/logout";
+    };
+
+    return { appName, user, nickname, popupVisible, showPopup, signOut };
   },
 });
 </script>
@@ -82,5 +159,18 @@ export default defineComponent({
   @media (prefers-color-scheme: dark) {
     content: url("/images/icons/hrs-128bi.png");
   }
+}
+
+.min-w-48 {
+  min-width: 12rem;
+}
+
+.icon-inline {
+  display: inline;
+  height: 1.2em;
+  width: 1.2em;
+  cursor: pointer;
+  position: relative;
+  top: -2px;
 }
 </style>

@@ -176,7 +176,7 @@
             <label class="text-lg font-semibold dark:text-white"
               >Password</label
             >
-            <div class="w-full space-x-2">
+            <div class="w-full">
               <ComboButton
                 class="
                   text-sm
@@ -184,6 +184,8 @@
                   dark:bg-white
                   text-white
                   dark:text-black
+                  w-full
+                  sm:w-auto
                 "
                 alt="Reset password"
                 :loading="isSendingPasswordReset"
@@ -199,16 +201,6 @@
             </div>
           </div>
         </div>
-
-        <div class="flex flex-row items-center gap-4 col-span-full">
-          <div class="flex-grow" />
-          <ComboButton
-            alt="Sign out"
-            class="text-sm text-red-500 border border-red-500"
-            @click="signOut"
-            >Sign out</ComboButton
-          >
-        </div>
       </div>
 
       <h6 class="text-2xl dark:text-white">Privacy settings</h6>
@@ -223,7 +215,7 @@
           p-8
         "
       >
-        <div class="flex flex-row items-center gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
           <div class="flex-grow">
             <label
               class="font-semibold dark:text-white"
@@ -238,7 +230,7 @@
           <select
             :id="friendRequestPrivacyUid"
             v-model="friendRequestPrivacySelection"
-            class="p-2 text-sm"
+            class="p-2 text-sm w-full sm:w-auto"
             :disabled="!emailVerified"
             @click="friendRequestPrivacyMessage = ''"
           >
@@ -252,7 +244,7 @@
           </select>
         </div>
 
-        <div class="flex flex-row items-center gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
           <div class="flex-grow">
             <label
               class="font-semibold dark:text-white"
@@ -267,7 +259,7 @@
           <select
             :id="defaultListVisibilityUid"
             v-model="defaultListVisibilitySelection"
-            class="p-2 text-sm"
+            class="p-2 text-sm w-full sm:w-auto"
             :disabled="!emailVerified"
             @click="defaultListVisibilityMessage = ''"
           >
@@ -294,7 +286,7 @@
           p-8
         "
       >
-        <div class="flex flex-row items-center gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
           <div class="flex-grow">
             <label class="font-semibold dark:text-white"
               >Delete my account</label
@@ -309,7 +301,7 @@
           </div>
           <ComboButton
             alt="Delete account"
-            class="text-sm bg-red-500 text-white"
+            class="text-sm bg-red-500 text-white w-full sm:w-auto"
             :loading="showDeleteConfirmationModal"
             :disabled="showDeleteConfirmationModal"
             @click="onShowDeleteConfirmationModal"
@@ -696,8 +688,7 @@ export default defineComponent({
       isAccountDeleteLoading.value = false;
 
       if (response.ok) {
-        // signOut();
-        showDeleteConfirmationModal.value = false;
+        signOut();
       }
     };
 
@@ -778,10 +769,11 @@ export default defineComponent({
 <style lang="less" scoped>
 .icon-inline {
   display: inline;
-  position: relative;
-  height: 1em;
-  width: 1em;
+  height: 1.2em;
+  width: 1.2em;
   cursor: pointer;
+  position: relative;
+  top: -2px;
 }
 .avatar-container {
   flex-grow: 0.5;
