@@ -1,5 +1,6 @@
 export enum AuthType {
   "none" = "none",
   "internal" = "internal",
-  "sso-google" = "sso-google",
+  "google" = "google",
+  "auth0" = "auth0",
 }

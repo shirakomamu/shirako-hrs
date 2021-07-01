@@ -3,19 +3,19 @@ import { Role, RoleGroup, HrbacOptions } from "src/services/hrbac";
 import { Guard, GuardBehavior } from "src/services/guard";
 import Actor from "./Actor";
 
-type ResolvedRbacOptions = {
+export type ResolvedRbacOptions = {
   [key in keyof RoleGroup as string]: Role[];
 };
 
 const DEFAULT_CHECK_BEHAVIOR = GuardBehavior.all;
 
 interface Check {
-  rgs: RoleGroup[];
+  actorRoles: Role[];
   roles: Role[];
 
   // all = all roles must be accessible, by any of the rgs
   // any = any of the roles can be accessible, by any of the rgs
-  mode?: GuardBehavior;
+  mode: GuardBehavior;
 }
 
 export default class Hrbac {
@@ -28,11 +28,13 @@ export default class Hrbac {
   }
 
   public can(guard: Guard, actor?: Actor): boolean {
-    const roleResult = this.memoizedCan({
-      rgs: actor?.rgs || [],
+    const canArgs = {
+      actorRoles: actor?.roles || [],
       roles: guard.roles || [],
-      mode: guard.mode,
-    });
+      mode: guard.mode || DEFAULT_CHECK_BEHAVIOR,
+    };
+
+    const roleResult = this.memoizedCan(canArgs);
 
     // if simple roles checking fails, immediately return
     if (!roleResult) {
@@ -78,6 +80,7 @@ export default class Hrbac {
     return memoize(this._can, {
       length: 1,
       primitive: true,
+      normalizer: (args) => JSON.stringify(args[0]),
     });
   }
 
@@ -106,29 +109,33 @@ export default class Hrbac {
       .filter((e, i, a) => a.indexOf(e) === i);
   }
 
-  private async _validate(rg: RoleGroup, role: Role) {
-    const rroRes = await this.rro;
-    return rroRes[rg].includes(role);
+  private _validate(actorRoles: Role[], role: Role): boolean {
+    return actorRoles.includes(role);
   }
 
-  private _can({ rgs, roles, mode = DEFAULT_CHECK_BEHAVIOR }: Check) {
+  private _can({ actorRoles, roles, mode }: Check): boolean {
     if (!roles.length) {
       // if no roles are checked, always true
       return true;
     }
-    if (!rgs.length) {
+    if (!actorRoles.length) {
       // if no rgs are present, always false
       return false;
     }
-    return rgs.some((e) => {
-      switch (mode) {
-        case GuardBehavior.all:
-          return roles.every((f) => this._validate(e, f));
-        case GuardBehavior.some:
-          return roles.some((f) => this._validate(e, f));
-        default:
-          return false;
-      }
-    });
+
+    const validationResults = roles.map((e) => this._validate(actorRoles, e));
+
+    switch (mode) {
+      case GuardBehavior.all:
+        return validationResults.every((e) => e);
+      case GuardBehavior.some:
+        return validationResults.some((e) => e);
+      case GuardBehavior.notAll:
+        return !validationResults.every((e) => e);
+      case GuardBehavior.notSome:
+        return !validationResults.some((e) => e);
+      default:
+        return false;
+    }
   }
 }

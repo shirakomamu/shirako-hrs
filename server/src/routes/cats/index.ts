@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { query } from "express-validator";
-
 import { route } from "src/middleware/route";
 import useSimpleGuard from "src/middleware/useSimpleGuard";
 import { Role } from "src/services/hrbac";
@@ -9,20 +7,30 @@ import CatsController from "./cats.controller";
 const catsController = new CatsController();
 const router: Router = Router();
 
-router.get("/", [], route(catsController.listCats));
+router.get("/", route(catsController.listCats));
 router.get(
-  "/guarded",
+  "/guard1",
+  [useSimpleGuard([Role._self_apis])],
+  route(catsController.listCats)
+);
+router.get(
+  "/guard1a",
+  [useSimpleGuard([Role._self_apis, Role._acl_logs_view])],
+  route(catsController.listCats)
+);
+router.get(
+  "/guard2",
+  [useSimpleGuard([Role._acl_logs_view])],
+  route(catsController.listCats)
+);
+router.get(
+  "/guard3",
   [useSimpleGuard([Role._self_profile])],
   route(catsController.listCats)
 );
 router.get(
-  "/validated",
-  [query("test").exists()],
-  route(catsController.listCats)
-);
-router.post(
-  "/",
-  [useSimpleGuard([Role._self_profile])],
+  "/guard3a",
+  [useSimpleGuard([Role._self_profile, Role._self_apis])],
   route(catsController.listCats)
 );
 

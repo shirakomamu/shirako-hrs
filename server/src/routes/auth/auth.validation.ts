@@ -1,27 +1,64 @@
-import { checkSchema, body } from "express-validator";
+import { checkSchema, oneOf } from "express-validator";
 import {
   UsernameParamSchema,
-  DisplayNameParamSchema,
-  EmailRegistrationParamSchema,
-  PasswordRegistrationParamSchema,
-  PageCheckElementParamSchema,
+  NicknameParamSchema,
+  EmailParamSchema,
+  FriendRequestPrivacyParamSchema,
+  DefaultListVisibilityParamSchema,
 } from "./auth.param.validation";
 
-export const RegisterNewMemberValidators = [
-  checkSchema({
-    username: UsernameParamSchema,
-    displayName: DisplayNameParamSchema,
-    email: EmailRegistrationParamSchema,
-    password: PasswordRegistrationParamSchema,
-  }),
+// additional check is done in method for _email_verified role if username or displayName
+export const UpdateUserValidators = [
+  oneOf([
+    checkSchema({
+      username: UsernameParamSchema,
+    }),
+    checkSchema({
+      nickname: NicknameParamSchema,
+    }),
+    checkSchema({
+      email: EmailParamSchema,
+    }),
+  ]),
 ];
 
-export const PageAuthValidators = [
-  body().isArray(),
-  checkSchema({
-    "*": PageCheckElementParamSchema,
-  }),
-  body().customSanitizer((value: string[]) =>
-    value.filter((e, i, a) => a.indexOf(e) === i)
-  ),
+export const UpdateUserPreferencesValidators = [
+  oneOf([
+    checkSchema({
+      friendRequestPrivacy: FriendRequestPrivacyParamSchema,
+    }),
+    checkSchema({
+      defaultListVisibility: DefaultListVisibilityParamSchema,
+    }),
+  ]),
 ];
+
+// export const OtpTokenValidators = [
+//   checkSchema({
+//     otpToken: OtpTokenCheckParamSchema,
+//     otpCode: OtpCodeCheckParamSchema,
+//   }),
+// ];
+
+// export const NameCheckValidators = [
+//   oneOf([
+//     checkSchema({
+//       type: NameCheckTypeIsUsernameParamSchema,
+//       name: UsernameParamSchema,
+//     }),
+//     checkSchema({
+//       type: NameCheckTypeIsDisplayNameParamSchema,
+//       name: DisplayNameParamSchema,
+//     }),
+//   ]),
+// ];
+
+// export const PageAuthValidators = [
+//   body().isArray(),
+//   checkSchema({
+//     "*": PageCheckElementParamSchema,
+//   }),
+//   body().customSanitizer((value: string[]) =>
+//     value.filter((e, i, a) => a.indexOf(e) === i)
+//   ),
+// ];

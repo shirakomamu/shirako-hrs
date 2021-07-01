@@ -16,6 +16,8 @@ export enum Role {
   // user
   "_self_profile" = "_self_profile",
   "_self_apis" = "_self_apis",
+
+  "_email_verified" = "_email_verified",
 }
 
 export enum RoleGroup {
@@ -29,5 +31,6 @@ export enum RoleGroup {
   "acl_logs_viewer" = "acl_logs_viewer",
 
   // user
+  "member_verified" = "member_verified",
   "member" = "member",
 }

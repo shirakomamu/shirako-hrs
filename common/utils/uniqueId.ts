@@ -2,7 +2,7 @@
 const idCounter: { [key: string]: number } = {};
 const DEFAULT_PREFIX = "shirako-hrs";
 
-export default function uniqueId(prefix = DEFAULT_PREFIX): string {
+export default (prefix = DEFAULT_PREFIX): string => {
   if (!idCounter[prefix]) {
     idCounter[prefix] = 0;
   }
@@ -13,4 +13,4 @@ export default function uniqueId(prefix = DEFAULT_PREFIX): string {
   }
 
   return `${prefix}-${id}`;
-}
+};

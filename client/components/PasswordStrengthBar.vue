@@ -9,14 +9,14 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent } from "@nuxtjs/composition-api";
 
-export default Vue.extend({
+export default defineComponent({
   name: "PasswordStrengthBar",
   props: {
     strength: {
       type: Number,
-      default: () => 0,
+      default: 0,
     },
   },
 });

@@ -8,14 +8,14 @@
     <article class="space-y-4">
       <h4 class="text-4xl dark:text-white">{{ statusCode }} - {{ message }}</h4>
       <p v-if="statusCode === 404">
-        The page at <code>{{ $route.path }}</code> could not be found.
+        The page at <code>{{ path }}</code> could not be found.
       </p>
     </article>
     <div>
       <button
         type="button"
         class="font-semibold dark:text-white hover:underline focus:underline"
-        @click="$router.push('/')"
+        @click="goHome"
       >
         Go back to home page
       </button>
@@ -24,28 +24,43 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {
+  defineComponent,
+  useMeta,
+  useContext,
+  computed,
+  useRouter,
+  useRoute,
+} from "@nuxtjs/composition-api";
 
-export default Vue.extend({
+export default defineComponent({
   name: "Error",
   props: {
     error: {
       type: Object,
-      default: () => null,
+      default: null,
     },
   },
-  head() {
-    return {
-      title: "Error | " + this.$config.appinfo.name,
+  setup(props) {
+    const context = useContext();
+    useMeta({ title: "Error | " + context.$config.appinfo.name });
+
+    const statusCode = computed(
+      () => (props.error && props.error.statusCode) || 500
+    );
+
+    const router = useRouter();
+
+    const goHome = () => {
+      router.push("/");
     };
+
+    const message = computed(() => props.error.message || "Internal error");
+    const path = useRoute().value.path;
+
+    return { statusCode, message, path, goHome };
   },
-  computed: {
-    statusCode() {
-      return (this.error && this.error.statusCode) || 500;
-    },
-    message() {
-      return this.error.message || "Internal error";
-    },
-  },
+  // empty head is required for useMeta to work
+  head: {},
 });
 </script>

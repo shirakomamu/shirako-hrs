@@ -1,17 +1,38 @@
 <template>
-  <div class="grid gap-1">
-    <input
-      ref="inputElem"
-      :value="value"
-      v-bind="$attrs"
-      :class="[classes, { invalid: validationError }]"
-      @input="onInput"
-      @input.once="setTouched"
-      @invalid="onInvalid"
-    />
+  <div class="grid grid-cols-1 gap-1">
+    <div class="flex flex-row items-center container">
+      <div class="flex-grow">
+        <input
+          ref="inputElem"
+          :value="value"
+          v-bind="$attrs"
+          :class="[
+            classes,
+            {
+              invalid: indicatorState === 'failure',
+              'pr-10': !['failure', 'none'].includes(indicatorState),
+            },
+          ]"
+          @input.once="setTouched"
+          @invalid="onInvalid"
+          v-on="{
+            ...$listeners,
+            input: (event) => onInput(event),
+          }"
+        />
+      </div>
+      <div class="check-mark px-2 w-10">
+        <Loader v-if="indicatorState === 'loading'" />
+        <Error
+          v-else-if="indicatorState === 'failure'"
+          class="text-yellow-600 dark:text-yellow-500"
+        />
+        <Check v-else-if="indicatorState === 'success'" class="text-blue-srk" />
+      </div>
+    </div>
     <slot />
     <div
-      v-if="validationError"
+      v-if="indicatorState === 'failure'"
       class="text-xs text-yellow-600 dark:text-yellow-500"
     >
       {{ validationError }}
@@ -23,10 +44,21 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import {
+  defineComponent,
+  ref,
+  computed,
+  PropOptions,
+  nextTick,
+} from "@nuxtjs/composition-api";
+import Loader from "client/components/icons/Loader.vue";
+import Check from "client/components/icons/Check.vue";
+import Error from "client/components/icons/Error.vue";
+import uniqueId from "@@/common/utils/uniqueId";
 
-export default Vue.extend({
+export default defineComponent({
   name: "Input",
+  components: { Loader, Check, Error },
   inheritAttrs: false,
   props: {
     value: {
@@ -39,63 +71,126 @@ export default Vue.extend({
     },
     debounceMs: {
       type: Number,
-      default: 100,
+      default: 1000,
     },
     // if validator returns a non-empty string, it will display it as a validation error
     // if it's an empty string or true, then it will be valid
     // if it's false, then it will be invalid without a validation error
     validator: {
       type: Function,
-      default: undefined,
-    },
+      default: () => "",
+    } as PropOptions<(...args: any) => Promise<string>>,
     passiveText: {
       type: String,
       default: "",
     },
+    doValidation: {
+      type: Boolean,
+      default: false,
+    },
   },
-  data() {
-    return {
-      touched: false as boolean,
-      timer: null as any, // timeout object
-      validationError: "" as string,
+  setup(props, { emit }) {
+    // refs
+    const inputElem = ref<HTMLInputElement | null>(null);
+
+    // data
+    const inputContext = ref("0");
+    const validating = ref(false);
+    const touching = ref(false);
+    const touched = ref(false);
+    const validationChecked = ref(false);
+    const timer = ref<any>(null);
+    const validationError = ref("");
+
+    const indicatorState = computed(
+      (): "success" | "loading" | "failure" | "none" => {
+        if (!touched.value || !validationChecked.value || touching.value)
+          return "none";
+        if (validating.value) return "loading";
+        if (validationError.value) return "failure";
+        return "success";
+      }
+    );
+
+    // methods
+    const setValidationError = (newValue: string) => {
+      (inputElem.value as HTMLInputElement)?.setCustomValidity(newValue);
+      validationError.value = newValue;
+      validationChecked.value = true;
     };
-  },
-  watch: {
-    validationError(newValue: string) {
-      (this.$refs.inputElem as HTMLInputElement)?.setCustomValidity(newValue);
-    },
-  },
-  methods: {
-    setTouched() {
-      this.touched = true;
-    },
-    onInput(el: Event) {
+
+    const setTouched = () => {
+      touched.value = true;
+    };
+
+    const onInput = (el: Event) => {
+      touching.value = true;
+      const uid = uniqueId();
+      inputContext.value = uid;
+      clearTimeout(timer.value);
+
       const elem = el.target as HTMLInputElement;
       const value = elem.value;
-      this.$emit("input", value);
-      this.timer = setTimeout(() => {
-        this.validationError = "";
+      emit("input", value);
 
-        this.$nextTick(() => {
-          if (this.validator) {
-            this.validationError = this.validator(value) || "";
+      if (props.doValidation) {
+        timer.value = setTimeout(async () => {
+          validating.value = true;
+          touching.value = false;
+          if (uid !== inputContext.value) return;
+          setValidationError("");
 
-            this.$nextTick(() => {
-              if (!this.validationError) elem.checkValidity();
-            });
+          await nextTick();
+
+          if (props.validator) {
+            const validatorValue = (await props.validator(value)) || "";
+            if (uid !== inputContext.value) return;
+            setValidationError(validatorValue);
+
+            await nextTick();
+
+            if (uid !== inputContext.value) return;
+            if (!validationError.value) elem.checkValidity();
           } else {
+            if (uid !== inputContext.value) return;
             elem.checkValidity();
           }
-        });
 
-        clearTimeout(this.timer);
-      }, this.debounceMs);
-    },
-    onInvalid(el: Event) {
-      this.validationError = (el.target as HTMLInputElement).validationMessage;
-    },
+          validating.value = false;
+        }, props.debounceMs);
+      }
+    };
+
+    const onInvalid = (el: Event) => {
+      setValidationError((el.target as HTMLInputElement).validationMessage);
+    };
+
+    return {
+      inputElem,
+      inputContext,
+      validating,
+      touching,
+      touched,
+      validationChecked,
+      timer,
+      validationError,
+      indicatorState,
+
+      setTouched,
+      onInput,
+      onInvalid,
+    };
   },
 });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.container {
+  position: relative;
+}
+.check-mark {
+  position: absolute;
+  right: 0;
+  outline: none;
+}
+</style>

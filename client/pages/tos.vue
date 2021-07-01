@@ -1,5 +1,5 @@
 <template>
-  <div class="terms-of-service space-y-8 max-w-prose">
+  <div class="space-y-8">
     <h5 class="text-4xl dark:text-white">Terms of service</h5>
     <p>
       By using this site, you agree to the policy set forth below. Please note
@@ -26,17 +26,14 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { defineComponent, useContext, useMeta } from "@nuxtjs/composition-api";
 
-export default Vue.extend({
-  data() {
-    return {};
+export default defineComponent({
+  setup() {
+    const context = useContext();
+    useMeta({ title: "Terms of service | " + context.$config.appinfo.name });
   },
-  head() {
-    return {
-      title: "Terms of service | " + this.$config.appinfo.name,
-    };
-  },
+  head: {},
 });
 </script>
 

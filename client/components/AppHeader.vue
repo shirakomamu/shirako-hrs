@@ -1,88 +1,156 @@
 <template>
-  <div class="nav flex items-center">
-    <div class="justify-start ml-8 mr-4 items-center">
-      <nuxt-link to="/" class="space-x-4 flex items-center">
-        <img class="app-icon" alt="shirako-hrs logo" width="32" height="32" />
-        <span class="font-semibold show-when-wide dark:text-white">{{
-          appName
-        }}</span></nuxt-link
+  <div class="nav flex items-center px-8">
+    <div class="justify-start items-center">
+      <nuxt-link
+        v-slot="{ navigate }"
+        to="/"
+        class="space-x-4 flex items-center"
+        custom
       >
+        <div class="pointer" @click="navigate" @keypress.enter="navigate">
+          <img class="app-icon" alt="shirako-hrs logo" width="32" height="32" />
+          <span class="font-semibold show-when-wide dark:text-white">{{
+            appName
+          }}</span>
+        </div>
+      </nuxt-link>
     </div>
     <div class="flex-grow" />
-    <div class="space-x-8 ml-4 mr-8 flex items-center align-middle text-sm">
-      <nuxt-link v-if="!user" v-slot="{ navigate }" to="/login" custom>
-        <button
-          type="button"
-          class="
-            rounded-full
-            bg-black
-            dark:bg-white
-            text-white
-            dark:text-black
-            font-semibold
-          "
-          @click="navigate"
-          @keypress.enter="navigate"
-        >
-          Sign in
-        </button>
-      </nuxt-link>
+    <div class="flex items-center align-middle text-sm">
+      <a
+        v-if="!user"
+        key="sign-in-link"
+        href="/api/auth/login"
+        class="
+          rounded-full
+          bg-black
+          dark:bg-white
+          text-white
+          dark:text-black
+          font-semibold
+        "
+      >
+        Sign in
+      </a>
+      <Drop
+        v-else
+        :visible="popupVisible"
+        container-class="p-8 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-2xl"
+        @hide="popupVisible = false"
+      >
+        <template #default>
+          <div class="flex flex-row gap-8 items-center">
+            <nuxt-link to="/dashboard" class="text-blue-srk"
+              ><Dashboard class="icon-inline" />
+              <span class="hover:underline focus:underline"
+                >Dashboard</span
+              ></nuxt-link
+            >
+            <button class="p-0" @click="showPopup">
+              <img
+                :src="user && user.avatar"
+                class="profile-avatar rounded-full pointer"
+                alt="profile"
+                width="32"
+                height="32"
+              />
+            </button>
+          </div>
+        </template>
+        <template #tooltip>
+          <div class="grid grid-cols-1 gap-8 min-w-48">
+            <div class="grid grid-cols-1 justify-items-center">
+              <p class="opacity-50">signed in as</p>
+              <p class="font-semibold dark:text-white">{{ nickname }}</p>
+            </div>
+
+            <hr />
+
+            <div class="grid grid-cols-1 gap-4 justify-items-center">
+              <nuxt-link to="/lists" class="text-blue-srk"
+                ><ViewStream class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >My lists</span
+                ></nuxt-link
+              >
+              <nuxt-link to="/friends" class="text-blue-srk"
+                ><People class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >Friends</span
+                ></nuxt-link
+              >
+              <nuxt-link to="/me" class="text-blue-srk"
+                ><Settings class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >My account</span
+                ></nuxt-link
+              >
+            </div>
+
+            <hr />
+
+            <ComboButton
+              alt="Sign out"
+              class="text-sm text-red-500 border border-red-500"
+              @click="signOut"
+              ><Logout class="icon-inline" /> Sign out</ComboButton
+            >
+          </div>
+        </template>
+      </Drop>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { mapGetters } from "vuex";
+import { ActorDto } from "@@/common/dto/auth";
+import {
+  computed,
+  defineComponent,
+  ref,
+  useContext,
+  useStore,
+} from "@nuxtjs/composition-api";
+import Dashboard from "client/components/icons/Dashboard.vue";
+import Logout from "client/components/icons/Logout.vue";
+import People from "client/components/icons/People.vue";
+import Settings from "client/components/icons/Settings.vue";
+import ViewStream from "client/components/icons/ViewStream.vue";
 
-// dark:text-gray-100
-// text-sm
-// link-underline-animate
-
-export default Vue.extend({
+export default defineComponent({
   name: "AppHeader",
-  data() {
-    return {
-      appName: this.$config.appinfo.name as string,
+  components: {
+    Dashboard,
+    Logout,
+    People,
+    Settings,
+    ViewStream,
+  },
+  setup() {
+    const context = useContext();
+    const store = useStore();
+
+    const appName = context.$config.appinfo.name;
+    const popupVisible = ref<boolean>(false);
+    const user = computed<ActorDto | null>(() => store.getters["auth/actor"]);
+    const nickname = computed(
+      (): string | null => user.value?.nickname || null
+    );
+
+    const showPopup = () => (popupVisible.value = true);
+
+    const signOut = () => {
+      window.location.href = "/api/auth/logout";
     };
-  },
-  computed: {
-    ...mapGetters({
-      user: "auth/user",
-    }),
-  },
-  methods: {
-    isRouteMatched(to: string) {
-      return this.$route.matched.some(({ path }) => path === to);
-    },
+
+    return { appName, user, nickname, popupVisible, showPopup, signOut };
   },
 });
 </script>
 
 <style lang="less" scoped>
-.link-underline-animate {
-  position: relative;
-  text-decoration: none;
-
-  &:after {
-    content: "";
-    display: block;
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    height: 1px;
-    transition: width 0.3s ease 0s, left 0.3s ease 0s;
-    width: 0;
-    background: rgba(0, 0, 0, var(--tw-text-opacity));
-    @media (prefers-color-scheme: dark) {
-      background: rgba(243, 244, 246, var(--tw-text-opacity));
-    }
-  }
-  &:hover:after,
-  &:focus:after {
-    width: 100%;
-    left: 0;
-  }
+.pointer {
+  cursor: pointer;
 }
 
 .app-icon {
@@ -91,5 +159,18 @@ export default Vue.extend({
   @media (prefers-color-scheme: dark) {
     content: url("/images/icons/hrs-128bi.png");
   }
+}
+
+.min-w-48 {
+  min-width: 12rem;
+}
+
+.icon-inline {
+  display: inline;
+  height: 1.2em;
+  width: 1.2em;
+  cursor: pointer;
+  position: relative;
+  top: -2px;
 }
 </style>

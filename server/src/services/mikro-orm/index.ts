@@ -5,20 +5,30 @@ import {
   IPrimaryKey,
   Dictionary,
 } from "@mikro-orm/core";
-import { TsMorphMetadataProvider } from "@mikro-orm/reflection";
 import {
   RedisCacheAdapter,
   RedisCacheAdapterOptions,
 } from "mikro-orm-cache-adapter-redis";
 import SrkError from "src/classes/SrkError";
 import createRedis from "src/services/redis";
-import { BaseEntity, ApiKey, Member } from "./entities";
+import { MIKRO_ORM_PREFIX } from "src/config/redis";
+import {
+  BaseEntityEntitySchema,
+  ApiKeyEntitySchema,
+  MemberEntitySchema,
+  MemberVerificationEntitySchema,
+} from "src/entities";
 
 const storage = new AsyncLocalStorage<EntityManager>();
 
 const orm = MikroORM.init({
-  entities: [BaseEntity, ApiKey, Member],
-  metadataProvider: TsMorphMetadataProvider,
+  context: () => storage.getStore(),
+  entities: [
+    BaseEntityEntitySchema,
+    ApiKeyEntitySchema,
+    MemberEntitySchema,
+    MemberVerificationEntitySchema,
+  ],
   type: "postgresql", // or 'sqlite' or 'postgresql' or 'mariadb'
   clientUrl: process.env.DATABASE_URL,
   pool: {
@@ -33,7 +43,7 @@ const orm = MikroORM.init({
     adapter: RedisCacheAdapter,
     options: {
       client: createRedis({
-        keyPrefix: "mikro-orm:",
+        keyPrefix: MIKRO_ORM_PREFIX,
       }),
       debug: process.env.NODE_ENV !== "production",
     } as RedisCacheAdapterOptions,
@@ -54,7 +64,7 @@ const orm = MikroORM.init({
     disableForeignKeys: false, // wrap statements with `set foreign_key_checks = 0` or equivalent
     allOrNothing: true, // wrap all migrations in master transaction
     dropTables: true, // allow to disable table dropping
-    safe: false, // allow to disable table and column dropping
+    safe: true, // allow to disable table and column dropping
     emit: "js", // migration generation mode
   },
   findOneOrFailHandler: (

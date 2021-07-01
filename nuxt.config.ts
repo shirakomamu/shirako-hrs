@@ -47,7 +47,10 @@ export default {
   css: ["@/assets/styles/index.less"],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: "./plugins/axios" }],
+  plugins: [
+    { src: "./plugins/axios" },
+    // { src: "./plugins/vuex-persist", ssr: false },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -56,6 +59,7 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/typescript
     "@nuxt/typescript-build",
+    "@nuxtjs/composition-api/module",
     // https://go.nuxtjs.dev/tailwindcss
     "@nuxtjs/tailwindcss",
     // https://go.nuxtjs.dev/pwa
@@ -83,21 +87,12 @@ export default {
             objectSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             // fontSrc: ["'self'"],
-            // imgSrc: ["'self'"],
+            imgSrc: ["'self'", "https://*.gravatar.com"],
           },
           reportOnly: false,
         },
         referrer: "same-origin",
         additionalHeaders: true, // x-frame-options, x-xss-protection, x-content-type-options
-      },
-    ],
-    [
-      "nuxt-vuex-localstorage",
-      {
-        localStorage: ["auth/token"], // If not entered, “localStorage” is the default value
-        sessionStorage: [], // If not entered, “sessionStorage” is the default value
-        keyMixTimes: 64, // number of repetitions of the hash function. Default is set to 64
-        KeyLength: 64, // length of the digest. Default is set to 64.
       },
     ],
   ],
@@ -107,7 +102,7 @@ export default {
       browserBaseURL: process.env.BROWSER_BASE_URL || "/",
     },
     appinfo,
-    build: process.env.COMMIT_HASH,
+    build: process.env.HEROKU_SLUG_COMMIT?.slice(0, 7),
   },
 
   privateRuntimeConfig: {
@@ -123,14 +118,6 @@ export default {
     port: serverConfig.port,
     timing: false,
   },
-
-  // serverMiddleware: [
-  //   {
-  //     path: "/api",
-  //     handler: await nest(), // use nest app instance as a normal nuxt server middleware
-  //   },
-  // ],
-
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   // pwa: {
   //   manifest: {
