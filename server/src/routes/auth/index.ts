@@ -17,10 +17,10 @@ const authController = new AuthController();
 const router: Router = Router();
 
 router.get("/login", (_req, res) =>
-  res.oidc.login({ returnTo: "http://localhost:3000" })
+  res.oidc.login({ returnTo: process.env.SERVER_BASE_URI })
 );
 router.get("/logout", (_req, res) =>
-  res.oidc.logout({ returnTo: "http://localhost:3000" })
+  res.oidc.logout({ returnTo: process.env.SERVER_BASE_URI })
 );
 
 router.get("/me", route(authController.identifyMyself));
