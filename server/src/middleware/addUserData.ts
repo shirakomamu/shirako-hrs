@@ -69,7 +69,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
           username: userinfo.username || "N/A",
           nickname: userinfo.nickname || "N/A",
           email: userinfo.email || "N/A",
-          avatar: userinfo.picture || "",
+          avatar:
+            process.env.DEFAULT_PROFILE_PICTURE_OVERRIDE_URL ||
+            userinfo.picture ||
+            "",
           cohort: null,
           key: null,
           rgs: userinfo.email_verified
