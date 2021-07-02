@@ -1,108 +1,86 @@
-import { Collection, EntitySchema, QueryOrder } from "@mikro-orm/core";
-import { ApiKey } from "./ApiKey";
+import { Collection, EntitySchema } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { MemberVerification } from "./MemberVerification";
-
-export enum VerificationStatus {
-  inactive = "inactive", // user has never verified
-  verified = "verified", // user is active
-  verifying = "verifying", // user is actively verifying (initial or re-verifying, check hasVerified)
-}
+import { DestinationList } from "./DestinationList";
+import { Friend } from "./Friend";
 
 export class Member extends BaseEntity {
-  username: string;
-  displayName: string;
-  discriminator: number;
-  email: string;
-  pwHash: string;
-  apiKeys = new Collection<ApiKey>(this);
-  verificationKeys = new Collection<MemberVerification>(this);
+  sub: string; // id from idp
+  destinationLists = new Collection<DestinationList>(this);
+  outgoingFriends = new Collection<Friend>(this);
+  incomingFriends = new Collection<Friend>(this);
 
-  constructor(
-    username: string,
-    displayName: string,
-    discriminator: number,
-    pwHash: string,
-    email: string
-  ) {
+  constructor(sub: string) {
     super();
-    this.username = username;
-    this.displayName = displayName;
-    this.discriminator = discriminator;
-    this.pwHash = pwHash;
-    this.email = email;
+    this.sub = sub;
   }
 
-  get hasVerified(): boolean {
-    const keyArray = this.verificationKeys.getItems();
+  get confirmedFriends(): Friend[] {
+    const outFriends = this.outgoingFriends.getItems();
+    const inFriends = this.incomingFriends.getItems();
 
-    return keyArray.some((e) => e.claimed);
+    return outFriends.filter((e) => {
+      return inFriends.includes(e);
+    });
   }
 
-  get activeKey(): MemberVerification | null {
-    const keyArray = this.verificationKeys.getItems();
+  get pendingOutgoingFriends(): Friend[] {
+    const outFriends = this.outgoingFriends.getItems();
+    const inFriends = this.incomingFriends.getItems();
 
-    return keyArray[0] || null;
+    return outFriends.filter((e) => {
+      return !inFriends.includes(e);
+    });
   }
 
-  get verificationStatus(): VerificationStatus {
-    const key = this.activeKey;
+  get pendingIncomingFriends(): Friend[] {
+    const outFriends = this.outgoingFriends.getItems();
+    const inFriends = this.incomingFriends.getItems();
 
-    if (key?.claimed) {
-      return VerificationStatus.verified;
-    }
-
-    if (key?.isFresh) {
-      return VerificationStatus.verifying;
-    }
-
-    return VerificationStatus.inactive;
+    return inFriends.filter((e) => {
+      return !outFriends.includes(e);
+    });
   }
 }
 
 export default new EntitySchema<Member, BaseEntity>({
   class: Member,
   properties: {
-    username: { type: String, unique: true },
-    displayName: { type: String },
-    discriminator: { type: Number },
-    email: { type: String },
-    pwHash: { type: String, lazy: true },
-    apiKeys: {
-      entity: () => ApiKey,
+    sub: { type: String, unique: true },
+    destinationLists: {
+      entity: () => DestinationList,
       reference: "1:m",
-      mappedBy: "member",
+      mappedBy: "owner",
       orphanRemoval: true,
     },
-    verificationKeys: {
-      entity: () => MemberVerification,
+    outgoingFriends: {
+      entity: () => Friend,
       reference: "1:m",
-      mappedBy: "member",
+      mappedBy: "user",
       orphanRemoval: true,
-      orderBy: {
-        createdAt: QueryOrder.DESC,
-      },
     },
-    hasVerified: {
-      entity: "method",
-      persist: false,
-      getter: true,
+    incomingFriends: {
+      entity: () => Friend,
+      reference: "1:m",
+      mappedBy: "friend",
+      orphanRemoval: true,
     },
-    activeKey: {
-      entity: "method",
-      persist: false,
-      getter: true,
-    },
-    verificationStatus: {
+    confirmedFriends: {
       type: "method",
       persist: false,
       getter: true,
+      lazy: true,
+    },
+    pendingOutgoingFriends: {
+      type: "method",
+      persist: false,
+      getter: true,
+      lazy: true,
+    },
+    pendingIncomingFriends: {
+      type: "method",
+      persist: false,
+      getter: true,
+      lazy: true,
     },
   },
-  uniques: [
-    {
-      properties: ["displayName", "discriminator"],
-      name: "fullDisplayName",
-    },
-  ],
 });

@@ -1,5 +1,5 @@
 import { ParamSchema } from "express-validator";
-import { DefaultListVisibility, FriendRequestPrivacy } from "@@/common/enums";
+import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
 
 export const UsernameParamSchema: ParamSchema = {
   in: ["body"],
@@ -66,7 +66,7 @@ export const DefaultListVisibilityParamSchema: ParamSchema = {
   custom: {
     errorMessage: "Option is invalid",
     options: (value: any) => {
-      return Object.values(DefaultListVisibility).includes(value);
+      return Object.values(ListVisibility).includes(value);
     },
   },
 };

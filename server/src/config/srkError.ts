@@ -61,26 +61,6 @@ const config = {
     status: 429,
     message: "Too many requests have been performed. Try again later.",
   },
-  usernameNotAvailable: {
-    name: "username_not_available",
-    status: 400,
-    message: "This username is not available.",
-  },
-  displayNameNotAvailable: {
-    name: "display_name_not_available",
-    status: 400,
-    message: "This display name is not available.",
-  },
-  discriminatorNotAvailable: {
-    name: "discriminator_not_available",
-    status: 400,
-    message: "This discriminator is not available.",
-  },
-  tokenExpired: {
-    name: "token_expired",
-    status: 400,
-    message: "This token has already expired.",
-  },
   failedLogin: {
     name: "failed_login",
     status: 400,

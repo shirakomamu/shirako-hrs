@@ -8,7 +8,7 @@
             href="https://shirako.dev/"
             target="_blank"
             class="hover:underline focus:underline"
-            >白子マム</a
+            >白狐マム</a
           ></span
         >
         |

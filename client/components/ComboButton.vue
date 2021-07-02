@@ -2,7 +2,12 @@
   <button
     :type="type"
     :disabled="disabled"
-    class="button-container"
+    class="
+      button-container
+      hover:font-semibold
+      focus:font-semibold
+      disabled:font-normal
+    "
     :class="{
       'opacity-50': loading || disabled,
       'disable-pointer': loading || disabled,

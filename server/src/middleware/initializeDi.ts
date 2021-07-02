@@ -4,13 +4,11 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import { SrkExpressResponse } from "src/services/jwt";
 import ormService, { storage } from "src/services/mikro-orm";
 import { Member } from "src/entities/Member";
-import { MemberVerification } from "src/entities/MemberVerification";
 
 export const DI = {} as {
   orm: Promise<MikroORM>;
   em: EntityManager;
   memberRepo: EntityRepository<Member>;
-  memberVerificationRepo: EntityRepository<MemberVerification>;
 };
 
 let initialized: boolean = false;
@@ -30,7 +28,6 @@ export default async (
 
     DI.em = (await DI.orm).em as EntityManager;
     DI.memberRepo = DI.em.getRepository(Member);
-    DI.memberVerificationRepo = DI.em.getRepository(MemberVerification);
 
     initialized = true;
   }

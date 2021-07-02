@@ -8,8 +8,9 @@
 
     <h6 class="text-2xl font-semibold dark:text-white">Analytics</h6>
     <p>
-      We do not use tracking cookies. We do not collect your metadata. We do not
-      collect your data for analytics purposes.
+      We do not use tracking cookies nor do we collect your metadata beyond the
+      minimum that is necessary for the functioning of our services. We do not
+      collect your data for analytics or marketing purposes.
     </p>
 
     <h6 class="text-2xl font-semibold dark:text-white">Cache</h6>
@@ -51,31 +52,36 @@
     </p>
     <p>
       We ask you for your email address when you create an account. We will only
-      use it to recover your account. You may also manage or erase your account
-      through the
+      use it to contact you regarding your account. You may also manage or erase
+      your account through the
       <nuxt-link to="/me" class="text-blue-srk hover:underline focus:underline"
-        >Manage account</nuxt-link
+        >My account</nuxt-link
       >
-      page at any time. Please note that this action is irreversible.
+      page at any time. These are some of the basic scenarios regarding which we
+      may email you:
     </p>
+    <ul class="pl-8 list-disc list-inside">
+      <li>Email verification</li>
+      <li>Account confirmation</li>
+      <li>Password change request</li>
+      <li>Account block alert</li>
+      <li>Account security alert</li>
+      <li>Account deletion</li>
+    </ul>
     <p>
       If you log into your account, we will store a cookie in your browser to
-      authenticate your browser. This cookie is necessary for the functioning of
-      this site. We will also store an identifying token in your browser's local
-      storage so that we can automatically log you back in after session expiry.
-      This cookie and token are erased upon logging out. You may also clear this
-      data at any time by using your browser's settings.
+      authenticate your browser. This cookie is erased upon logging out. You may
+      also clear this data at any time by using your browser's settings.
     </p>
 
     <h6 class="text-2xl font-semibold dark:text-white">
-      Use of the help center
+      Use of the Help Center
     </h6>
     <p>
       We utilize Atlassian's Jira Service Management to provide basic help
-      center services should you need to contact us regarding this app. Our help
-      center is accessible through both the web and email. In either case, we
-      require you to provide us an email address so that we can contact you
-      back.
+      services should you need to contact us regarding this app. Our help center
+      is accessible through both the web and email. In either case, we require
+      you to provide us an email address so that we can contact you back.
     </p>
     <p>
       Please note that in order to view the progress of your ticket through the

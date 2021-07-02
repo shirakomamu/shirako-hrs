@@ -3,7 +3,7 @@ export enum FriendRequestPrivacy {
   "anyone" = "anyone",
 }
 
-export enum DefaultListVisibility {
+export enum ListVisibility {
   "list" = "list",
   "friends" = "friends",
   "anyone" = "anyone",

@@ -16,7 +16,7 @@
       </nuxt-link>
     </div>
     <div class="flex-grow" />
-    <div class="flex items-center align-middle text-sm">
+    <div class="flex items-center text-sm">
       <a
         v-if="!user"
         key="sign-in-link"
@@ -28,6 +28,8 @@
           text-white
           dark:text-black
           font-semibold
+          py-1
+          px-4
         "
       >
         Sign in

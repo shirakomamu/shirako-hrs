@@ -1,9 +1,9 @@
 import { Role, RoleGroup } from "src/services/hrbac";
-import { DefaultListVisibility, FriendRequestPrivacy } from "@@/common/enums";
+import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
 
 export type UpdateUserPrivacyDto = {
   friendRequestPrivacy?: FriendRequestPrivacy;
-  defaultListVisibility?: DefaultListVisibility;
+  defaultListVisibility?: ListVisibility;
 };
 
 export type Auth0UserMetadataDto = {

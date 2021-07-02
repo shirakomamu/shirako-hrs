@@ -14,9 +14,10 @@ import createRedis from "src/services/redis";
 import { MIKRO_ORM_PREFIX } from "src/config/redis";
 import {
   BaseEntityEntitySchema,
-  ApiKeyEntitySchema,
+  DestinationEntitySchema,
+  DestinationListEntitySchema,
+  FriendEntitySchema,
   MemberEntitySchema,
-  MemberVerificationEntitySchema,
 } from "src/entities";
 
 const storage = new AsyncLocalStorage<EntityManager>();
@@ -25,9 +26,10 @@ const orm = MikroORM.init({
   context: () => storage.getStore(),
   entities: [
     BaseEntityEntitySchema,
-    ApiKeyEntitySchema,
     MemberEntitySchema,
-    MemberVerificationEntitySchema,
+    FriendEntitySchema,
+    DestinationEntitySchema,
+    DestinationListEntitySchema,
   ],
   type: "postgresql", // or 'sqlite' or 'postgresql' or 'mariadb'
   clientUrl: process.env.DATABASE_URL,

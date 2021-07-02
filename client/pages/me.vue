@@ -110,13 +110,13 @@
             <label
               :for="nicknameUid"
               class="text-lg font-semibold dark:text-white"
-              >Nickname</label
+              >Display name</label
             >
             <div v-if="!isNicknameEditing" class="text-sm w-full">
               <button
                 type="button"
                 class="p-0"
-                alt="Change nickname"
+                alt="Change display name"
                 @click="showNicknameEditor(true)"
               >
                 {{ nickname }}
@@ -131,7 +131,7 @@
               type="text"
               name="nickname"
               classes="p-2 text-sm w-full"
-              passive-text="Your nickname identifies you publicly, even to people not on your friends list."
+              passive-text="Your display name identifies you publicly, even to people not on your friends list."
               required
               :disabled="isNicknameLoading"
               @keyup.esc.prevent="showNicknameEditor(false)"
@@ -386,7 +386,7 @@ import ISrkResponse, {
   IVerifyEmailPayload,
 } from "@@/common/interfaces/api";
 import { Role } from "src/services/hrbac";
-import { DefaultListVisibility, FriendRequestPrivacy } from "@@/common/enums";
+import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
 import { ActorDto } from "@@/common/dto/auth";
 
 export default defineComponent({
@@ -453,15 +453,15 @@ export default defineComponent({
     const defaultListVisibilityOptions = [
       {
         text: "List members",
-        value: DefaultListVisibility.list,
+        value: ListVisibility.list,
       },
       {
         text: "Friends",
-        value: DefaultListVisibility.friends,
+        value: ListVisibility.friends,
       },
       {
         text: "Anyone",
-        value: DefaultListVisibility.anyone,
+        value: ListVisibility.anyone,
       },
     ];
 
@@ -523,11 +523,11 @@ export default defineComponent({
     });
 
     const defaultListVisibilitySelection = computed({
-      get(): DefaultListVisibility {
+      get(): ListVisibility {
         return user.value?.meta.privacySettings
-          ?.defaultListVisibility as DefaultListVisibility;
+          ?.defaultListVisibility as ListVisibility;
       },
-      async set(newValue: DefaultListVisibility): Promise<void> {
+      async set(newValue: ListVisibility): Promise<void> {
         store.commit(
           "auth/setActor",
           Object.assign({}, user.value, {
