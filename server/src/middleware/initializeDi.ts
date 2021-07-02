@@ -23,7 +23,9 @@ export default async (
 ) => {
   if (!initialized) {
     const migrator = (await DI.orm).getMigrator();
-    await migrator.createMigration();
+    if (process.env.NODE_ENV !== "production") {
+      await migrator.createMigration();
+    }
     await migrator.up();
 
     DI.em = (await DI.orm).em as EntityManager;
