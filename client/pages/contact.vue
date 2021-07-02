@@ -20,7 +20,7 @@
           bg-gray-200
           dark:bg-gray-700
           gap-4
-          transform
+          transform-gpu
           hover:scale-105
           transition
         "
@@ -52,7 +52,7 @@
           bg-gray-200
           dark:bg-gray-700
           gap-4
-          transform
+          transform-gpu
           hover:scale-105
           transition
         "

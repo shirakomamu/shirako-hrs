@@ -11,7 +11,7 @@ import getUserCached from "src/services/auth0-mgmt/getUserCached";
 // {
 //   sub: 'auth0|60cd8d8f34a3650069ed5923',
 //   nickname: 'mamu',
-//   name: '白子マム',
+//   name: '白狐マム',
 //   picture: 'https://s.gravatar.com/avatar/6c8dabb2b76a6bf4ad94bf2729fe0a99?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fma.png',
 //   updated_at: '2021-06-21T05:52:31.367Z',
 //   email: 'mamu@shirako.dev',
@@ -20,7 +20,7 @@ import getUserCached from "src/services/auth0-mgmt/getUserCached";
 // .idTokenClaims
 // {
 //   nickname: 'mamu',
-//   name: '白子マム',
+//   name: '白狐マム',
 //   picture: 'https://s.gravatar.com/avatar/6c8dabb2b76a6bf4ad94bf2729fe0a99?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fma.png',
 //   updated_at: '2021-06-21T05:52:31.367Z',
 //   email: 'mamu@shirako.dev',
@@ -35,7 +35,7 @@ import getUserCached from "src/services/auth0-mgmt/getUserCached";
 // .user
 // {
 //   nickname: 'mamu',
-//   name: '白子マム',
+//   name: '白狐マム',
 //   picture: 'https://s.gravatar.com/avatar/6c8dabb2b76a6bf4ad94bf2729fe0a99?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fma.png',
 //   updated_at: '2021-06-21T05:52:31.367Z',
 //   email: 'mamu@shirako.dev',
