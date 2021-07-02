@@ -87,7 +87,7 @@ export default {
             objectSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             // fontSrc: ["'self'"],
-            imgSrc: ["'self'", "https://*.gravatar.com"],
+            imgSrc: ["'self'"],
           },
           reportOnly: false,
         },

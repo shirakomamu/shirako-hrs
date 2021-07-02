@@ -16,7 +16,7 @@ const config: ConfigParams = {
   auth0Logout: true,
   idpLogout: false,
   secret: process.env.AUTH0_SECRET,
-  baseURL: process.env.SERVER_BASE_URI,
+  baseURL: process.env.SERVER_BASE_URI + "/api",
   clientID: process.env.AUTH0_CLIENT_ID,
   clientSecret: process.env.AUTH0_CLIENT_SECRET,
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,

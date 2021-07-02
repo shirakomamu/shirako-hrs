@@ -52,7 +52,7 @@
               <img
                 :src="user && user.avatar"
                 class="profile-avatar rounded-full pointer"
-                alt="profile"
+                alt="avatar"
                 width="32"
                 height="32"
               />
