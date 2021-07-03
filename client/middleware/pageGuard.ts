@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ActorDto } from "@@/common/dto/auth";
 import { defineNuxtMiddleware } from "@nuxtjs/composition-api";
 import RouteModel from "client/models/Route";
