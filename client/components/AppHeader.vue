@@ -8,7 +8,7 @@
         custom
       >
         <div class="pointer" @click="navigate" @keypress.enter="navigate">
-          <img class="app-icon" alt="shirako-hrs logo" width="32" height="32" />
+          <img class="app-icon" alt="App logo" width="32" height="32" />
           <span class="font-semibold show-when-wide dark:text-white">{{
             appName
           }}</span>
@@ -52,7 +52,7 @@
               <img
                 :src="user && user.avatar"
                 class="profile-avatar rounded-full pointer"
-                alt="avatar"
+                alt="Avatar"
                 width="32"
                 height="32"
               />
@@ -156,10 +156,10 @@ export default defineComponent({
 }
 
 .app-icon {
-  content: url("/images/icons/hrs-128bi.png");
+  content: url("client/assets/images/icons/hrs-128bi.png");
 
   @media (prefers-color-scheme: dark) {
-    content: url("/images/icons/hrs-128bi.png");
+    content: url("client/assets/images/icons/hrs-128bi.png");
   }
 }
 

@@ -52,7 +52,7 @@
           <img
             :src="avatar"
             class="profile-avatar rounded-full mx-auto"
-            alt="avatar"
+            alt="Avatar"
             width="150"
             height="150"
           />
