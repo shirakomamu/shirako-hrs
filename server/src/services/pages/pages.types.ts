@@ -1,5 +1,5 @@
 import { Guard } from "src/services/guard";
 
 export type PageMap = {
-  [key: string]: Guard | undefined;
+  [key: string]: Guard | null;
 };

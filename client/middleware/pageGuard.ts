@@ -1,21 +1,10 @@
+import { ActorDto } from "@@/common/dto/auth";
 import { defineNuxtMiddleware } from "@nuxtjs/composition-api";
 import RouteModel from "client/models/Route";
 
 export default defineNuxtMiddleware(
   async ({ store, error, route, redirect, from }) => {
-    const isError = store.getters["auth/loginError"];
-
-    if (isError) {
-      if (process.client) {
-        return error({ statusCode: 404 });
-      } else if (process.server) {
-        const uriComponent = encodeURIComponent(route.fullPath);
-        const toRedirPath = `/login?redir=${uriComponent}`;
-        if (route.fullPath !== toRedirPath) {
-          return redirect(toRedirPath);
-        }
-      }
-    }
+    const user: ActorDto | null = store.getters["auth/actor"];
 
     const grl = store.$db().model(RouteModel);
 

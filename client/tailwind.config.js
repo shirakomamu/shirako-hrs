@@ -12,7 +12,7 @@ module.exports = {
   theme: {
     textColor: (theme) => ({
       ...theme("colors"),
-      "blue-srk": "#008aff",
+      "blue-srk": "#0089ff",
     }),
   },
   variants: {

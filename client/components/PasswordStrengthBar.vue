@@ -47,7 +47,7 @@ export default defineComponent({
       background-color: greenyellow;
     }
     &.bar-4 {
-      background-color: #008aff;
+      background-color: #0089ff;
     }
   }
 }

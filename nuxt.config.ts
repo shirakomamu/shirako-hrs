@@ -64,6 +64,7 @@ export default {
     "@nuxtjs/tailwindcss",
     // https://go.nuxtjs.dev/pwa
     // "@nuxtjs/pwa",
+    // "@aceforth/nuxt-optimized-images",
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -160,6 +161,12 @@ export default {
     viewer: false,
     config: {},
   },
+
+  // https://marquez.co/docs/nuxt-optimized-images/configuration
+  // optimizedImages: {
+  //   optimizeImages: true,
+  //   optimizeImagesInDev: true,
+  // },
 
   ignore: ["**/*.test.*", ["./migrations/*.*"]],
 } as NuxtConfig;
