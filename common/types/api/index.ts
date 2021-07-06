@@ -1,16 +1,16 @@
-interface OkResponse<T = any> {
+type OkResponse<T = any> = {
   ok: true;
   payload: T;
-}
+};
 
-interface ErrorResponse {
+type ErrorResponse = {
   ok: false;
   error: {
     name: string;
     message?: string;
     data?: any;
   };
-}
+};
 
 type ISrkResponse<T = any> = OkResponse<T> | ErrorResponse;
 

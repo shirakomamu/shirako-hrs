@@ -1,6 +1,6 @@
 import { Model } from "@vuex-orm/core";
 import { AxiosResponse } from "axios";
-import ISrkResponse from "@@/common/interfaces/api";
+import ISrkResponse from "@@/common/types/api";
 
 const ROUTE_CACHE_DURATION_SECONDS = 600;
 const LOGIN_PATH = "/login";

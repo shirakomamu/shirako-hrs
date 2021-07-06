@@ -3,9 +3,10 @@ import { NextFunction, Request, Response } from "express";
 // import jwksClient from "jwks-rsa";
 import { SrkCookie, AuthType } from "src/services/jwt";
 import Actor from "src/classes/Actor";
-import hrbac, { RoleGroup } from "src/services/hrbac";
 import { Auth0UserMetadataDto } from "@@/common/dto/auth";
 import getUserCached from "src/services/auth0-mgmt/getUserCached";
+import assert from "@@/common/utils/assert";
+import { RoleGroup } from "@@/common/enums/hrbac";
 
 // .getUserInfo()
 // {
@@ -57,31 +58,42 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const userinfo = await getUserCached(req.oidc.user.sub);
     // const userinfo = await req.oidc.fetchUserInfo();
-    const rro = await hrbac.rro;
+    const userinfo = await getUserCached(req.oidc.user.sub);
+
+    // roles are gotten from the ID token, which expires after 1 hour
+    const tokenRoles: string[] =
+      req.oidc.user[`${process.env.CUSTOM_CLAIM_NAMESPACE}roles`] || [];
+
+    const roles = [];
+    const prefix = process.env.ID_TOKEN_ROLES_PREFIX;
+    if (prefix) {
+      assert<string>(prefix);
+      roles.push(
+        ...(tokenRoles
+          .filter((e) => e.startsWith(prefix))
+          .map((e) => e.replace(prefix, "")) as RoleGroup[])
+      );
+    }
 
     res.locals.authResult = {
       authType: AuthType.auth0,
-      actor: new Actor(
-        {
-          id: userinfo.user_id || "N/A",
-          username: userinfo.username || "N/A",
-          nickname: userinfo.nickname || "N/A",
-          email: userinfo.email || "N/A",
-          avatar:
-            process.env.DEFAULT_PROFILE_PICTURE_OVERRIDE_URL ||
-            userinfo.picture ||
-            "",
-          cohort: null,
-          key: null,
-          rgs: userinfo.email_verified
-            ? [RoleGroup.member_verified]
-            : [RoleGroup.member],
-          meta: (userinfo.user_metadata as Auth0UserMetadataDto) || {},
-        },
-        rro
-      ),
+      actor: new Actor({
+        id: userinfo.user_id || "N/A",
+        username: userinfo.username || "N/A",
+        nickname: userinfo.nickname || "N/A",
+        email: userinfo.email || "N/A",
+        avatar:
+          process.env.DEFAULT_PROFILE_PICTURE_OVERRIDE_URL ||
+          userinfo.picture ||
+          "",
+        cohort: null,
+        key: null,
+        rgs: userinfo.email_verified
+          ? [RoleGroup.member_verified, ...roles]
+          : [RoleGroup.member, ...roles],
+        meta: (userinfo.user_metadata as Auth0UserMetadataDto) || {},
+      }),
     } as SrkCookie;
   } catch (e) {
     res.locals.authResult = {

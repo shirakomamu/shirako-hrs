@@ -1,5 +1,5 @@
 import { SrkCookie } from "src/services/jwt";
-import { IUpdateUserPrivacyPayload } from "@@/common/interfaces/api";
+import { IUpdateUserPrivacyPayload } from "@@/common/types/api";
 import SrkError from "src/classes/SrkError";
 import updateUser from "src/services/auth0-mgmt/updateUser";
 import { UpdateUserPrivacyDto } from "@@/common/dto/auth";

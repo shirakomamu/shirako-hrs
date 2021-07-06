@@ -1,5 +1,5 @@
 import { SrkCookie } from "src/services/jwt";
-import { IResetPasswordPayload } from "@@/common/interfaces/api";
+import { IResetPasswordPayload } from "@@/common/types/api";
 import SrkError from "src/classes/SrkError";
 import sendPasswordResetEmail from "src/services/auth0-mgmt/sendPasswordResetEmail";
 

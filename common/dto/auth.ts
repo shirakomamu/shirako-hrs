@@ -1,5 +1,5 @@
-import { Role, RoleGroup } from "src/services/hrbac";
 import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
+import { Role, RoleGroup } from "@@/common/enums/hrbac";
 
 export type UpdateUserPrivacyDto = {
   friendRequestPrivacy?: FriendRequestPrivacy;

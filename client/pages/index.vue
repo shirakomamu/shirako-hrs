@@ -2,7 +2,7 @@
   <div class="space-y-8 flex flex-col">
     <div class="relative flex flex-col flex-grow">
       <div class="tag-contents flex-grow flex flex-col p-12 gap-8">
-        <div class="flex-grow">
+        <div class="flex-grow grid grid-cols-1 items-center">
           <div class="space-y-8">
             <img alt="Shirako logo" class="srk-icon" width="64" height="64" />
             <p class="text-3xl">
@@ -103,8 +103,8 @@ export default defineComponent({
 
   @media (min-width: theme("screens.md")) {
     margin-left: 33%;
-    background-color: rgba(255, 255, 255, 1);
-    color: #ff7600;
+    background-color: rgb(255, 118, 0);
+    color: white;
 
     @media (prefers-color-scheme: dark) {
       background-color: rgba(25, 25, 25, 1);
@@ -117,6 +117,10 @@ export default defineComponent({
 
 .srk-icon {
   content: url("client/assets/images/icons/icon-512xt.png");
+
+  @media (min-width: theme("screens.md")) {
+    content: url("client/assets/images/icons/icon-512tt.png");
+  }
 
   @media (prefers-color-scheme: dark) {
     content: url("client/assets/images/icons/icon-512ft.png");

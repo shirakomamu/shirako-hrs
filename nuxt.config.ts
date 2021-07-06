@@ -126,6 +126,10 @@ export default {
   //   },
   // },
 
+  router: {
+    middleware: ["pageGuard"],
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     extend(config) {

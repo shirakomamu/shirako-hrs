@@ -1,5 +1,5 @@
 import { SrkCookie } from "src/services/jwt";
-import { ISelfIdentifyPayload } from "@@/common/interfaces/api";
+import { ISelfIdentifyPayload } from "@@/common/types/api";
 
 export default (authResult: SrkCookie): ISelfIdentifyPayload => {
   if (!authResult.actor) {

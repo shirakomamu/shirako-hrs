@@ -156,10 +156,10 @@ export default defineComponent({
 }
 
 .app-icon {
-  content: url("client/assets/images/icons/hrs-128bi.png");
+  content: url("client/assets/images/icons/icon-128bt.png");
 
   @media (prefers-color-scheme: dark) {
-    content: url("client/assets/images/icons/hrs-128bi.png");
+    content: url("client/assets/images/icons/icon-512ft.png");
   }
 }
 

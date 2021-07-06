@@ -384,18 +384,26 @@ import ISrkResponse, {
   IUpdateUserPayload,
   IUpdateUserPrivacyPayload,
   IVerifyEmailPayload,
-} from "@@/common/interfaces/api";
-import { Role } from "src/services/hrbac";
+} from "@@/common/types/api";
 import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
 import { ActorDto } from "@@/common/dto/auth";
+import { Role } from "@@/common/enums/hrbac";
+import { Guard } from "@@/common/types/hrbac";
 
 export default defineComponent({
   components: {
     Edit,
   },
+  meta: {
+    guard: {
+      roles: [Role._self_profile],
+    } as Guard,
+  },
   setup() {
     const context = useContext();
-    useMeta({ title: "My account | " + context.$config.appinfo.name });
+    useMeta({
+      title: "My account | " + context.$config.appinfo.name,
+    });
 
     // refs
     const usernameInput = ref<null | ComponentRenderProxy<HTMLInputElement>>(

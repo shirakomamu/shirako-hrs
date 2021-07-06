@@ -3,8 +3,8 @@ import {
   ActorDto,
   Auth0UserMetadataDto,
 } from "@@/common/dto/auth";
-import { Role, RoleGroup } from "src/services/hrbac";
-import { ResolvedRbacOptions } from "./Hrbac";
+import { Role, RoleGroup } from "@@/common/enums/hrbac";
+import hrbacRules from "src/services/hrbac-rules";
 
 export default class Actor implements ActorDto {
   public id: string;
@@ -18,20 +18,17 @@ export default class Actor implements ActorDto {
   public roles: Role[];
   public meta: Auth0UserMetadataDto;
 
-  constructor(
-    {
-      id,
-      username,
-      nickname,
-      email,
-      avatar,
-      cohort,
-      key,
-      rgs,
-      meta,
-    }: ActorConstructorDto,
-    rro: ResolvedRbacOptions
-  ) {
+  constructor({
+    id,
+    username,
+    nickname,
+    email,
+    avatar,
+    cohort,
+    key,
+    rgs,
+    meta,
+  }: ActorConstructorDto) {
     this.id = id;
     this.username = username;
     this.nickname = nickname;
@@ -43,7 +40,7 @@ export default class Actor implements ActorDto {
     this.meta = meta;
 
     this.roles = rgs
-      .flatMap((e) => rro[e])
-      .filter((e, i, a) => a.indexOf(e) === i);
+      .flatMap((e) => hrbacRules[e])
+      .filter((e, i, a) => !!e && a.indexOf(e) === i);
   }
 }

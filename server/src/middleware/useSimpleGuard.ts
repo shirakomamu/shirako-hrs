@@ -1,5 +1,5 @@
+import { Role } from "@@/common/enums/hrbac";
 import { NextFunction, Request, Response } from "express";
-import { Role } from "src/services/hrbac";
 import { SrkExpressResponse } from "src/services/jwt";
 import useGuard from "./useGuard";
 

@@ -1,5 +1,5 @@
 import { SrkCookie } from "src/services/jwt";
-import { IVerifyEmailPayload } from "@@/common/interfaces/api";
+import { IVerifyEmailPayload } from "@@/common/types/api";
 import sendVerificationEmail from "src/services/auth0-mgmt/sendVerificationEmail";
 import SrkError from "src/classes/SrkError";
 

@@ -1,9 +1,10 @@
 import { SrkCookie } from "src/services/jwt";
-import { IUpdateUserPayload } from "@@/common/interfaces/api";
+import { IUpdateUserPayload } from "@@/common/types/api";
 import SrkError from "src/classes/SrkError";
 import updateUser from "src/services/auth0-mgmt/updateUser";
 import { UpdateUserDto } from "@@/common/dto/auth";
-import hrbac, { Role } from "src/services/hrbac";
+import { Role } from "@@/common/enums/hrbac";
+import hrbacCan from "@@/common/utils/hrbacCan";
 
 export default async (
   authResult: SrkCookie,
@@ -15,7 +16,7 @@ export default async (
 
   // manual check for verified user for username and nickname
   if (username || nickname) {
-    if (!hrbac.can({ roles: [Role._email_verified] }, authResult.actor)) {
+    if (!hrbacCan({ roles: [Role._email_verified] }, authResult.actor)) {
       throw new SrkError("unauthorized");
     }
   }
