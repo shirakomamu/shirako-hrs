@@ -1,7 +1,7 @@
 import { defineNuxtMiddleware } from "@nuxtjs/composition-api";
-import hrbacCan from "@@/common/utils/hrbacCan";
-import { ActorDto } from "@@/common/dto/auth";
-import { Guard } from "@@/common/types/hrbac";
+import hrbacCan from "common/utils/hrbacCan";
+import { ActorDto } from "common/dto/auth";
+import { Guard } from "common/types/hrbac";
 
 export default defineNuxtMiddleware(({ route, store, error }) => {
   // route.meta is an array
@@ -17,6 +17,10 @@ export default defineNuxtMiddleware(({ route, store, error }) => {
   });
 
   if (!result.every((e) => e)) {
-    error({ statusCode: 404, message: "This page could not be found" });
+    error({
+      statusCode: 404,
+      message: "This page could not be found",
+      path: route.path,
+    });
   }
 });

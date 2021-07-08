@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 import { Method } from "axios";
-import { GEN_ACCESS_TOKEN_KEY } from "src/config/redis";
-import axios from "src/services/axios";
-import redisGu from "src/services/redis-gu";
+import { GEN_ACCESS_TOKEN_KEY } from "server/config/redis";
+import axios from "server/services/axios";
+import redisGu from "server/services/redis-gu";
 
 interface TokenResponse {
   access_token: string;

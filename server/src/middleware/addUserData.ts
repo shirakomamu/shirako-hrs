@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 // import { JwtHeader } from "jsonwebtoken";
 // import jwksClient from "jwks-rsa";
-import { SrkCookie, AuthType } from "src/services/jwt";
-import Actor from "src/classes/Actor";
-import { Auth0UserMetadataDto } from "@@/common/dto/auth";
-import getUserCached from "src/services/auth0-mgmt/getUserCached";
-import assert from "@@/common/utils/assert";
-import { RoleGroup } from "@@/common/enums/hrbac";
+import { SrkCookie, AuthType } from "server/services/jwt";
+import Actor from "server/classes/Actor";
+import { Auth0UserMetadataDto } from "common/dto/auth";
+import getUserCached from "server/services/auth0-mgmt/getUserCached";
+import assert from "common/utils/assert";
+import { RoleGroup } from "common/enums/hrbac";
 
 // .getUserInfo()
 // {

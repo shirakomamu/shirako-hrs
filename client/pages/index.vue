@@ -59,22 +59,21 @@
 </template>
 
 <script lang="ts">
-import { ActorDto } from "@@/common/dto/auth";
 import {
   computed,
   defineComponent,
   useContext,
   useMeta,
-  useStore,
 } from "@nuxtjs/composition-api";
+import useUser from "client/composables/useUser";
 
 export default defineComponent({
   name: "Index",
   setup() {
     const context = useContext();
+    const user = useUser();
     useMeta({ title: "Home | " + context.$config.appinfo.name });
-    const store = useStore();
-    const user = computed<ActorDto | null>(() => store.getters["auth/actor"]);
+
     const nickname = computed(
       (): string | null => user.value?.nickname || null
     );

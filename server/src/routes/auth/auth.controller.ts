@@ -1,6 +1,6 @@
 import { Request } from "express";
-import SrkResponse from "src/classes/SrkResponse";
-import { SrkExpressResponse } from "src/services/jwt";
+import SrkResponse from "server/classes/SrkResponse";
+import { SrkExpressResponse } from "server/services/jwt";
 import {
   identifyMyself,
   resendVerificationEmail,

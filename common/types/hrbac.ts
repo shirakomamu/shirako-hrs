@@ -1,4 +1,4 @@
-import { GuardBehavior, Role } from "@@/common/enums/hrbac";
+import { GuardBehavior, Role } from "common/enums/hrbac";
 
 export type Guard = {
   roles?: Role[];

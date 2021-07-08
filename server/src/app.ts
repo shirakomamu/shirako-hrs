@@ -3,15 +3,14 @@ import express from "express";
 import cookieParser from "cookie-parser";
 
 // Require middlewares
-import initializeDi, { DI } from "src/middleware/initializeDi";
-import initializeDb from "src/middleware/initializeDb";
-import auth0 from "src/middleware/auth0";
-// import jwt from "src/middleware/jwt";
-import addUserData from "src/middleware/addUserData";
-import preErrorHandler from "src/middleware/preErrorHandler";
+import initializeDi, { DI } from "server/middleware/initializeDi";
+import initializeDb from "server/middleware/initializeDb";
+import auth0 from "server/middleware/auth0";
+import addUserData from "server/middleware/addUserData";
+import preErrorHandler from "server/middleware/preErrorHandler";
 
 // Routes
-import routes from "src/routes";
+import routes from "server/routes";
 
 // Re-export DI
 export { DI };
@@ -26,11 +25,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser(process.env.COOKIE_SECRET)); // for signed cookies
-app.use(cookieParser()); // for unsigned cookies
+// app.use(cookieParser()); // for unsigned cookies
 
 // Add authentication data
 app.use(auth0);
-// app.use(jwt);
 app.use(addUserData);
 app.use(preErrorHandler);
 

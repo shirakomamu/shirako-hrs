@@ -1,12 +1,11 @@
 <template>
   <div class="space-y-8">
-    <h5 class="text-4xl dark:text-white">My account</h5>
+    <h5 class="text-4xl dark:text-white">Settings</h5>
     <div class="grid grid-cols-1 justify-center gap-4">
       <div
         v-if="!emailVerified"
         class="
           grid grid-cols-1
-          w-full
           gap-8
           items-center
           bg-gray-200
@@ -40,7 +39,6 @@
         class="
           grid grid-cols-1
           sm:grid-cols-2
-          w-full
           gap-8
           items-center
           bg-gray-200
@@ -207,7 +205,6 @@
       <div
         class="
           grid grid-cols-1
-          w-full
           gap-8
           items-center
           bg-gray-200
@@ -215,7 +212,7 @@
           p-8
         "
       >
-        <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="flex-grow">
             <label
               class="font-semibold dark:text-white"
@@ -244,7 +241,7 @@
           </select>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="flex-grow">
             <label
               class="font-semibold dark:text-white"
@@ -278,7 +275,6 @@
       <div
         class="
           grid grid-cols-1
-          w-full
           gap-8
           items-center
           bg-gray-200
@@ -372,23 +368,23 @@ import {
   useMeta,
   useContext,
   computed,
-  useStore,
   nextTick,
   ComponentRenderProxy,
+  useStore,
 } from "@nuxtjs/composition-api";
-import { mapActions } from "vuex";
 import Edit from "client/components/icons/Edit.vue";
-import uniqueId from "@@/common/utils/uniqueId";
+import uniqueId from "common/utils/uniqueId";
 import ISrkResponse, {
   IResetPasswordPayload,
   IUpdateUserPayload,
   IUpdateUserPrivacyPayload,
   IVerifyEmailPayload,
-} from "@@/common/types/api";
-import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
-import { ActorDto } from "@@/common/dto/auth";
-import { Role } from "@@/common/enums/hrbac";
-import { Guard } from "@@/common/types/hrbac";
+} from "common/types/api";
+import { ListVisibility, FriendRequestPrivacy } from "common/enums";
+import { Role } from "common/enums/hrbac";
+import { Guard } from "common/types/hrbac";
+import useUser from "client/composables/useUser";
+import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 
 export default defineComponent({
   components: {
@@ -401,8 +397,10 @@ export default defineComponent({
   },
   setup() {
     const context = useContext();
+    const user = useUser();
+    const store = useStore();
     useMeta({
-      title: "My account | " + context.$config.appinfo.name,
+      title: "Settings | " + context.$config.appinfo.name,
     });
 
     // refs
@@ -458,26 +456,10 @@ export default defineComponent({
       },
     ];
 
-    const defaultListVisibilityOptions = [
-      {
-        text: "List members",
-        value: ListVisibility.list,
-      },
-      {
-        text: "Friends",
-        value: ListVisibility.friends,
-      },
-      {
-        text: "Anyone",
-        value: ListVisibility.anyone,
-      },
-    ];
+    const defaultListVisibilityOptions = useListVisibilityOptions();
 
     const showDeleteConfirmationModal = ref<boolean>(false);
     const deleteConfirmationDraft = ref<string | null>(null);
-
-    const store = useStore();
-    const user = computed<ActorDto | null>(() => store.getters["auth/actor"]);
 
     // computed
     const avatar = computed((): string | null => user.value?.avatar || null);
@@ -768,21 +750,10 @@ export default defineComponent({
   },
   // required for useMeta to work
   head: {},
-  methods: {
-    ...mapActions({ api: "api/send", reidentify: "auth/fetch" }),
-  },
 });
 </script>
 
 <style lang="less" scoped>
-.icon-inline {
-  display: inline;
-  height: 1.2em;
-  width: 1.2em;
-  cursor: pointer;
-  position: relative;
-  top: -2px;
-}
 .avatar-container {
   flex-grow: 0.5;
 }

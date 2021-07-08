@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import SrkResponse from "src/classes/SrkResponse";
+import SrkResponse from "server/classes/SrkResponse";
 import {
   sendResponse,
   SrkExpressResponse,
   WithSrkExpressResponse,
-} from "src/services/jwt";
+} from "server/services/jwt";
 
 export default (
   _req: Request,

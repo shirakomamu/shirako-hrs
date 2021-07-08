@@ -1,16 +1,16 @@
 import { Router } from "express";
 
 // Rate limiter
-import baseRateLimiter from "src/middleware/baseRateLimiter";
+import baseRateLimiter from "server/middleware/baseRateLimiter";
 
 // Error catcher
-import responseSender from "src/middleware/responseSender";
-import finalHandler from "src/middleware/finalHandler";
+import responseSender from "server/middleware/responseSender";
+import finalHandler from "server/middleware/finalHandler";
 
 // API routes
-import auth from "src/routes/auth";
-import cats from "src/routes/cats";
-import catchall from "src/routes/catchall";
+import auth from "server/routes/auth";
+import cats from "server/routes/cats";
+import catchall from "server/routes/catchall";
 
 const router: Router = Router();
 

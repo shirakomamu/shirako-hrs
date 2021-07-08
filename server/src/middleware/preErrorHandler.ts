@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { NextFunction, Request, Response } from "express";
-import { SrkExpressResponse } from "src/services/jwt";
+import { SrkExpressResponse } from "server/services/jwt";
 import finalHandler from "./finalHandler";
 
 export default (

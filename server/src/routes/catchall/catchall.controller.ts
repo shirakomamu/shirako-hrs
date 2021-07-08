@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import SrkError from "src/classes/SrkError";
-import { SrkExpressResponse, WithSrkExpressResponse } from "src/services/jwt";
+import SrkError from "server/classes/SrkError";
+import {
+  SrkExpressResponse,
+  WithSrkExpressResponse,
+} from "server/services/jwt";
 
 export default class {
   public error404 = (

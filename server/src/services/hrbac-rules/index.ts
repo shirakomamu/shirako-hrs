@@ -1,5 +1,5 @@
-import { Role, RoleGroup } from "@@/common/enums/hrbac";
-import options from "src/config/hrbac";
+import { Role, RoleGroup } from "common/enums/hrbac";
+import options from "server/config/hrbac";
 
 export type HrbacOptions = {
   [key in keyof RoleGroup as string]: {

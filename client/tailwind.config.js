@@ -13,6 +13,17 @@ module.exports = {
     textColor: (theme) => ({
       ...theme("colors"),
       "blue-srk": "#0089ff",
+      "orange-srk": "#ff7600",
+    }),
+    borderColor: (theme) => ({
+      ...theme("colors"),
+      "blue-srk": "#0089ff",
+      "orange-srk": "#ff7600",
+    }),
+    backgroundColor: (theme) => ({
+      ...theme("colors"),
+      "blue-srk": "#0089ff",
+      "orange-srk": "#ff7600",
     }),
   },
   variants: {

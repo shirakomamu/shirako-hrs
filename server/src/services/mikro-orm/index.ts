@@ -9,16 +9,16 @@ import {
   RedisCacheAdapter,
   RedisCacheAdapterOptions,
 } from "mikro-orm-cache-adapter-redis";
-import SrkError from "src/classes/SrkError";
-import createRedis from "src/services/redis";
-import { MIKRO_ORM_PREFIX } from "src/config/redis";
+import SrkError from "server/classes/SrkError";
+import createRedis from "server/services/redis";
+import { MIKRO_ORM_PREFIX } from "server/config/redis";
 import {
   BaseEntityEntitySchema,
   DestinationEntitySchema,
   DestinationListEntitySchema,
   FriendEntitySchema,
   MemberEntitySchema,
-} from "src/entities";
+} from "server/entities";
 
 const storage = new AsyncLocalStorage<EntityManager>();
 

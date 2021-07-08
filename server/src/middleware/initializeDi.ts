@@ -1,14 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { EntityRepository, MikroORM } from "@mikro-orm/core";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { SrkExpressResponse } from "src/services/jwt";
-import ormService, { storage } from "src/services/mikro-orm";
-import { Member } from "src/entities/Member";
+import { SrkExpressResponse } from "server/services/jwt";
+import ormService, { storage } from "server/services/mikro-orm";
+import { Member } from "server/entities/Member";
+import { DestinationList } from "../entities/DestinationList";
 
 export const DI = {} as {
   orm: Promise<MikroORM>;
   em: EntityManager;
   memberRepo: EntityRepository<Member>;
+  destinationListRepo: EntityRepository<DestinationList>;
 };
 
 let initialized: boolean = false;
@@ -30,6 +32,7 @@ export default async (
 
     DI.em = (await DI.orm).em as EntityManager;
     DI.memberRepo = DI.em.getRepository(Member);
+    DI.destinationListRepo = DI.em.getRepository(DestinationList);
 
     initialized = true;
   }

@@ -1,6 +1,6 @@
 import { GetterTree, MutationTree, ActionTree } from "vuex";
-import { ActorDto } from "@@/common/dto/auth";
-import ISrkResponse, { ISelfIdentifyPayload } from "@@/common/types/api";
+import { ActorDto } from "common/dto/auth";
+import ISrkResponse, { ISelfIdentifyPayload } from "common/types/api";
 
 export const state = () => ({
   actor: null as ActorDto | null,

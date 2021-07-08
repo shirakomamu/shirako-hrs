@@ -32,6 +32,17 @@ body.no-overflow {
   inset: 0;
 }
 
+.bg-flat {
+  &:not([class*="bg-opacity-"]) {
+    --tw-bg-opacity: 1;
+  }
+
+  background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+  @media (prefers-color-scheme: dark) {
+    background-color: rgba(25, 25, 25, var(--tw-bg-opacity));
+  }
+}
+
 // dark mode for @tailwindcss/forms
 [type="text"],
 [type="email"],
@@ -107,4 +118,13 @@ img.profile-avatar {
   white-space: nowrap;
   overflow: hidden;
   color: transparent;
+}
+
+.icon-inline {
+  display: inline;
+  height: 1.2em;
+  width: 1.2em;
+  cursor: pointer;
+  position: relative;
+  top: -2px;
 }

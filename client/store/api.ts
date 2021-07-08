@@ -1,6 +1,6 @@
 import { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import { ActionTree } from "vuex";
-import ISrkResponse from "@@/common/types/api";
+import ISrkResponse from "common/types/api";
 
 export const state = () => ({});
 

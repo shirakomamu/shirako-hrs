@@ -1,6 +1,6 @@
-import { Guard } from "@@/common/types/hrbac";
-import { GuardBehavior, Role } from "@@/common/enums/hrbac";
-import Actor from "src/classes/Actor";
+import { Guard } from "common/types/hrbac";
+import { GuardBehavior, Role } from "common/enums/hrbac";
+import Actor from "server/classes/Actor";
 import memoizee from "memoizee";
 
 const DEFAULT_CHECK_BEHAVIOR = GuardBehavior.all;
@@ -50,7 +50,7 @@ const memoizedCheck = memoizee(check, {
   normalizer: (args) => JSON.stringify(args[0]),
 });
 
-function can(guard: Guard, actor?: Actor): boolean {
+function can(guard: Guard, actor?: Actor | null): boolean {
   const canArgs = {
     actorRoles: actor?.roles || [],
     roles: guard.roles || [],

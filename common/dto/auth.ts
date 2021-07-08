@@ -1,5 +1,5 @@
-import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
-import { Role, RoleGroup } from "@@/common/enums/hrbac";
+import { ListVisibility, FriendRequestPrivacy } from "common/enums";
+import { Role, RoleGroup } from "common/enums/hrbac";
 
 export type UpdateUserPrivacyDto = {
   friendRequestPrivacy?: FriendRequestPrivacy;
@@ -30,28 +30,4 @@ export type UpdateUserDto = {
   username?: string;
   nickname?: string;
   email?: string;
-};
-
-// unused below
-
-export type MemberRegistrationDto = {
-  username: string;
-  displayName: string;
-  password: string;
-  email: string;
-};
-
-export type NameCheckDto = {
-  type: "un" | "dn";
-  name: string;
-};
-
-export type OtpTokenCheckDto = {
-  otpToken: string;
-  otpCode?: string;
-};
-
-export type LoginDto = {
-  user: string; // email or username
-  password: string;
 };

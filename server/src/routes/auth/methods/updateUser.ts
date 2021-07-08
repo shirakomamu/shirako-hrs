@@ -1,10 +1,10 @@
-import { SrkCookie } from "src/services/jwt";
-import { IUpdateUserPayload } from "@@/common/types/api";
-import SrkError from "src/classes/SrkError";
-import updateUser from "src/services/auth0-mgmt/updateUser";
-import { UpdateUserDto } from "@@/common/dto/auth";
-import { Role } from "@@/common/enums/hrbac";
-import hrbacCan from "@@/common/utils/hrbacCan";
+import { SrkCookie } from "server/services/jwt";
+import { IUpdateUserPayload } from "common/types/api";
+import SrkError from "server/classes/SrkError";
+import updateUser from "server/services/auth0-mgmt/updateUser";
+import { UpdateUserDto } from "common/dto/auth";
+import { Role } from "common/enums/hrbac";
+import hrbacCan from "common/utils/hrbacCan";
 
 export default async (
   authResult: SrkCookie,

@@ -1,4 +1,4 @@
-import assert from "@@/common/utils/assert";
+import assert from "common/utils/assert";
 import { ChangeSetType, EntitySchema, FlushEventArgs } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Member } from "./Member";

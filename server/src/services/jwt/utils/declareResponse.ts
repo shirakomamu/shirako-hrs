@@ -1,5 +1,5 @@
 import { Response } from "express";
-import SrkResponse from "src/classes/SrkResponse";
+import SrkResponse from "server/classes/SrkResponse";
 import { SrkExpressResponse, WithSrkExpressResponse } from "../jwt.interfaces";
 
 export default function (

@@ -71,8 +71,8 @@ import Check from "client/components/icons/Check.vue";
 import Error from "client/components/icons/Error.vue";
 import Visibility from "client/components/icons/Visibility.vue";
 import VisibilityOff from "client/components/icons/VisibilityOff.vue";
-import uniqueId from "@@/common/utils/uniqueId";
-import endWithString from "@@/common/utils/endWithString";
+import uniqueId from "common/utils/uniqueId";
+import endWithString from "common/utils/endWithString";
 
 export default defineComponent({
   name: "PasswordInput",

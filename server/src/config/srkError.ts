@@ -1,4 +1,4 @@
-import { SrkErrorInstance } from "src/services/srk-error";
+import { SrkErrorInstance } from "server/services/srk-error";
 
 const config = {
   internalError: {

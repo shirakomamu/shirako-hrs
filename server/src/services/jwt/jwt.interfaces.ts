@@ -1,5 +1,5 @@
 import { Response } from "express";
-import SrkResponse from "src/classes/SrkResponse";
+import SrkResponse from "server/classes/SrkResponse";
 import { SrkCookie } from "./jwt.types";
 
 export type SrkExpressResponse = Response & {

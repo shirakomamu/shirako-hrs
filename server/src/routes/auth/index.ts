@@ -1,10 +1,10 @@
-import { GuardBehavior, Role } from "@@/common/enums/hrbac";
+import { GuardBehavior, Role } from "common/enums/hrbac";
 import { Router } from "express";
-import { route } from "src/middleware/route";
-import useGuard from "src/middleware/useGuard";
-import useSimpleGuard from "src/middleware/useSimpleGuard";
-// import { authFail, authSlow } from "src/services/sub-rate-limiter";
-// import subRateLimiterFactory from "src/services/sub-rate-limiter-factory";
+import { route } from "server/middleware/route";
+import useGuard from "server/middleware/useGuard";
+import useSimpleGuard from "server/middleware/useSimpleGuard";
+// import { authFail, authSlow } from "server/services/sub-rate-limiter";
+// import subRateLimiterFactory from "server/services/sub-rate-limiter-factory";
 import AuthController from "./auth.controller";
 import {
   UpdateUserPreferencesValidators,

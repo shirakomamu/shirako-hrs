@@ -1,7 +1,7 @@
-// import { Role } from "@@/common/enums/hrbac";
+// import { Role } from "common/enums/hrbac";
 import { Router } from "express";
-import { route } from "src/middleware/route";
-// import useSimpleGuard from "src/middleware/useSimpleGuard";
+import { route } from "server/middleware/route";
+// import useSimpleGuard from "server/middleware/useSimpleGuard";
 import CatsController from "./cats.controller";
 
 const catsController = new CatsController();

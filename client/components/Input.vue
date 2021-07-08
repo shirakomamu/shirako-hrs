@@ -1,8 +1,10 @@
 <template>
   <div class="grid grid-cols-1 gap-1">
+    <label :for="thisUid">{{ label }}</label>
     <div class="flex flex-row items-center container">
       <div class="flex-grow">
         <input
+          :id="thisUid"
           ref="inputElem"
           :value="value"
           v-bind="$attrs"
@@ -54,7 +56,7 @@ import {
 import Loader from "client/components/icons/Loader.vue";
 import Check from "client/components/icons/Check.vue";
 import Error from "client/components/icons/Error.vue";
-import uniqueId from "@@/common/utils/uniqueId";
+import uniqueId from "common/utils/uniqueId";
 
 export default defineComponent({
   name: "Input",
@@ -88,10 +90,18 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    label: {
+      type: String,
+      default: "",
+    },
   },
   setup(props, { emit }) {
     // refs
     const inputElem = ref<HTMLInputElement | null>(null);
+
+    const uid = uniqueId();
+
+    const thisUid = "input-" + uid;
 
     // data
     const inputContext = ref("0");
@@ -166,6 +176,8 @@ export default defineComponent({
     };
 
     return {
+      thisUid,
+
       inputElem,
       inputContext,
       validating,

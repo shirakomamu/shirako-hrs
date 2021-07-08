@@ -2,9 +2,9 @@ import {
   ActorConstructorDto,
   ActorDto,
   Auth0UserMetadataDto,
-} from "@@/common/dto/auth";
-import { Role, RoleGroup } from "@@/common/enums/hrbac";
-import hrbacRules from "src/services/hrbac-rules";
+} from "common/dto/auth";
+import { Role, RoleGroup } from "common/enums/hrbac";
+import hrbacRules from "server/services/hrbac-rules";
 
 export default class Actor implements ActorDto {
   public id: string;

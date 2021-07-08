@@ -1,7 +1,7 @@
-import { SrkCookie } from "src/services/jwt";
-import { IResetPasswordPayload } from "@@/common/types/api";
-import SrkError from "src/classes/SrkError";
-import sendPasswordResetEmail from "src/services/auth0-mgmt/sendPasswordResetEmail";
+import { SrkCookie } from "server/services/jwt";
+import { IResetPasswordPayload } from "common/types/api";
+import SrkError from "server/classes/SrkError";
+import sendPasswordResetEmail from "server/services/auth0-mgmt/sendPasswordResetEmail";
 
 export default async (
   authResult: SrkCookie

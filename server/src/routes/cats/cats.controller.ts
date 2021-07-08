@@ -1,7 +1,7 @@
 import { Request } from "express";
-import SrkResponse from "src/classes/SrkResponse";
-import { SrkExpressResponse } from "src/services/jwt";
-// import sendgrid from "src/services/sendgrid";
+import SrkResponse from "server/classes/SrkResponse";
+import { SrkExpressResponse } from "server/services/jwt";
+// import sendgrid from "server/services/sendgrid";
 
 export default class {
   public listCats = (_req: Request, _res: SrkExpressResponse) => {

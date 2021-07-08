@@ -1,6 +1,6 @@
-import { Role } from "@@/common/enums/hrbac";
+import { Role } from "common/enums/hrbac";
 import { NextFunction, Request, Response } from "express";
-import { SrkExpressResponse } from "src/services/jwt";
+import { SrkExpressResponse } from "server/services/jwt";
 import useGuard from "./useGuard";
 
 export default (roles: Role[]) =>

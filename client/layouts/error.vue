@@ -56,7 +56,7 @@ export default defineComponent({
     };
 
     const message = computed(() => props.error.message || "Internal error");
-    const path = useRoute().value.path;
+    const path = props.error.path || useRoute().value.path;
 
     return { statusCode, message, path, goHome };
   },

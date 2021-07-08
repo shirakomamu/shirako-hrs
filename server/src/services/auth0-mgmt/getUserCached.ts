@@ -1,6 +1,9 @@
 /* eslint-disable camelcase */
-import { GENERAL_USAGE_PREFIX, GEN_USER_INFO_PREFIX } from "src/config/redis";
-import redisGu from "src/services/redis-gu";
+import {
+  GENERAL_USAGE_PREFIX,
+  GEN_USER_INFO_PREFIX,
+} from "server/config/redis";
+import redisGu from "server/services/redis-gu";
 import getUser, { GetUserResponse } from "./getUser";
 
 export default async (id: string): Promise<GetUserResponse> => {

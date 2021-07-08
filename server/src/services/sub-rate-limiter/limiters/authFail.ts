@@ -4,8 +4,8 @@ import {
   AUTH_FAIL_POINTS,
   AUTH_FAIL_DURATION,
   AUTH_FAIL_BLOCK_DURATION,
-} from "src/config/rateLimiter";
-import redisRl from "src/services/redis-rl";
+} from "server/config/rateLimiter";
+import redisRl from "server/services/redis-rl";
 
 export default new RateLimiterRedis({
   storeClient: redisRl,

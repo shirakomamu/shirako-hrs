@@ -1,4 +1,4 @@
-import { ListVisibility } from "@@/common/enums";
+import { ListVisibility } from "common/enums";
 import { Collection, EntitySchema } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Destination } from "./Destination";

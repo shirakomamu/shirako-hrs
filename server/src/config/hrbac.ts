@@ -1,5 +1,5 @@
-import { Role, RoleGroup } from "@@/common/enums/hrbac";
-import { HrbacOptions } from "src/services/hrbac-rules";
+import { Role, RoleGroup } from "common/enums/hrbac";
+import { HrbacOptions } from "server/services/hrbac-rules";
 
 const options = {
   [RoleGroup.member_verified]: {

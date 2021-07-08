@@ -1,8 +1,8 @@
-import { SrkCookie } from "src/services/jwt";
-import { IUpdateUserPrivacyPayload } from "@@/common/types/api";
-import SrkError from "src/classes/SrkError";
-import updateUser from "src/services/auth0-mgmt/updateUser";
-import { UpdateUserPrivacyDto } from "@@/common/dto/auth";
+import { SrkCookie } from "server/services/jwt";
+import { IUpdateUserPrivacyPayload } from "common/types/api";
+import SrkError from "server/classes/SrkError";
+import updateUser from "server/services/auth0-mgmt/updateUser";
+import { UpdateUserPrivacyDto } from "common/dto/auth";
 
 export default async (
   authResult: SrkCookie,

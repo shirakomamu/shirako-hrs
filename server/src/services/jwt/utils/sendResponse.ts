@@ -1,11 +1,11 @@
 import { Response } from "express";
-import SrkError from "src/classes/SrkError";
-import SrkResponse from "src/classes/SrkResponse";
-import ISrkResponse from "@@/common/types/api";
+import SrkError from "server/classes/SrkError";
+import SrkResponse from "server/classes/SrkResponse";
+import ISrkResponse from "common/types/api";
 import {
   AUTH_JWT_COOKIE_NAME,
   AUTH_JWT_COOKIE_PARAMETERS,
-} from "src/config/cookie";
+} from "server/config/cookie";
 import { SrkExpressResponse, WithSrkExpressResponse } from "../jwt.interfaces";
 
 async function sendResponse(

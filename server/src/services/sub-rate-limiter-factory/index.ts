@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { RateLimiterStoreAbstract } from "rate-limiter-flexible";
-import SrkError from "src/classes/SrkError";
+import SrkError from "server/classes/SrkError";
 
 type ConsumptionKeyGenerator = ({
   req,

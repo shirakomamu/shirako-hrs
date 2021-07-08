@@ -1,6 +1,7 @@
 import { ParamSchema } from "express-validator";
-import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
+import { ListVisibility, FriendRequestPrivacy } from "common/enums";
 
+const protectedUsernames = [/^me$/i, /.{0,}mamu.{0,}/i, /.{0,}shirako.{0,}/i];
 export const UsernameParamSchema: ParamSchema = {
   in: ["body"],
   isString: {
@@ -17,10 +18,13 @@ export const UsernameParamSchema: ParamSchema = {
   },
   custom: {
     errorMessage:
-      "Username is limited to alphanumeric characters and these symbols: @, ^, $, ., !, `, -, #, +, ', ~, _",
+      "Username is limited to alphanumeric characters and the symbols [@, ^, $, ., !, `, -, #, +, ', ~, _], or you cannot use this username",
     options: (value: string) => {
       // https://auth0.com/docs/connections/database/require-username
-      return /^[A-z0-9@^$.!`\-#+'~_]+$/.test(value);
+      return (
+        /^[A-z0-9@^$.!`\-#+'~_]+$/.test(value) &&
+        protectedUsernames.every((e) => !e.test(value))
+      );
     },
   },
   isEmail: {

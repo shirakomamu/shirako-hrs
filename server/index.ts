@@ -1,8 +1,8 @@
 const path = require("path");
 const moduleAlias = require("module-alias");
 moduleAlias.addAliases({
-  src: path.join(__dirname, "/src/"),
-  "@@": path.join(__dirname, "/../"),
+  server: path.join(__dirname, "/src/"),
+  common: path.join(__dirname, "/../common/"),
 });
 
 module.exports = require("./src/app");

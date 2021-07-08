@@ -1,4 +1,4 @@
-import appinfo from "@@/appinfo";
+import appinfo from "appinfo";
 import { Client } from "@sendgrid/client";
 
 const REGISTRATION_EMAIL_VERIFICATION_TEMPLATE_ID =

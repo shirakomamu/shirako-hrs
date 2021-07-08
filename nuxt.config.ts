@@ -44,7 +44,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ["@/assets/styles/index.less"],
+  css: ["assets/styles/index.less"],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
@@ -71,7 +71,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     "@nuxtjs/axios",
-    "@/modules/api",
+    "modules/api",
     [
       "@dansmaculotte/nuxt-security",
       {
@@ -133,10 +133,6 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     extend(config) {
-      // config.externals = {
-      //   knex: "commonjs knex",
-      //   "mikro-orm": "commonjs mikro-orm",
-      // };
       if (!config.resolve) {
         config.resolve = {};
       }
@@ -146,7 +142,7 @@ export default {
 
       config.resolve.plugins.push(
         new TsConfigPathsPlugin({
-          configFile: "./tsconfig.json",
+          configFile: "tsconfig.json",
         })
       );
     },
@@ -159,7 +155,7 @@ export default {
 
   // TailwindCSS module configuration (https://tailwindcss.nuxtjs.org/options)
   tailwindcss: {
-    cssPath: "@/assets/styles/tailwind.less",
+    cssPath: "assets/styles/tailwind.less",
     configPath: "tailwind.config.js",
     exposeConfig: false,
     viewer: false,
