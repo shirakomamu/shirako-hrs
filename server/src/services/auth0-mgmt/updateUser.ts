@@ -12,23 +12,29 @@ export default async (
     nickname,
     email,
     user_metadata,
+    app_metadata,
   }: {
     username?: string;
     nickname?: string;
     email?: string;
     user_metadata?: object;
+    app_metadata?: object;
   }
 ) => {
   const ENDPOINT = "api/v2/users/" + id; // added onto issuer base url
 
-  const response = await send<UpdateUserResponse>(ENDPOINT, "patch", {
-    username,
-    nickname,
-    email,
-    user_metadata,
+  const response = await send<UpdateUserResponse>(ENDPOINT, {
+    method: "patch",
+    data: {
+      username,
+      nickname,
+      email,
+      user_metadata,
+      app_metadata,
+    },
   });
 
-  await setCache(id, response);
+  await setCache({ id }, response);
 
   return response;
 };

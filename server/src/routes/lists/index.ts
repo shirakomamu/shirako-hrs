@@ -6,15 +6,14 @@ import useSimpleGuard from "server/middleware/useSimpleGuard";
 // import subRateLimiterFactory from "server/services/sub-rate-limiter-factory";
 import ListsController from "./lists.controller";
 import {} from "./lists.validation";
-// import {} from "./auth.validation";
 
-const listsController = new ListsController();
+const controller = new ListsController();
 const router: Router = Router();
 
 router.post(
   "/",
   [useSimpleGuard([Role._self_destination_lists])],
-  route(listsController.createDestinationList)
+  route(controller.createDestinationList)
 );
 
 export default router;

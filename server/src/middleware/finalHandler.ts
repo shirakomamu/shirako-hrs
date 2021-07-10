@@ -4,13 +4,14 @@ import SrkResponse from "server/classes/SrkResponse";
 import {
   declareResponse,
   sendResponse,
+  SrkExpressRequest,
   SrkExpressResponse,
   WithSrkExpressResponse,
 } from "server/services/jwt";
 
 export default (
   error: Error | SrkError | null,
-  _req: Request,
+  _req: Request | SrkExpressRequest,
   res: Response | SrkExpressResponse | WithSrkExpressResponse,
   _next: NextFunction
 ) => {

@@ -1,19 +1,13 @@
 /* eslint-disable camelcase */
-import { ActorDto } from "common/dto/auth";
 import { ListVisibility } from "common/enums";
-import { UpdateUserResponse } from "server/services/auth0-mgmt/updateUser";
 
-export type ISelfIdentifyPayload = {
-  actor?: ActorDto;
+export type DestinationListMetadata = {
+  id: string;
+  title: string;
+  owner: string;
+  description: string | null;
+  visibility: ListVisibility;
 };
-
-export type IVerifyEmailPayload = {};
-
-export type IResetPasswordPayload = {};
-
-export type IUpdateUserPayload = UpdateUserResponse & {};
-
-export type IUpdateUserPrivacyPayload = UpdateUserResponse & {};
 
 // from yelp API
 export type DestinationItem = {
@@ -42,10 +36,6 @@ export type DestinationItem = {
   }[];
 };
 
-export type IDestinationListPayload = {
-  title: string;
-  owner: string;
-  description: string | null;
-  visibility: ListVisibility;
+export type IDestinationListPayload = DestinationListMetadata & {
   items: DestinationItem[];
 };

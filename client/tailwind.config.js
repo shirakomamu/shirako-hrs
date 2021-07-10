@@ -28,9 +28,12 @@ module.exports = {
   },
   variants: {
     extend: {
-      opacity: ["disabled"],
+      backgroundOpacity: ["disabled"],
+      borderOpacity: ["disabled"],
       cursor: ["disabled"],
+      dropShadow: ["hover", "focus"],
       fontWeight: ["hover", "focus", "disabled"],
+      opacity: ["disabled"],
     },
   },
   plugins: [

@@ -1,13 +1,17 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request } from "express";
 import { validationResult } from "express-validator";
 import SrkError from "server/classes/SrkError";
 import SrkResponse from "server/classes/SrkResponse";
-import { declareResponse, SrkExpressResponse } from "server/services/jwt";
+import {
+  declareResponse,
+  SrkExpressRequest,
+  SrkExpressResponse,
+} from "server/services/jwt";
 
 export const route = (func: Function, onFail?: Function) => {
   return async (
-    req: Request,
-    res: Response | SrkExpressResponse,
+    req: Request | SrkExpressRequest,
+    res: SrkExpressResponse,
     next: NextFunction
   ) => {
     const errors = validationResult(req);

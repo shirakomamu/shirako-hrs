@@ -52,6 +52,7 @@ import {
   computed,
   PropOptions,
   nextTick,
+  watch,
 } from "@nuxtjs/composition-api";
 import Loader from "client/components/icons/Loader.vue";
 import Check from "client/components/icons/Check.vue";
@@ -174,6 +175,17 @@ export default defineComponent({
     const onInvalid = (el: Event) => {
       setValidationError((el.target as HTMLInputElement).validationMessage);
     };
+
+    watch(
+      () => props.value,
+      () => {
+        if (!touching.value) {
+          validating.value = false;
+          touching.value = false;
+          setValidationError("");
+        }
+      }
+    );
 
     return {
       thisUid,

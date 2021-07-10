@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { Method } from "axios";
+import { AxiosRequestConfig } from "axios";
 import { GEN_ACCESS_TOKEN_KEY } from "server/config/redis";
 import axios from "server/services/axios";
 import redisGu from "server/services/redis-gu";
@@ -7,10 +7,6 @@ import redisGu from "server/services/redis-gu";
 interface TokenResponse {
   access_token: string;
   token_type: "Bearer";
-}
-
-interface SendOptions {
-  includeAccessToken?: boolean;
 }
 
 export async function getAccessToken() {
@@ -37,11 +33,9 @@ export async function getAccessToken() {
 
 export async function send<T = any>(
   endpoint: string,
-  method: Method,
-  payload?: any,
-  options?: SendOptions
+  options: Omit<AxiosRequestConfig, "url">
 ) {
-  const includeAccessToken = options?.includeAccessToken || true;
+  const includeAccessToken = true;
 
   const headers: { [key: string]: string } = {};
   if (includeAccessToken) {
@@ -55,10 +49,9 @@ export async function send<T = any>(
   }
 
   const response = await axios.request<T>({
-    method,
     url: process.env.AUTH0_ISSUER_BASE_URL + endpoint,
     headers,
-    data: payload,
+    ...options,
   });
 
   return response.data;

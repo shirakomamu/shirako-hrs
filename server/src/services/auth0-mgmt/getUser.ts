@@ -35,7 +35,7 @@ export interface GetUserResponse {
 export default async (id: string) => {
   const ENDPOINT = "api/v2/users/" + id; // added onto issuer base url
 
-  const response = await send<GetUserResponse>(ENDPOINT, "get");
+  const response = await send<GetUserResponse>(ENDPOINT, { method: "get" });
 
   return response;
 };

@@ -1,5 +1,7 @@
 import { ParamSchema } from "express-validator";
 import { ListVisibility, FriendRequestPrivacy } from "common/enums";
+import hrbacCan from "common/utils/hrbacCan";
+import { Role } from "common/enums/hrbac";
 
 const protectedUsernames = [/^me$/i, /.{0,}mamu.{0,}/i, /.{0,}shirako.{0,}/i];
 export const UsernameParamSchema: ParamSchema = {
@@ -16,15 +18,22 @@ export const UsernameParamSchema: ParamSchema = {
       max: 24,
     },
   },
+  toLowerCase: true,
   custom: {
     errorMessage:
       "Username is limited to alphanumeric characters and the symbols [@, ^, $, ., !, `, -, #, +, ', ~, _], or you cannot use this username",
-    options: (value: string) => {
+    options: (value: string, { req }) => {
+      const actor = req.locals?.authResult?.actor;
+
+      const tests: boolean[] = [];
       // https://auth0.com/docs/connections/database/require-username
-      return (
-        /^[A-z0-9@^$.!`\-#+'~_]+$/.test(value) &&
-        protectedUsernames.every((e) => !e.test(value))
-      );
+      tests.push(/^[A-z0-9@^$.!`\-#+'~_]+$/.test(value));
+
+      if (!hrbacCan({ roles: [Role._protected_usernames] }, actor)) {
+        tests.push(!protectedUsernames.some((e) => e.test(value)));
+      }
+
+      return tests.every((e) => e);
     },
   },
   isEmail: {

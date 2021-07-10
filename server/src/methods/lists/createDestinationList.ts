@@ -1,6 +1,6 @@
 import { CreateListDto } from "common/dto/lists";
 import SrkError from "server/classes/SrkError";
-import getMemberFromActor from "server/composables/getMemberFromActor";
+import getMemberFromActor from "server/methods/users/getMemberFromActor";
 import { DestinationList } from "server/entities/DestinationList";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
@@ -15,7 +15,7 @@ export default async (
 
   const repo = DI.destinationListRepo;
 
-  const member = await getMemberFromActor(authResult.actor);
+  const member = await getMemberFromActor(authResult);
 
   const list = repo.create({
     owner: member,

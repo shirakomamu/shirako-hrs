@@ -75,12 +75,6 @@
                   >Profile</span
                 ></nuxt-link
               >
-              <nuxt-link :to="'/u/' + username + '/lists'" class="text-blue-srk"
-                ><ViewStream class="icon-inline" />
-                <span class="hover:underline focus:underline"
-                  >Lists</span
-                ></nuxt-link
-              >
               <nuxt-link to="/friends" class="text-blue-srk"
                 ><People class="icon-inline" />
                 <span class="hover:underline focus:underline"
@@ -123,7 +117,6 @@ import Logout from "client/components/icons/Logout.vue";
 import People from "client/components/icons/People.vue";
 import Person from "client/components/icons/Person.vue";
 import Settings from "client/components/icons/Settings.vue";
-import ViewStream from "client/components/icons/ViewStream.vue";
 
 export default defineComponent({
   name: "AppHeader",
@@ -133,7 +126,6 @@ export default defineComponent({
     People,
     Person,
     Settings,
-    ViewStream,
   },
   setup() {
     const context = useContext();

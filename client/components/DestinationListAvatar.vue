@@ -4,31 +4,33 @@
       container
       grid grid-cols-1
       items-center
-      bg-blue-srk bg-opacity-10
-      transition
-      hover:bg-opacity-50
-      text-sm text-center text-white
-      hover:font-semibold
-      rounded-2xl
+      text-center
+      border border-black
+      dark:border-white
+      border-opacity-20
+      hover:border-opacity-100
       p-2
+      transition
+      filter
+      hover:drop-shadow-md
     "
   >
-    <!-- <List class="list-icon text-blue-srk" /> -->
+    <List class="list-icon opacity-50" />
     <div class="grid grid-cols-1 gap-2">
-      <p>{{ listName }}</p>
-      <p class="opacity-50">{{ owner }}</p>
+      <p class="text-md font-semibold">{{ listName }}</p>
+      <p class="text-sm opacity-50">{{ owner }}</p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-// import List from "client/components/icons/List.vue";
+import List from "client/components/icons/List.vue";
 
 export default defineComponent({
   name: "DestinationListAvatar",
   components: {
-    // List,
+    List,
   },
   props: {
     listName: {
@@ -58,7 +60,7 @@ export default defineComponent({
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  height: 2rem;
-  width: 2rem;
+  height: 1rem;
+  width: 1rem;
 }
 </style>

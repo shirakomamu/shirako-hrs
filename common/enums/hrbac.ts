@@ -7,6 +7,7 @@ export enum GuardBehavior {
 
 export enum Role {
   "_beta_g1" = "_beta_g1",
+  "_protected_usernames" = "_protected_usernames",
 
   // user
   "_self_profile" = "_self_profile",
@@ -20,6 +21,7 @@ export enum Role {
 export enum RoleGroup {
   // beta flags
   "beta_g1" = "beta_g1",
+  "protected_usernames" = "protected_usernames",
 
   // user
   "member_verified" = "member_verified",

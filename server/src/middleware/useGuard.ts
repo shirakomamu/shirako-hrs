@@ -1,18 +1,20 @@
-import { NextFunction, Request, Response } from "express";
-import { SrkExpressResponse } from "server/services/jwt";
+import { NextFunction, Request } from "express";
+import { SrkExpressRequest, SrkExpressResponse } from "server/services/jwt";
 import SrkError from "server/classes/SrkError";
-import assert from "common/utils/assert";
 import { Guard } from "common/types/hrbac";
 import hrbacCan from "common/utils/hrbacCan";
 
 export default (guard: Guard) =>
-  (_req: Request, res: Response | SrkExpressResponse, next: NextFunction) => {
+  (
+    req: Request | SrkExpressRequest,
+    _res: SrkExpressResponse,
+    next: NextFunction
+  ) => {
     let result: boolean;
-    if (!res.locals.authResult) {
+    if (!req.locals?.authResult) {
       result = hrbacCan(guard);
     } else {
-      assert<SrkExpressResponse>(res);
-      result = hrbacCan(guard, res.locals.authResult.actor);
+      result = hrbacCan(guard, req.locals.authResult.actor);
     }
 
     if (!result) {

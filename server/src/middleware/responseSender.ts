@@ -2,12 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import SrkResponse from "server/classes/SrkResponse";
 import {
   sendResponse,
+  SrkExpressRequest,
   SrkExpressResponse,
   WithSrkExpressResponse,
 } from "server/services/jwt";
 
 export default (
-  _req: Request,
+  _req: Request | SrkExpressRequest,
   res: Response | SrkExpressResponse | WithSrkExpressResponse,
   next: NextFunction
 ) => {

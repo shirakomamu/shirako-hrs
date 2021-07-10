@@ -1,6 +1,14 @@
 <template>
   <div class="space-y-8">
-    <h5 class="text-4xl dark:text-white">{{ title }}</h5>
+    <nuxt-link
+      class="text-lg text-blue-srk hover:underline focus:underline"
+      :to="`/u/${formListOwner}`"
+      ><ArrowBack class="icon-inline" /> Back to {{ formListOwner }}'s
+      profile</nuxt-link
+    >
+    <hr />
+    {{ r }}
+    <h6 class="text-2xl dark:text-white">{{ title }}</h6>
     <div class="grid grid-cols-1 justify-center gap-4">
       <template v-if="mode === 'add' || mode === 'edit'">
         <form
@@ -111,7 +119,6 @@ import {
 } from "@nuxtjs/composition-api";
 import hrbacCan from "common/utils/hrbacCan";
 import { Role } from "common/enums/hrbac";
-import { DestinationItem } from "common/types/api";
 import Input from "client/components/Input.vue";
 import useList from "client/composables/useList";
 import useUser from "client/composables/useUser";
@@ -120,16 +127,19 @@ import { ListVisibility } from "common/enums";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import uniqueId from "common/utils/uniqueId";
 import { CreateListDto } from "common/dto/lists";
+import ArrowBack from "client/components/icons/ArrowBack.vue";
+import { DestinationItem } from "common/types/api";
 
 export default defineComponent({
   components: {
+    ArrowBack,
     Input,
   },
   setup() {
     const context = useContext();
     const user = useUser();
     const route = useRoute().value;
-    if (!user) {
+    if (!user.value) {
       return context.error({
         statusCode: 404,
         message: "This page cannot be found",
@@ -138,6 +148,7 @@ export default defineComponent({
     }
     const api = useInternalApi();
 
+    const r = ref<any>(null);
     const maxDescriptionLength = 200;
 
     const { username, listId } = route.params;
@@ -157,7 +168,6 @@ export default defineComponent({
     const listItems = ref<DestinationItem[]>([]);
     if (listId === "new") {
       if (
-        !user.value ||
         user.value.username !== username ||
         !hrbacCan({ roles: [Role._self_destination_lists] }, user.value)
       ) {
@@ -172,24 +182,30 @@ export default defineComponent({
       formListVisibility.value =
         user.value.meta.privacySettings?.defaultListVisibility || null;
     } else {
-      const r = useList({ username, listId });
+      const listRef = useList({ username, listId });
 
-      if (!r.value) {
-        return context.error({
-          statusCode: 404,
-          message: "This page cannot be found",
-          path: route.path,
-        });
-      }
+      r.value = listRef.value;
 
-      title.value = r.value.title;
+      console.log(r.value);
 
-      formListName.value = r.value.title;
-      formListOwner.value = r.value.owner;
-      formListDescription.value = r.value.description;
-      formListVisibility.value = r.value.visibility;
-      formListIds.value = r.value.items.map((e) => e.id);
-      listItems.value = r.value.items;
+      // console.log(formListOwner.value, mode.value, title.value);
+
+      // if (!r.value) {
+      //   return context.error({
+      //     statusCode: 404,
+      //     message: "This page cannot be found",
+      //     path: route.path,
+      //   });
+      // }
+
+      // title.value = r.value.title;
+
+      // formListName.value = r.value.title;
+      // formListOwner.value = r.value.owner;
+      // formListDescription.value = r.value.description;
+      // formListVisibility.value = r.value.visibility;
+      // formListIds.value = r.value.items.map((e) => e.id);
+      // listItems.value = r.value.items;
     }
 
     const descriptionLengthHelper = computed(() => {
@@ -214,6 +230,7 @@ export default defineComponent({
       });
 
       console.log(response);
+
       isCreating.value = false;
     };
 
@@ -240,6 +257,8 @@ export default defineComponent({
 
       isCreating,
       onCreate,
+
+      r,
     };
   },
   // required for useMeta to work

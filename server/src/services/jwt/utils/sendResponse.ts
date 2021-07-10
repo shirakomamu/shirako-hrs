@@ -1,7 +1,7 @@
 import { Response } from "express";
 import SrkError from "server/classes/SrkError";
 import SrkResponse from "server/classes/SrkResponse";
-import ISrkResponse from "common/types/api";
+import { ISrkResponse } from "common/types/api";
 import {
   AUTH_JWT_COOKIE_NAME,
   AUTH_JWT_COOKIE_PARAMETERS,

@@ -1,4 +1,4 @@
-import ISrkResponse from "common/types/api";
+import { ISrkResponse } from "common/types/api";
 import { useStore } from "@nuxtjs/composition-api";
 import { AxiosRequestConfig } from "axios";
 

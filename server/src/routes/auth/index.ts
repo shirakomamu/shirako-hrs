@@ -12,7 +12,7 @@ import {
 } from "./auth.validation";
 // import {} from "./auth.validation";
 
-const authController = new AuthController();
+const controller = new AuthController();
 const router: Router = Router();
 
 router.get("/login", (_req, res) =>
@@ -22,21 +22,21 @@ router.get("/logout", (_req, res) =>
   res.oidc.logout({ returnTo: process.env.SERVER_BASE_URI })
 );
 
-router.get("/me", route(authController.identifyMyself));
+router.get("/me", route(controller.identifyMyself));
 router.patch(
   "/me",
   [useSimpleGuard([Role._self_profile]), ...UpdateUserValidators],
-  route(authController.updateUser)
+  route(controller.updateUser)
 );
 router.delete(
   "/me",
   [useSimpleGuard([Role._self_profile])],
-  route(authController.deleteUser)
+  route(controller.deleteUser)
 );
 router.patch(
   "/me/preferences",
   [useSimpleGuard([Role._email_verified]), ...UpdateUserPreferencesValidators],
-  route(authController.updateUserPreferences)
+  route(controller.updateUserPreferences)
 );
 
 router.post(
@@ -57,19 +57,19 @@ router.post(
       mode: GuardBehavior.all,
     }),
   ],
-  route(authController.resendVerificationEmail)
+  route(controller.resendVerificationEmail)
 );
 router.post(
   "/me/reset_password",
   [useSimpleGuard([Role._self_profile])],
-  route(authController.sendPasswordResetEmail)
+  route(controller.sendPasswordResetEmail)
 );
 
 // router.post(
 //   "/register",
 //   ...RegisterNewMemberValidators,
 //   route(
-//     authController.registerNewMember,
+//     controller.registerNewMember,
 //     subRateLimiterFactory([
 //       {
 //         rateLimiter: authSlow,
@@ -91,7 +91,7 @@ router.post(
 //   "/register/token",
 //   ...OtpTokenValidators,
 //   route(
-//     authController.checkOtpToken,
+//     controller.checkOtpToken,
 //     subRateLimiterFactory([
 //       {
 //         rateLimiter: authSlow,
@@ -105,7 +105,7 @@ router.post(
 //   "/ncheck",
 //   ...NameCheckValidators,
 //   route(
-//     authController.isNameAvailable,
+//     controller.isNameAvailable,
 //     subRateLimiterFactory([
 //       {
 //         rateLimiter: authSlow,

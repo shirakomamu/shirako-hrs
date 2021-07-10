@@ -5,6 +5,6 @@ import { send } from ".";
 export default async (id: string) => {
   const ENDPOINT = "api/v2/users/" + id; // added onto issuer base url
 
-  await send<void>(ENDPOINT, "delete");
-  await clearCache(id);
+  await send<void>(ENDPOINT, { method: "delete" });
+  await clearCache({ id });
 };

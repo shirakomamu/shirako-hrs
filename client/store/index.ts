@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { GetterTree, ActionTree, MutationTree } from "vuex";
 // import cookie from "cookie";
-// import ISrkResponse, { ISelfIdentifyPayload } from "common/interfaces/api";
+// import { ISrkResponse, ISelfIdentifyPayload } from "common/interfaces/api";
 
 export const state = () => ({});
 

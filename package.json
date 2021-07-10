@@ -36,6 +36,8 @@
     "js-cookie": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.3",
+    "lucene-escape-query": "^1.0.1",
+    "lucene-query-string-builder": "^1.0.2",
     "memoizee": "^0.4.15",
     "mikro-orm-cache-adapter-redis": "^1.1.1",
     "module-alias": "^2.2.2",

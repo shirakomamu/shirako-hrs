@@ -95,10 +95,14 @@
               type="text"
               name="username"
               classes="p-2 text-sm w-full"
-              passive-text="Your username allows other people to find you, if your profile is set to public."
+              passive-text="Your username allows other people to find you."
+              minlength="1"
+              maxlength="24"
               required
               :disabled="isUsernameLoading"
-              @keyup.esc.prevent="showUsernameEditor(false)"
+              :do-validation="true"
+              :validator="usernameValidator"
+              @keyup.esc.prevent="showUsernameEditor(false, false)"
               @keyup.enter.prevent="showUsernameEditor(false)"
               @blur.prevent="showUsernameEditor(false)"
             />
@@ -108,13 +112,13 @@
             <label
               :for="nicknameUid"
               class="text-lg font-semibold dark:text-white"
-              >Display name</label
+              >Nickname</label
             >
             <div v-if="!isNicknameEditing" class="text-sm w-full">
               <button
                 type="button"
                 class="p-0"
-                alt="Change display name"
+                alt="Change nickname"
                 @click="showNicknameEditor(true)"
               >
                 {{ nickname }}
@@ -129,10 +133,13 @@
               type="text"
               name="nickname"
               classes="p-2 text-sm w-full"
-              passive-text="Your display name identifies you publicly, even to people not on your friends list."
+              passive-text="Choose a nickname to show on your profile."
+              minlength="1"
+              maxlength="24"
               required
               :disabled="isNicknameLoading"
-              @keyup.esc.prevent="showNicknameEditor(false)"
+              :do-validation="true"
+              @keyup.esc.prevent="showNicknameEditor(false, false)"
               @keyup.enter.prevent="showNicknameEditor(false)"
               @blur.prevent="showNicknameEditor(false)"
             />
@@ -158,13 +165,14 @@
               :id="emailUid"
               ref="emailInput"
               v-model="emailDraft"
-              type="text"
+              type="email"
               name="email"
               classes="p-2 text-sm w-full"
               passive-text="Your email is used to contact you about your account information, and only you can see it. If you change it, the new email address must be re-verified."
               required
               :disabled="isEmailLoading"
-              @keyup.esc.prevent="showEmailEditor(false)"
+              :do-validation="true"
+              @keyup.esc.prevent="showEmailEditor(false, false)"
               @keyup.enter.prevent="showEmailEditor(false)"
               @blur.prevent="showEmailEditor(false)"
             />
@@ -219,16 +227,15 @@
               :for="friendRequestPrivacyUid"
               >Who can send you a friend request?</label
             >
-            <p class="text-sm">
-              Choose who can add you as a friend using your username.
-            </p>
+            <p class="text-sm">Choose who can add you as a friend.</p>
           </div>
           <p class="text-sm">{{ friendRequestPrivacyMessage }}</p>
           <select
             :id="friendRequestPrivacyUid"
+            ref="friendRequestPrivacySelect"
             v-model="friendRequestPrivacySelection"
             class="p-2 text-sm w-full sm:w-auto"
-            :disabled="!emailVerified"
+            :disabled="!emailVerified || isFriendRequestPrivacyLoading"
             @click="friendRequestPrivacyMessage = ''"
           >
             <option
@@ -255,9 +262,10 @@
           <p class="text-sm">{{ defaultListVisibilityMessage }}</p>
           <select
             :id="defaultListVisibilityUid"
+            ref="defaultListVisibilitySelect"
             v-model="defaultListVisibilitySelection"
             class="p-2 text-sm w-full sm:w-auto"
-            :disabled="!emailVerified"
+            :disabled="!emailVerified || isDefaultListVisibilityLoading"
             @click="defaultListVisibilityMessage = ''"
           >
             <option
@@ -369,12 +377,13 @@ import {
   useContext,
   computed,
   nextTick,
-  ComponentRenderProxy,
   useStore,
 } from "@nuxtjs/composition-api";
 import Edit from "client/components/icons/Edit.vue";
+import Input from "client/components/Input.vue";
 import uniqueId from "common/utils/uniqueId";
-import ISrkResponse, {
+import {
+  ISrkResponse,
   IResetPasswordPayload,
   IUpdateUserPayload,
   IUpdateUserPrivacyPayload,
@@ -385,6 +394,7 @@ import { Role } from "common/enums/hrbac";
 import { Guard } from "common/types/hrbac";
 import useUser from "client/composables/useUser";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
+import hrbacCan from "common/utils/hrbacCan";
 
 export default defineComponent({
   components: {
@@ -404,13 +414,11 @@ export default defineComponent({
     });
 
     // refs
-    const usernameInput = ref<null | ComponentRenderProxy<HTMLInputElement>>(
-      null
-    );
-    const nicknameInput = ref<null | ComponentRenderProxy<HTMLInputElement>>(
-      null
-    );
-    const emailInput = ref<null | ComponentRenderProxy<HTMLInputElement>>(null);
+    const usernameInput = ref<null | InstanceType<typeof Input>>(null);
+    const nicknameInput = ref<null | InstanceType<typeof Input>>(null);
+    const emailInput = ref<null | InstanceType<typeof Input>>(null);
+    const friendRequestPrivacySelect = ref<null | HTMLSelectElement>(null);
+    const defaultListVisibilitySelect = ref<null | HTMLSelectElement>(null);
 
     const uid = uniqueId();
     const usernameUid = "username-" + uid;
@@ -434,6 +442,9 @@ export default defineComponent({
 
     const isEmailLoading = ref<boolean>(false);
     const isEmailEditing = ref<boolean>(false);
+
+    const isFriendRequestPrivacyLoading = ref<boolean>(false);
+    const isDefaultListVisibilityLoading = ref<boolean>(false);
 
     const isAccountDeleteDisabled = ref<boolean>(false);
     const isAccountDeleteLoading = ref<boolean>(false);
@@ -481,6 +492,7 @@ export default defineComponent({
           ?.friendRequestPrivacy as FriendRequestPrivacy;
       },
       async set(newValue: FriendRequestPrivacy): Promise<void> {
+        isFriendRequestPrivacyLoading.value = true;
         store.commit(
           "auth/setActor",
           Object.assign({}, user.value, {
@@ -509,6 +521,7 @@ export default defineComponent({
           }, 5000);
         }
         await store.dispatch("auth/fetch");
+        isFriendRequestPrivacyLoading.value = false;
       },
     });
 
@@ -518,6 +531,7 @@ export default defineComponent({
           ?.defaultListVisibility as ListVisibility;
       },
       async set(newValue: ListVisibility): Promise<void> {
+        isDefaultListVisibilityLoading.value = true;
         store.commit(
           "auth/setActor",
           Object.assign({}, user.value, {
@@ -546,18 +560,30 @@ export default defineComponent({
           }, 5000);
         }
         await store.dispatch("auth/fetch");
+        isDefaultListVisibilityLoading.value = false;
       },
     });
 
     // methods
-    const showUsernameEditor = async (state: boolean = true) => {
-      isUsernameEditing.value = state;
+    const showUsernameEditor = async (
+      state: boolean = true,
+      doSubmit: boolean = true
+    ) => {
       if (state) {
+        isUsernameEditing.value = state;
         usernameDraft.value = username.value;
         await nextTick();
-        if (!usernameInput.value?.$refs.inputElem) return;
-        (usernameInput.value.$refs.inputElem as HTMLInputElement)?.focus();
-      } else if (usernameDraft.value !== username.value) {
+        (usernameInput.value?.$refs.inputElem as HTMLInputElement)?.focus();
+      } else if (doSubmit && usernameDraft.value !== username.value) {
+        if (
+          !(
+            usernameInput.value?.$refs.inputElem as HTMLInputElement
+          )?.checkValidity() ||
+          usernameInput.value?.indicatorState !== "success"
+        )
+          return;
+
+        isUsernameLoading.value = true;
         const response: ISrkResponse<IUpdateUserPayload> = await store.dispatch(
           "api/send",
           {
@@ -571,18 +597,33 @@ export default defineComponent({
 
         if (response.ok) {
           await store.dispatch("auth/fetch");
+          isUsernameEditing.value = state;
         }
+        isUsernameLoading.value = false;
+      } else {
+        isUsernameEditing.value = state;
       }
     };
 
-    const showNicknameEditor = async (state: boolean = true) => {
-      isNicknameEditing.value = state;
+    const showNicknameEditor = async (
+      state: boolean = true,
+      doSubmit: boolean = true
+    ) => {
       if (state) {
+        isNicknameEditing.value = state;
         nicknameDraft.value = nickname.value;
         await nextTick();
-        if (!nicknameInput.value?.$refs.inputElem) return;
-        (nicknameInput.value.$refs.inputElem as HTMLInputElement)?.focus();
-      } else if (nicknameDraft.value !== nickname.value) {
+        (nicknameInput.value?.$refs.inputElem as HTMLInputElement)?.focus();
+      } else if (doSubmit && nicknameDraft.value !== nickname.value) {
+        if (
+          !(
+            nicknameInput.value?.$refs.inputElem as HTMLInputElement
+          )?.checkValidity() ||
+          nicknameInput.value?.indicatorState !== "success"
+        )
+          return;
+
+        isNicknameLoading.value = true;
         const response: ISrkResponse<IUpdateUserPayload> = await store.dispatch(
           "api/send",
           {
@@ -596,18 +637,33 @@ export default defineComponent({
 
         if (response.ok) {
           await store.dispatch("auth/fetch");
+          isNicknameEditing.value = state;
         }
+        isNicknameLoading.value = false;
+      } else {
+        isNicknameEditing.value = state;
       }
     };
 
-    const showEmailEditor = async (state: boolean = true) => {
-      isEmailEditing.value = state;
+    const showEmailEditor = async (
+      state: boolean = true,
+      doSubmit: boolean = true
+    ) => {
       if (state) {
+        isEmailEditing.value = state;
         emailDraft.value = email.value;
         await nextTick();
-        if (!emailInput.value?.$refs.inputElem) return;
-        (emailInput.value.$refs.inputElem as HTMLInputElement)?.focus();
-      } else if (emailDraft.value !== email.value) {
+        (emailInput.value?.$refs.inputElem as HTMLInputElement)?.focus();
+      } else if (doSubmit && emailDraft.value !== email.value) {
+        if (
+          !(
+            emailInput.value?.$refs.inputElem as HTMLInputElement
+          )?.checkValidity() ||
+          emailInput.value?.indicatorState !== "success"
+        )
+          return;
+
+        isEmailLoading.value = true;
         const response: ISrkResponse<IUpdateUserPayload> = await store.dispatch(
           "api/send",
           {
@@ -621,8 +677,33 @@ export default defineComponent({
 
         if (response.ok) {
           await store.dispatch("auth/fetch");
+          isEmailEditing.value = state;
+        }
+        isEmailLoading.value = false;
+      } else {
+        isEmailEditing.value = state;
+      }
+    };
+
+    const protectedUsernames = [
+      /^me$/i,
+      /.{0,}mamu.{0,}/i,
+      /.{0,}shirako.{0,}/i,
+    ];
+    const usernameValidator = (value: string) => {
+      if (value.length < 1 || value.length > 24) {
+        return "Username must be 1 to 24 characters long";
+      }
+      if (!/^[A-z0-9@^$.!`\-#+'~_]+$/.test(value)) {
+        return "Username is limited to alphanumeric characters and the symbols [@, ^, $, ., !, `, -, #, +, ', ~, _]";
+      }
+      if (!hrbacCan({ roles: [Role._protected_usernames] }, user.value)) {
+        if (protectedUsernames.some((e) => e.test(value))) {
+          return "Username is reserved and cannot be used";
         }
       }
+
+      return "";
     };
 
     const resendVerificationEmail = async () => {
@@ -695,6 +776,8 @@ export default defineComponent({
       usernameInput,
       nicknameInput,
       emailInput,
+      friendRequestPrivacySelect,
+      defaultListVisibilitySelect,
 
       // static
       usernameUid,
@@ -714,6 +797,8 @@ export default defineComponent({
       isNicknameEditing,
       isEmailLoading,
       isEmailEditing,
+      isFriendRequestPrivacyLoading,
+      isDefaultListVisibilityLoading,
       isAccountDeleteDisabled,
       isAccountDeleteLoading,
       usernameDraft,
@@ -746,6 +831,7 @@ export default defineComponent({
       requestAccountDelete,
       signOut,
       onShowDeleteConfirmationModal,
+      usernameValidator,
     };
   },
   // required for useMeta to work

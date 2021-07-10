@@ -146,6 +146,9 @@ export default {
         })
       );
     },
+    // babel: {
+    //   plugins: ["@nuxtjs/composition-api/dist/babel-plugin"],
+    // },
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
