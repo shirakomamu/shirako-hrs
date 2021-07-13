@@ -5,3 +5,12 @@ export type CreateListDto = {
   description: string | null;
   visibility: ListVisibility;
 };
+
+export type GetListsDto = {
+  username: string;
+};
+
+export type GetListDto = {
+  username: string;
+  id: string;
+};

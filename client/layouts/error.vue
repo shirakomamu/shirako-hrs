@@ -43,6 +43,7 @@ export default defineComponent({
   },
   setup(props) {
     const context = useContext();
+    const route = useRoute();
     useMeta({ title: "Error | " + context.$config.appinfo.name });
 
     const statusCode = computed(
@@ -56,7 +57,7 @@ export default defineComponent({
     };
 
     const message = computed(() => props.error.message || "Internal error");
-    const path = props.error.path || useRoute().value.path;
+    const path = props.error.path || route.value.path;
 
     return { statusCode, message, path, goHome };
   },

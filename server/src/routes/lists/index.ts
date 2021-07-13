@@ -11,9 +11,13 @@ const controller = new ListsController();
 const router: Router = Router();
 
 router.post(
-  "/",
+  "/:username",
   [useSimpleGuard([Role._self_destination_lists])],
   route(controller.createDestinationList)
 );
+
+router.get("/:username", route(controller.getDestinationListsByUsername));
+
+router.get("/:username/:id", route(controller.getDestinationList));
 
 export default router;

@@ -19,8 +19,8 @@ export default defineNuxtMiddleware(({ route, store, error }) => {
   if (!result.every((e) => e)) {
     error({
       statusCode: 404,
-      message: "This page could not be found",
-      path: route.path,
+      message: "This page could not be found.",
+      // path: route.path,
     });
   }
 });

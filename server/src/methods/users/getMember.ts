@@ -1,4 +1,4 @@
-import { IMemberPayload } from "common/types/api/users";
+import { IMemberPayload } from "common/types/api";
 import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
 import getUserCached from "server/services/auth0-mgmt/getUserCached";

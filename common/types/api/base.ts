@@ -1,9 +1,9 @@
-type OkResponse<T = any> = {
+export type OkResponse<T = any> = {
   ok: true;
   payload: T;
 };
 
-type ErrorResponse = {
+export type ErrorResponse = {
   ok: false;
   error: {
     name: string;

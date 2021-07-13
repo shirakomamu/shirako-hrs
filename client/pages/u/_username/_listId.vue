@@ -138,12 +138,12 @@ export default defineComponent({
   setup() {
     const context = useContext();
     const user = useUser();
-    const route = useRoute().value;
+    const route = useRoute();
     if (!user.value) {
       return context.error({
         statusCode: 404,
-        message: "This page cannot be found",
-        path: route.path,
+        message: "This page could not be found.",
+        // path: route.value.path,
       });
     }
     const api = useInternalApi();
@@ -151,7 +151,7 @@ export default defineComponent({
     const r = ref<any>(null);
     const maxDescriptionLength = 200;
 
-    const { username, listId } = route.params;
+    const { username, listId: id } = route.value.params;
 
     const uid = uniqueId();
     const listDescriptionUid = "list-description-" + uid;
@@ -166,15 +166,15 @@ export default defineComponent({
     const formListVisibility = ref<null | ListVisibility>(null);
     const formListIds = ref<string[]>([]);
     const listItems = ref<DestinationItem[]>([]);
-    if (listId === "new") {
+    if (id === "new") {
       if (
         user.value.username !== username ||
         !hrbacCan({ roles: [Role._self_destination_lists] }, user.value)
       ) {
         return context.error({
           statusCode: 404,
-          message: "This page cannot be found",
-          path: route.path,
+          message: "This page could not be found.",
+          // path: route.value.path,
         });
       }
       mode.value = "add";
@@ -182,21 +182,13 @@ export default defineComponent({
       formListVisibility.value =
         user.value.meta.privacySettings?.defaultListVisibility || null;
     } else {
-      const listRef = useList({ username, listId });
+      const listRef = useList({ username, id });
 
       r.value = listRef.value;
 
       console.log(r.value);
 
       // console.log(formListOwner.value, mode.value, title.value);
-
-      // if (!r.value) {
-      //   return context.error({
-      //     statusCode: 404,
-      //     message: "This page cannot be found",
-      //     path: route.path,
-      //   });
-      // }
 
       // title.value = r.value.title;
 

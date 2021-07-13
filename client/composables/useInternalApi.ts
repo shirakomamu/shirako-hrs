@@ -4,10 +4,12 @@ import { AxiosRequestConfig } from "axios";
 
 const useInternalApi = () => {
   const store = useStore();
-  const sendFunction = <T = any>(
-    payload: AxiosRequestConfig
+  const sendFunction = async <T = any>(
+    options: AxiosRequestConfig
   ): Promise<ISrkResponse<T>> => {
-    return store.dispatch("api/send", payload);
+    const r: ISrkResponse<T> = await store.dispatch("api/send", options);
+
+    return r;
   };
 
   return sendFunction;

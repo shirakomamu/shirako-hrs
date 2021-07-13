@@ -32,6 +32,15 @@ body.no-overflow {
   inset: 0;
 }
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .bg-flat {
   &:not([class*="bg-opacity-"]) {
     --tw-bg-opacity: 1;

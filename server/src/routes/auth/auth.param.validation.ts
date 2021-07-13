@@ -2,6 +2,7 @@ import { ParamSchema } from "express-validator";
 import { ListVisibility, FriendRequestPrivacy } from "common/enums";
 import hrbacCan from "common/utils/hrbacCan";
 import { Role } from "common/enums/hrbac";
+import { SrkExpressRequest } from "server/services/jwt";
 
 const protectedUsernames = [/^me$/i, /.{0,}mamu.{0,}/i, /.{0,}shirako.{0,}/i];
 export const UsernameParamSchema: ParamSchema = {
@@ -23,7 +24,7 @@ export const UsernameParamSchema: ParamSchema = {
     errorMessage:
       "Username is limited to alphanumeric characters and the symbols [@, ^, $, ., !, `, -, #, +, ', ~, _], or you cannot use this username",
     options: (value: string, { req }) => {
-      const actor = req.locals?.authResult?.actor;
+      const actor = (req as SrkExpressRequest).locals.authResult.actor;
 
       const tests: boolean[] = [];
       // https://auth0.com/docs/connections/database/require-username

@@ -1,20 +1,26 @@
-import { useAsync } from "@nuxtjs/composition-api";
-import { IMemberPayload } from "common/types/api/users";
+import { useAsync, useContext } from "@nuxtjs/composition-api";
+import uniqueId from "common/utils/uniqueId";
+import getMemberByUsername from "./base/getMemberByUsername";
 import useInternalApi from "./useInternalApi";
 
 const useMember = ({ username }: { username: string }) => {
+  const context = useContext();
   const api = useInternalApi();
-  return useAsync<IMemberPayload | null>(async () => {
-    const response = await api<IMemberPayload>({
-      url: "/api/users/" + username,
-    });
 
-    if (response.ok) {
-      return response.payload;
+  return useAsync(async () => {
+    const r = await getMemberByUsername(api, username);
+
+    if (r.ok) {
+      return r.payload;
     }
 
+    context.error({
+      statusCode: 404,
+      message: r.error.message || r.error.name || "An error has occurred.",
+    });
+
     return null;
-  }, "useMember");
+  }, uniqueId());
 };
 
 export default useMember;

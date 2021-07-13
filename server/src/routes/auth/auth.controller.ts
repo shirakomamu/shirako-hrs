@@ -8,6 +8,7 @@ import {
   updateUserPreferences,
   deleteUser,
 } from "server/methods/auth";
+import { UpdateUserDto, UpdateUserPrivacyDto } from "common/dto/auth";
 
 export default class {
   public identifyMyself = async (
@@ -41,7 +42,10 @@ export default class {
     req: SrkExpressRequest,
     _res: SrkExpressResponse
   ) => {
-    const payload = await updateUser(req.locals.authResult, req.body);
+    const payload = await updateUser(
+      req.locals.authResult,
+      req.body as UpdateUserDto
+    );
 
     return new SrkResponse({ payload });
   };
@@ -52,7 +56,7 @@ export default class {
   ) => {
     const payload = await updateUserPreferences(
       req.locals.authResult,
-      req.body
+      req.body as UpdateUserPrivacyDto
     );
 
     return new SrkResponse({ payload });
