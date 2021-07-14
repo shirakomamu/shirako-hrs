@@ -6,10 +6,6 @@ export type CreateListDto = {
   visibility: ListVisibility;
 };
 
-export type GetListsDto = {
-  username: string;
-};
-
 export type GetListDto = {
   username: string;
   id: string;

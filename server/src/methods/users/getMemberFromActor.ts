@@ -12,9 +12,7 @@ export default async (authResult: SrkCookie): Promise<Member> => {
   const repo = DI.memberRepo;
 
   const existingMember = await repo.findOne({
-    sub: {
-      $eq: authResult.actor.id,
-    },
+    sub: authResult.actor.id,
   });
 
   if (existingMember) return existingMember;

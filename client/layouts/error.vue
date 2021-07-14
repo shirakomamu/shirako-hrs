@@ -12,13 +12,12 @@
       </p>
     </article>
     <div>
-      <button
-        type="button"
-        class="font-semibold dark:text-white hover:underline focus:underline"
+      <ComboButton
+        class="font-semibold text-blue-srk hover:underline focus:underline p-0"
         @click="goHome"
       >
-        Go back to home page
-      </button>
+        <ArrowBack class="icon-inline" /> Back to home page
+      </ComboButton>
     </div>
   </div>
 </template>
@@ -32,9 +31,13 @@ import {
   useRouter,
   useRoute,
 } from "@nuxtjs/composition-api";
+import ArrowBack from "client/components/icons/ArrowBack.vue";
 
 export default defineComponent({
   name: "Error",
+  components: {
+    ArrowBack,
+  },
   props: {
     error: {
       type: Object,
@@ -56,8 +59,10 @@ export default defineComponent({
       router.push("/");
     };
 
-    const message = computed(() => props.error.message || "Internal error");
-    const path = props.error.path || route.value.path;
+    const message = computed(() =>
+      statusCode.value === 404 ? "Not found" : "Error"
+    );
+    const path = computed(() => props.error.path || route.value.path);
 
     return { statusCode, message, path, goHome };
   },

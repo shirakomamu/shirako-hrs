@@ -7,46 +7,32 @@
       text-center
       border border-black
       dark:border-white
-      border-opacity-30
+      border-opacity-50
       hover:border-opacity-100
+      border-dashed
       p-2
       transition
       filter
       hover:drop-shadow-md
     "
   >
-    <List class="list-icon opacity-50" />
-    <div class="grid grid-cols-1 gap-2">
-      <p class="text-md font-semibold">{{ listName }}</p>
-      <p class="text-sm opacity-50">{{ owner }}</p>
+    <PlaylistAdd class="list-icon opacity-50" />
+    <div class="grid grid-cols-1 gap-2 place-items-center">
+      <Add class="icon-inline" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-import List from "client/components/icons/List.vue";
+import Add from "client/components/icons/Add.vue";
+import PlaylistAdd from "client/components/icons/PlaylistAdd.vue";
 
 export default defineComponent({
-  name: "DestinationListAvatar",
+  name: "DestinationListAddAvatar",
   components: {
-    List,
-  },
-  props: {
-    listName: {
-      type: String,
-      default: "",
-    },
-    owner: {
-      type: String,
-      default: "",
-    },
-  },
-  setup(props) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { listName: _listName, owner: _owner } = props;
-
-    return {};
+    Add,
+    PlaylistAdd,
   },
 });
 </script>
@@ -62,5 +48,9 @@ export default defineComponent({
   right: 0.5rem;
   height: 1.5rem;
   width: 1.5rem;
+}
+.icon-inline {
+  width: 3rem;
+  height: 3rem;
 }
 </style>

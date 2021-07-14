@@ -94,19 +94,6 @@
       <div class="grid grid-cols-1 gap-4">
         <div class="flex flex-row gap-4 items-center">
           <h6 class="text-2xl dark:text-white">Lists</h6>
-          <div class="flex-grow" />
-          <nuxt-link
-            v-if="isMe && canList"
-            :to="`/u/${member.username}/new`"
-            custom
-          >
-            <ComboButton
-              alt="New list"
-              class="text-sm border border-blue-srk text-blue-srk"
-            >
-              <PlaylistAdd class="icon-inline" /> New list</ComboButton
-            >
-          </nuxt-link>
         </div>
 
         <div
@@ -120,6 +107,9 @@
           "
         >
           <div
+            v-if="
+              (destinationLists && destinationLists.length) || (isMe && canList)
+            "
             class="
               grid grid-flow-row grid-cols-2
               md:grid-cols-4
@@ -130,16 +120,29 @@
             "
           >
             <nuxt-link
-              v-for="(name, index) in listNameTest"
-              :key="index"
-              :to="`/u/${route.params.username}/${name}`"
+              v-if="isMe && canList"
+              key="new"
+              :to="`/u/${route.params.username}/new`"
               custom
             >
-              <DestinationListAvatar
-                :list-name="name"
-                :owner="index.toString()"
-              />
+              <DestinationListAddAvatar />
             </nuxt-link>
+            <template v-if="destinationLists && destinationLists.length">
+              <nuxt-link
+                v-for="(list, index) in destinationLists"
+                :key="index"
+                :to="`/u/${route.params.username}/${list.id}`"
+                custom
+              >
+                <DestinationListAvatar
+                  :list-name="list.name"
+                  :owner="list.owner"
+                />
+              </nuxt-link>
+            </template>
+          </div>
+          <div v-else class="grid grid-flow-row grid-cols-1 gap-4 items-center">
+            <p>No lists available.</p>
           </div>
         </div>
       </div>
@@ -162,6 +165,7 @@ import {
   useContext,
   useMeta,
   useRoute,
+  useStore,
   watch,
 } from "@nuxtjs/composition-api";
 import hrbacCan from "common/utils/hrbacCan";
@@ -170,10 +174,8 @@ import useMember from "client/composables/useMember";
 import Block from "client/components/icons/Block.vue";
 import PersonAdd from "client/components/icons/PersonAdd.vue";
 import PersonRemove from "client/components/icons/PersonRemove.vue";
-import PlaylistAdd from "client/components/icons/PlaylistAdd.vue";
-import useUser from "client/composables/useUser";
-import useInternalApi from "client/composables/useInternalApi";
-import getMemberByUsername from "client/composables/base/getMemberByUsername";
+import useSelf from "client/composables/useSelf";
+import { MemberModel } from "client/models";
 
 export default defineComponent({
   meta: {
@@ -186,13 +188,13 @@ export default defineComponent({
     Loader,
     PersonAdd,
     PersonRemove,
-    PlaylistAdd,
   },
   setup() {
     const context = useContext();
     const route = useRoute();
-    const user = useUser();
-    const api = useInternalApi();
+    const self = useSelf();
+    const store = useStore();
+    const model = store.$db().model(MemberModel);
 
     const member = useMember({
       username: route.value.params.username,
@@ -202,52 +204,31 @@ export default defineComponent({
       () => route.value.params.username,
       async (value: string) => {
         member.value = null;
-        const r = await getMemberByUsername(api, value);
+        const r = await model.apiFetch(value);
 
-        if (r.ok) {
-          member.value = r.payload;
-        } else {
-          context.error({
-            statusCode: 404,
-            message:
-              r.error.message || r.error.name || "An error has occurred.",
-          });
+        if (!r) {
+          return context.error({ statusCode: 404 });
         }
+
+        member.value = r;
       }
     );
 
-    const isMe = computed(
-      () => member.value?.username === user.value?.username
+    const isFriend = computed(() => member.value?.isFriend);
+    const isAcceptingRequests = computed(
+      () => member.value?.isAcceptingFriends
     );
-    const canFriend = hrbacCan({ roles: [Role._self_friends] }, user.value);
+    const destinationLists = computed(() => member.value?.lists);
+
+    // self functions
+    const isMe = computed(
+      () => member.value?.username === self.value?.username
+    );
+    const canFriend = hrbacCan({ roles: [Role._self_friends] }, self.value);
     const canList = hrbacCan(
       { roles: [Role._self_destination_lists] },
-      user.value
+      self.value
     );
-    const isFriend = true;
-    const isAcceptingRequests = true;
-    const listNameTest = [
-      "Hello there",
-      "My name is",
-      "Shirako",
-      "Mamu",
-      "Favorites",
-      "Hello there",
-      "My name is",
-      "Shirako",
-      "Mamu",
-      "Favorites",
-      "Hello there",
-      "My name is",
-      "Shirako",
-      "Mamu",
-      "Favorites",
-      "Hello there",
-      "My name is",
-      "list-id-test",
-      "Mamu",
-      "Favorites",
-    ];
 
     const isFriendLoading = ref<boolean>(false);
 
@@ -273,7 +254,7 @@ export default defineComponent({
       canFriend,
       canList,
 
-      listNameTest,
+      destinationLists,
     };
   },
   // required for useMeta to work

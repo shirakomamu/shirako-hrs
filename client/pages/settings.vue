@@ -392,7 +392,7 @@ import {
 import { ListVisibility, FriendRequestPrivacy } from "common/enums";
 import { Role } from "common/enums/hrbac";
 import { Guard } from "common/types/hrbac";
-import useUser from "client/composables/useUser";
+import useSelf from "client/composables/useSelf";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import hrbacCan from "common/utils/hrbacCan";
 
@@ -407,7 +407,7 @@ export default defineComponent({
   },
   setup() {
     const context = useContext();
-    const user = useUser();
+    const self = useSelf();
     const store = useStore();
     useMeta({
       title: "Settings | " + context.$config.appinfo.name,
@@ -473,33 +473,33 @@ export default defineComponent({
     const deleteConfirmationDraft = ref<string | null>(null);
 
     // computed
-    const avatar = computed((): string | null => user.value?.avatar || null);
-    const id = computed((): string | null => user.value?.id || null);
+    const avatar = computed((): string | null => self.value?.avatar || null);
+    const id = computed((): string | null => self.value?.id || null);
     const username = computed(
-      (): string | null => user.value?.username || null
+      (): string | null => self.value?.username || null
     );
     const nickname = computed(
-      (): string | null => user.value?.nickname || null
+      (): string | null => self.value?.nickname || null
     );
-    const email = computed((): string | null => user.value?.email || null);
+    const email = computed((): string | null => self.value?.email || null);
     const emailVerified = computed(
-      (): boolean => user.value?.roles.includes(Role._email_verified) || false
+      (): boolean => self.value?.roles.includes(Role._email_verified) || false
     );
 
     const friendRequestPrivacySelection = computed({
       get(): FriendRequestPrivacy {
-        return user.value?.meta.privacySettings
+        return self.value?.meta.privacySettings
           ?.friendRequestPrivacy as FriendRequestPrivacy;
       },
       async set(newValue: FriendRequestPrivacy): Promise<void> {
         isFriendRequestPrivacyLoading.value = true;
         store.commit(
           "auth/setActor",
-          Object.assign({}, user.value, {
+          Object.assign({}, self.value, {
             meta: {
-              ...user.value?.meta,
+              ...self.value?.meta,
               privacySettings: {
-                ...user.value?.meta.privacySettings,
+                ...self.value?.meta.privacySettings,
                 friendRequestPrivacy: newValue,
               },
             },
@@ -527,18 +527,18 @@ export default defineComponent({
 
     const defaultListVisibilitySelection = computed({
       get(): ListVisibility {
-        return user.value?.meta.privacySettings
+        return self.value?.meta.privacySettings
           ?.defaultListVisibility as ListVisibility;
       },
       async set(newValue: ListVisibility): Promise<void> {
         isDefaultListVisibilityLoading.value = true;
         store.commit(
           "auth/setActor",
-          Object.assign({}, user.value, {
+          Object.assign({}, self.value, {
             meta: {
-              ...user.value?.meta,
+              ...self.value?.meta,
               privacySettings: {
-                ...user.value?.meta.privacySettings,
+                ...self.value?.meta.privacySettings,
                 defaultListVisibility: newValue,
               },
             },
@@ -697,7 +697,7 @@ export default defineComponent({
       if (!/^[A-z0-9@^$.!`\-#+'~_]+$/.test(value)) {
         return "Username is limited to alphanumeric characters and the symbols [@, ^, $, ., !, `, -, #, +, ', ~, _]";
       }
-      if (!hrbacCan({ roles: [Role._protected_usernames] }, user.value)) {
+      if (!hrbacCan({ roles: [Role._protected_usernames] }, self.value)) {
         if (protectedUsernames.some((e) => e.test(value))) {
           return "Username is reserved and cannot be used";
         }
@@ -812,7 +812,7 @@ export default defineComponent({
       deleteConfirmationDraft,
 
       // computed
-      user,
+      self,
       avatar,
       id,
       username,

@@ -19,24 +19,25 @@ export default async (
 
   const [self, target] = await Promise.all([
     authResult.actor
-      ? DI.memberRepo.findOne(
-          {
-            sub: {
-              $eq: authResult.actor.id,
-            },
-          },
-          ["outgoingFriends", "incomingFriends", "destinationLists"]
-        )
+      ? DI.memberRepo.findOne({
+          sub: authResult.actor.id,
+        })
       : null,
     DI.memberRepo.findOneOrFail(
       {
-        sub: {
-          $eq: targetUser.id,
-        },
+        sub: targetUser.id,
       },
       ["outgoingFriends", "incomingFriends", "destinationLists"]
     ),
   ]);
+
+  const lists = target.destinationLists.getItems().map((e) => ({
+    id: e.id,
+    owner: username, // it's a hack to get username because it's always self
+    name: e.name,
+    description: e.description,
+    visibility: e.visibility,
+  }));
 
   return {
     username,
@@ -47,6 +48,6 @@ export default async (
       : false,
     isFriend: self ? target.confirmedFriends.includes(self) : false,
     isAcceptingFriends: targetUser.isAcceptingFriends,
-    lists: [],
+    lists,
   };
 };

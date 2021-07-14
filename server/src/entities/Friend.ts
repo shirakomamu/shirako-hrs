@@ -34,12 +34,8 @@ export class Friend extends BaseEntity {
           const targetUser = thisEntity.friend;
 
           return repo.findOne({
-            user: {
-              $eq: targetUser,
-            },
-            friend: {
-              $eq: originatingUser,
-            },
+            user: targetUser,
+            friend: originatingUser,
           });
         })
       )

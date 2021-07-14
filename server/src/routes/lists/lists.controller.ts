@@ -3,9 +3,8 @@ import { SrkExpressRequest, SrkExpressResponse } from "server/services/jwt";
 import {
   createDestinationList,
   getDestinationList,
-  getDestinationListsByUsername,
 } from "server/methods/lists";
-import { CreateListDto, GetListDto, GetListsDto } from "common/dto/lists";
+import { CreateListDto, GetListDto } from "common/dto/lists";
 
 export default class {
   public createDestinationList = async (
@@ -27,18 +26,6 @@ export default class {
     const payload = await getDestinationList(
       req.locals.authResult,
       req.params as GetListDto
-    );
-
-    return new SrkResponse({ payload });
-  };
-
-  public getDestinationListsByUsername = async (
-    req: SrkExpressRequest,
-    _res: SrkExpressResponse
-  ) => {
-    const payload = await getDestinationListsByUsername(
-      req.locals.authResult,
-      req.params as GetListsDto
     );
 
     return new SrkResponse({ payload });

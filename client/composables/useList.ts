@@ -1,36 +1,31 @@
-import { useAsync, useContext } from "@nuxtjs/composition-api";
+import { useAsync, useContext, useStore } from "@nuxtjs/composition-api";
+import { DestinationListModel } from "client/models";
 import uniqueId from "common/utils/uniqueId";
-import getDestinationList from "./base/getDestinationList";
-import useInternalApi from "./useInternalApi";
-import useUser from "./useUser";
+import useSelf from "./useSelf";
 
 const useList = ({ username, id }: { username: string; id: string }) => {
   const context = useContext();
-  const user = useUser();
-  const api = useInternalApi();
+  const self = useSelf();
+  const model = useStore().$db().model(DestinationListModel);
 
   return useAsync(async () => {
-    if (user.value?.username === username && id === "new") {
+    if (self.value?.username === username && id === "new") {
       return null;
     }
     if (id === "new") {
       context.error({
         statusCode: 404,
-        message: "You are unauthorized.",
       });
     }
-    const r = await getDestinationList(api, username, id);
+    const r = await model.apiFetch({ username, id });
 
-    if (r.ok) {
-      return r.payload;
+    if (!r) {
+      context.error({
+        statusCode: 404,
+      });
     }
 
-    context.error({
-      statusCode: 404,
-      message: r.error.message || r.error.name || "An error has occurred.",
-    });
-
-    return null;
+    return r;
   }, uniqueId());
 };
 

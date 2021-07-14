@@ -1,25 +1,21 @@
-import { useAsync, useContext } from "@nuxtjs/composition-api";
+import { useAsync, useContext, useStore } from "@nuxtjs/composition-api";
+import { MemberModel } from "client/models";
 import uniqueId from "common/utils/uniqueId";
-import getMemberByUsername from "./base/getMemberByUsername";
-import useInternalApi from "./useInternalApi";
 
 const useMember = ({ username }: { username: string }) => {
   const context = useContext();
-  const api = useInternalApi();
+  const model = useStore().$db().model(MemberModel);
 
   return useAsync(async () => {
-    const r = await getMemberByUsername(api, username);
+    const r = await model.apiFetch(username);
 
-    if (r.ok) {
-      return r.payload;
+    if (!r) {
+      context.error({
+        statusCode: 404,
+      });
     }
 
-    context.error({
-      statusCode: 404,
-      message: r.error.message || r.error.name || "An error has occurred.",
-    });
-
-    return null;
+    return r;
   }, uniqueId());
 };
 

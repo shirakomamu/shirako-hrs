@@ -21,7 +21,7 @@
         </div>
 
         <div class="text-right">
-          <div v-if="user">
+          <div v-if="self">
             <p>Welcome back{{ nickname ? ", " + nickname : "" }}.</p>
             <nuxt-link
               to="/dashboard"
@@ -65,20 +65,20 @@ import {
   useContext,
   useMeta,
 } from "@nuxtjs/composition-api";
-import useUser from "client/composables/useUser";
+import useSelf from "client/composables/useSelf";
 
 export default defineComponent({
   name: "Index",
   setup() {
     const context = useContext();
-    const user = useUser();
+    const self = useSelf();
     useMeta({ title: "Home | " + context.$config.appinfo.name });
 
     const nickname = computed(
-      (): string | null => user.value?.nickname || null
+      (): string | null => self.value?.nickname || null
     );
 
-    return { user, nickname };
+    return { self, nickname };
   },
   head: {},
 });

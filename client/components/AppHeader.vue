@@ -18,7 +18,7 @@
     <div class="flex-grow" />
     <div class="flex items-center text-sm">
       <a
-        v-if="!user"
+        v-if="!self"
         key="sign-in-link"
         href="/api/auth/login"
         class="
@@ -50,7 +50,7 @@
             >
             <button class="p-0" @click="showPopup">
               <img
-                :src="user && user.avatar"
+                :src="self && self.avatar"
                 class="profile-avatar rounded-full pointer"
                 alt="Avatar"
                 width="32"
@@ -111,7 +111,7 @@ import {
   ref,
   useContext,
 } from "@nuxtjs/composition-api";
-import useUser from "client/composables/useUser";
+import useSelf from "client/composables/useSelf";
 import Dashboard from "client/components/icons/Dashboard.vue";
 import Logout from "client/components/icons/Logout.vue";
 import People from "client/components/icons/People.vue";
@@ -129,15 +129,15 @@ export default defineComponent({
   },
   setup() {
     const context = useContext();
-    const user = useUser();
+    const self = useSelf();
 
     const appName = context.$config.appinfo.name;
     const popupVisible = ref<boolean>(false);
     const username = computed(
-      (): string | null => user.value?.username || null
+      (): string | null => self.value?.username || null
     );
     const nickname = computed(
-      (): string | null => user.value?.nickname || null
+      (): string | null => self.value?.nickname || null
     );
 
     const showPopup = () => (popupVisible.value = true);
@@ -148,7 +148,7 @@ export default defineComponent({
 
     return {
       appName,
-      user,
+      self,
       username,
       nickname,
       popupVisible,
