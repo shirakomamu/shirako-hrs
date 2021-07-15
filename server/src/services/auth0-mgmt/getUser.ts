@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+import { Auth0AppMetadataDto, Auth0UserMetadataDto } from "common/dto/auth";
 import { send } from ".";
 
 export interface GetUserResponse {
@@ -18,8 +18,8 @@ export interface GetUserResponse {
       isSocial: boolean;
     }
   ];
-  app_metadata?: object;
-  user_metadata?: object;
+  app_metadata?: Auth0AppMetadataDto;
+  user_metadata?: Auth0UserMetadataDto;
   picture?: string;
   name?: string;
   nickname?: string;

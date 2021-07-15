@@ -1,18 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { RateLimiterStoreAbstract } from "rate-limiter-flexible";
 import SrkError from "server/classes/SrkError";
-import {
-  SrkExpressRequest,
-  SrkExpressResponse,
-  WithSrkExpressResponse,
-} from "../jwt";
+import { SrkExpressRequest, SrkExpressResponse } from "../jwt";
 
 type ConsumptionKeyGenerator = ({
   req,
   res,
 }: {
   req: Request | SrkExpressRequest;
-  res: Response | SrkExpressResponse | WithSrkExpressResponse;
+  res: Response | SrkExpressResponse;
 }) => string;
 
 interface SubRateLimiterFactoryOptions {

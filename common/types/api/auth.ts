@@ -1,14 +1,12 @@
 import { ActorDto } from "common/dto/auth";
 import { UpdateUserResponse } from "server/services/auth0-mgmt/updateUser";
 
-export type ISelfIdentifyPayload = {
+export interface ISelfIdentifyPayload {
   actor?: ActorDto;
-};
+}
 
-export type IVerifyEmailPayload = {};
+export interface IVerifyEmailPayload {}
 
-export type IResetPasswordPayload = {};
+export interface IResetPasswordPayload {}
 
-export type IUpdateUserPayload = UpdateUserResponse & {};
-
-export type IUpdateUserPrivacyPayload = UpdateUserResponse & {};
+export interface IUpdateUserPayload extends UpdateUserResponse {}

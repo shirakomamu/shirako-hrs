@@ -6,7 +6,7 @@ export const state = () => ({
   actor: null as ActorDto | null,
 });
 
-export type ModuleState = ReturnType<typeof state>;
+export interface ModuleState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<ModuleState, ModuleState> = {
   actor: (state) => state.actor,

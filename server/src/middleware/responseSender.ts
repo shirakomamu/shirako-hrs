@@ -4,16 +4,15 @@ import {
   sendResponse,
   SrkExpressRequest,
   SrkExpressResponse,
-  WithSrkExpressResponse,
 } from "server/services/jwt";
 
 export default (
   _req: Request | SrkExpressRequest,
-  res: Response | SrkExpressResponse | WithSrkExpressResponse,
+  res: Response | SrkExpressResponse,
   next: NextFunction
 ) => {
   if (res.locals.controllerResult instanceof SrkResponse) {
-    return sendResponse(res as WithSrkExpressResponse);
+    return sendResponse(res as SrkExpressResponse);
   } else {
     // going to force a 404
     next();

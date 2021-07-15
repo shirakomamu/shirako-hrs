@@ -6,13 +6,12 @@ import {
   sendResponse,
   SrkExpressRequest,
   SrkExpressResponse,
-  WithSrkExpressResponse,
 } from "server/services/jwt";
 
 export default (
   error: Error | SrkError | null,
   _req: Request | SrkExpressRequest,
-  res: Response | SrkExpressResponse | WithSrkExpressResponse,
+  res: Response | SrkExpressResponse,
   _next: NextFunction
 ) => {
   if (error instanceof SrkError) {

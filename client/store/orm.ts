@@ -2,7 +2,7 @@ import { GetterTree, MutationTree } from "vuex";
 
 export const state = () => ({});
 
-export type ModuleState = ReturnType<typeof state>;
+export interface ModuleState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<ModuleState, ModuleState> = {
   getByEntity: (state) => (key: keyof ModuleState) => state[key] || {},

@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+import { Auth0AppMetadataDto, Auth0UserMetadataDto } from "common/dto/auth";
 import { GetUserResponse } from "./getUser";
 import { setCache } from "./getUserCached";
 import { send } from ".";
@@ -17,8 +17,8 @@ export default async (
     username?: string;
     nickname?: string;
     email?: string;
-    user_metadata?: object;
-    app_metadata?: object;
+    user_metadata?: Auth0UserMetadataDto;
+    app_metadata?: Auth0AppMetadataDto;
   }
 ) => {
   const ENDPOINT = "api/v2/users/" + id; // added onto issuer base url

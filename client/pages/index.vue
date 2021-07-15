@@ -49,6 +49,7 @@
             w-full
             h-full
             filter
+            transform-gpu
             scale-110
             bg-left bg-no-repeat bg-cover
           "

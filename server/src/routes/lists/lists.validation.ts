@@ -8,7 +8,7 @@ import {
 } from "./lists.param.validation";
 
 export const CreateDestinationListValidators = [
-  checkSchema({
+  ...checkSchema({
     username: SelfUsernameParamSchema,
     name: ListNameParamSchema,
     visibility: ListVisibilityParamSchema,
@@ -16,13 +16,8 @@ export const CreateDestinationListValidators = [
 ];
 
 export const GetDestinationListValidators = [
-  checkSchema({
+  ...checkSchema({
     username: UsernameParamSchema,
     id: DestinationListIdParamSchema,
-  }),
-];
-export const GetDestinationListsByUsernameValidators = [
-  checkSchema({
-    username: UsernameParamSchema,
   }),
 ];

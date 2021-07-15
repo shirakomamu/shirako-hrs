@@ -11,15 +11,10 @@
       hover:border-opacity-100
       p-2
       transition
-      filter
-      hover:drop-shadow-md
     "
   >
     <List class="list-icon opacity-50" />
-    <div class="grid grid-cols-1 gap-2">
-      <p class="text-md font-semibold">{{ listName }}</p>
-      <p class="text-sm opacity-50">{{ owner }}</p>
-    </div>
+    <slot />
   </div>
 </template>
 
@@ -32,20 +27,7 @@ export default defineComponent({
   components: {
     List,
   },
-  props: {
-    listName: {
-      type: String,
-      default: "",
-    },
-    owner: {
-      type: String,
-      default: "",
-    },
-  },
-  setup(props) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { listName: _listName, owner: _owner } = props;
-
+  setup() {
     return {};
   },
 });

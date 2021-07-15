@@ -1,25 +1,31 @@
 import { SrkCookie } from "server/services/jwt";
-import { IUpdateUserPrivacyPayload } from "common/types/api";
+import { IUpdateUserPayload } from "common/types/api";
 import SrkError from "server/classes/SrkError";
 import updateUser from "server/services/auth0-mgmt/updateUser";
-import { UpdateUserPrivacyDto } from "common/dto/auth";
+import { Auth0UserMetadataDto } from "common/dto/auth";
 
 export default async (
   authResult: SrkCookie,
-  { friendRequestPrivacy, defaultListVisibility }: UpdateUserPrivacyDto
-): Promise<IUpdateUserPrivacyPayload> => {
+  metadata: Auth0UserMetadataDto
+): Promise<IUpdateUserPayload> => {
   if (!authResult.actor) {
     throw new SrkError("unauthorized");
   }
+
   const response = await updateUser(authResult.actor.id, {
     user_metadata: {
       privacySettings: {
         friendRequestPrivacy:
-          friendRequestPrivacy ||
+          metadata.privacySettings?.friendRequestPrivacy ||
           authResult.actor.meta.privacySettings?.friendRequestPrivacy,
         defaultListVisibility:
-          defaultListVisibility ||
+          metadata.privacySettings?.defaultListVisibility ||
           authResult.actor.meta.privacySettings?.defaultListVisibility,
+      },
+      locationSettings: {
+        defaultLocation:
+          metadata.locationSettings?.defaultLocation ||
+          authResult.actor.meta.locationSettings?.defaultLocation,
       },
     },
   });

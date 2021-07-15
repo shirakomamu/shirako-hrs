@@ -5,6 +5,7 @@ import {
   EmailParamSchema,
   FriendRequestPrivacyParamSchema,
   DefaultListVisibilityParamSchema,
+  DefaultLocationParamSchema,
 } from "./auth.param.validation";
 
 // additional check is done in method for _email_verified role if username or displayName
@@ -25,10 +26,13 @@ export const UpdateUserValidators = [
 export const UpdateUserPreferencesValidators = [
   oneOf([
     checkSchema({
-      friendRequestPrivacy: FriendRequestPrivacyParamSchema,
+      "privacySettings.friendRequestPrivacy": FriendRequestPrivacyParamSchema,
     }),
     checkSchema({
-      defaultListVisibility: DefaultListVisibilityParamSchema,
+      "privacySettings.defaultListVisibility": DefaultListVisibilityParamSchema,
+    }),
+    checkSchema({
+      "locationSettings.defaultLocation": DefaultLocationParamSchema,
     }),
   ]),
 ];

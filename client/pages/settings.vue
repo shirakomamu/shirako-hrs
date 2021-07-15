@@ -229,7 +229,9 @@
             >
             <p class="text-sm">Choose who can add you as a friend.</p>
           </div>
-          <p class="text-sm">{{ friendRequestPrivacyMessage }}</p>
+          <p v-if="friendRequestPrivacyMessage" class="text-sm">
+            {{ friendRequestPrivacyMessage }}
+          </p>
           <select
             :id="friendRequestPrivacyUid"
             ref="friendRequestPrivacySelect"
@@ -259,7 +261,9 @@
               Choose the default visibility setting for newly-created lists.
             </p>
           </div>
-          <p class="text-sm">{{ defaultListVisibilityMessage }}</p>
+          <p v-if="defaultListVisibilityMessage" class="text-sm">
+            {{ defaultListVisibilityMessage }}
+          </p>
           <select
             :id="defaultListVisibilityUid"
             ref="defaultListVisibilitySelect"
@@ -276,6 +280,52 @@
               {{ option.text }}
             </option>
           </select>
+        </div>
+      </div>
+
+      <h6 class="text-2xl dark:text-white">Location settings</h6>
+      <div
+        class="
+          grid grid-cols-1
+          gap-8
+          items-center
+          bg-gray-200
+          dark:bg-gray-700
+          p-8
+        "
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex-grow">
+            <label
+              class="font-semibold dark:text-white"
+              :for="defaultLocationUid"
+              >Default location for search</label
+            >
+            <p class="text-sm">
+              You can use an address or a ZIP code. This is used to ensure your
+              search results are for destinations close to you.
+            </p>
+          </div>
+          <p v-if="defaultLocationMessage" class="text-sm">
+            {{ defaultLocationMessage }}
+          </p>
+          <Input
+            :id="defaultLocationUid"
+            ref="defaultLocationInput"
+            v-model="defaultLocationDraft"
+            type="text"
+            name="defaultLocation"
+            classes="p-2 text-sm w-full"
+            min="0"
+            max="64"
+            passive-text="Your default location is not shared with anyone."
+            required
+            :disabled="isDefaultLocationLoading"
+            :do-validation="true"
+            @keyup.esc.prevent="processDefaultLocation(false)"
+            @keyup.enter.prevent="processDefaultLocation(true)"
+            @blur.prevent="processDefaultLocation(true)"
+          />
         </div>
       </div>
 
@@ -378,6 +428,7 @@ import {
   computed,
   nextTick,
   useStore,
+  watch,
 } from "@nuxtjs/composition-api";
 import Edit from "client/components/icons/Edit.vue";
 import Input from "client/components/Input.vue";
@@ -386,7 +437,6 @@ import {
   ISrkResponse,
   IResetPasswordPayload,
   IUpdateUserPayload,
-  IUpdateUserPrivacyPayload,
   IVerifyEmailPayload,
 } from "common/types/api";
 import { ListVisibility, FriendRequestPrivacy } from "common/enums";
@@ -395,6 +445,12 @@ import { Guard } from "common/types/hrbac";
 import useSelf from "client/composables/useSelf";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import hrbacCan from "common/utils/hrbacCan";
+import useInternalApi from "client/composables/useInternalApi";
+import {
+  Auth0UserMetadataDto,
+  UpdateUserDto,
+  UpdateUserLocationDto,
+} from "common/dto/auth";
 
 export default defineComponent({
   components: {
@@ -412,6 +468,7 @@ export default defineComponent({
     useMeta({
       title: "Settings | " + context.$config.appinfo.name,
     });
+    const api = useInternalApi();
 
     // refs
     const usernameInput = ref<null | InstanceType<typeof Input>>(null);
@@ -419,6 +476,7 @@ export default defineComponent({
     const emailInput = ref<null | InstanceType<typeof Input>>(null);
     const friendRequestPrivacySelect = ref<null | HTMLSelectElement>(null);
     const defaultListVisibilitySelect = ref<null | HTMLSelectElement>(null);
+    const defaultLocationInput = ref<null | InstanceType<typeof Input>>(null);
 
     const uid = uniqueId();
     const usernameUid = "username-" + uid;
@@ -426,6 +484,7 @@ export default defineComponent({
     const emailUid = "email-" + uid;
     const friendRequestPrivacyUid = "friend-privacy-" + uid;
     const defaultListVisibilityUid = "list-privacy-" + uid;
+    const defaultLocationUid = "default-location-" + uid;
 
     // data
     const isSendingVerificationEmail = ref<boolean>(false);
@@ -445,6 +504,7 @@ export default defineComponent({
 
     const isFriendRequestPrivacyLoading = ref<boolean>(false);
     const isDefaultListVisibilityLoading = ref<boolean>(false);
+    const isDefaultLocationLoading = ref<boolean>(false);
 
     const isAccountDeleteDisabled = ref<boolean>(false);
     const isAccountDeleteLoading = ref<boolean>(false);
@@ -455,6 +515,7 @@ export default defineComponent({
 
     const friendRequestPrivacyMessage = ref<string>("");
     const defaultListVisibilityMessage = ref<string>("");
+    const defaultLocationMessage = ref<string>("");
 
     const friendRequestPrivacyOptions = [
       {
@@ -485,6 +546,15 @@ export default defineComponent({
     const emailVerified = computed(
       (): boolean => self.value?.roles.includes(Role._email_verified) || false
     );
+    const defaultLocation = computed(
+      (): string | null =>
+        self.value?.meta.locationSettings?.defaultLocation || null
+    );
+    const defaultLocationDraft = ref<string | null>(defaultLocation.value);
+
+    watch(defaultLocation, (newValue: string | null) => {
+      defaultLocationDraft.value = newValue;
+    });
 
     const friendRequestPrivacySelection = computed({
       get(): FriendRequestPrivacy {
@@ -505,14 +575,15 @@ export default defineComponent({
             },
           })
         );
-        const response: ISrkResponse<IUpdateUserPrivacyPayload> =
-          await store.dispatch("api/send", {
-            method: "patch",
-            url: "/api/auth/me/preferences",
-            data: {
+        const response = await api<IUpdateUserPayload>({
+          method: "patch",
+          url: "/api/auth/me/preferences",
+          data: {
+            privacySettings: {
               friendRequestPrivacy: newValue,
             },
-          });
+          } as Auth0UserMetadataDto,
+        });
 
         if (response.ok) {
           friendRequestPrivacyMessage.value = "saved!";
@@ -544,14 +615,15 @@ export default defineComponent({
             },
           })
         );
-        const response: ISrkResponse<IUpdateUserPrivacyPayload> =
-          await store.dispatch("api/send", {
-            method: "patch",
-            url: "/api/auth/me/preferences",
-            data: {
+        const response = await api<IUpdateUserPayload>({
+          method: "patch",
+          url: "/api/auth/me/preferences",
+          data: {
+            privacySettings: {
               defaultListVisibility: newValue,
             },
-          });
+          } as Auth0UserMetadataDto,
+        });
 
         if (response.ok) {
           defaultListVisibilityMessage.value = "saved!";
@@ -591,7 +663,7 @@ export default defineComponent({
             url: "/api/auth/me",
             data: {
               username: usernameDraft.value,
-            },
+            } as UpdateUserDto,
           }
         );
 
@@ -631,7 +703,7 @@ export default defineComponent({
             url: "/api/auth/me",
             data: {
               nickname: nicknameDraft.value,
-            },
+            } as UpdateUserDto,
           }
         );
 
@@ -671,7 +743,7 @@ export default defineComponent({
             url: "/api/auth/me",
             data: {
               email: emailDraft.value,
-            },
+            } as UpdateUserDto,
           }
         );
 
@@ -682,6 +754,41 @@ export default defineComponent({
         isEmailLoading.value = false;
       } else {
         isEmailEditing.value = state;
+      }
+    };
+
+    const processDefaultLocation = async (doSubmit: boolean = true) => {
+      if (doSubmit && defaultLocationDraft.value !== defaultLocation.value) {
+        if (
+          !(
+            defaultLocationInput.value?.$refs.inputElem as HTMLInputElement
+          )?.checkValidity() ||
+          defaultLocationInput.value?.indicatorState !== "success"
+        ) {
+          return;
+        }
+
+        isDefaultLocationLoading.value = true;
+        const response: ISrkResponse<IUpdateUserPayload> = await store.dispatch(
+          "api/send",
+          {
+            method: "patch",
+            url: "/api/auth/me/preferences",
+            data: {
+              locationSettings: { defaultLocation: defaultLocationDraft.value },
+            } as UpdateUserLocationDto,
+          }
+        );
+        isDefaultLocationLoading.value = false;
+
+        if (response.ok) {
+          await store.dispatch("auth/fetch");
+          defaultLocationInput.value.setTouched(false);
+          defaultLocationMessage.value = "saved!";
+          setTimeout(() => {
+            defaultLocationMessage.value = "";
+          }, 5000);
+        }
       }
     };
 
@@ -778,6 +885,7 @@ export default defineComponent({
       emailInput,
       friendRequestPrivacySelect,
       defaultListVisibilitySelect,
+      defaultLocationInput,
 
       // static
       usernameUid,
@@ -785,6 +893,7 @@ export default defineComponent({
       emailUid,
       friendRequestPrivacyUid,
       defaultListVisibilityUid,
+      defaultLocationUid,
 
       // data
       isSendingVerificationEmail,
@@ -799,13 +908,16 @@ export default defineComponent({
       isEmailEditing,
       isFriendRequestPrivacyLoading,
       isDefaultListVisibilityLoading,
+      isDefaultLocationLoading,
       isAccountDeleteDisabled,
       isAccountDeleteLoading,
       usernameDraft,
       nicknameDraft,
       emailDraft,
+      defaultLocationDraft,
       friendRequestPrivacyMessage,
       defaultListVisibilityMessage,
+      defaultLocationMessage,
       friendRequestPrivacyOptions,
       defaultListVisibilityOptions,
       showDeleteConfirmationModal,
@@ -826,6 +938,7 @@ export default defineComponent({
       showUsernameEditor,
       showNicknameEditor,
       showEmailEditor,
+      processDefaultLocation,
       resendVerificationEmail,
       requestPasswordReset,
       requestAccountDelete,

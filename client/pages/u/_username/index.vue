@@ -26,7 +26,7 @@
               sm:text-left
               filter
               text-white
-              drop-shadow-md
+              p-bg-text
             "
           >
             <p class="text-4xl font-bold">
@@ -44,9 +44,13 @@
               w-full
               h-full
               filter
+              blur-xl
+              transform-gpu
               scale-110
-              bg-left bg-no-repeat bg-cover
+              bg-left bg-no-repeat bg-cover bg-gray-200
+              dark:bg-gray-700
             "
+            :class="pBgBackgroundUrl"
           />
         </div>
       </div>
@@ -71,7 +75,7 @@
           Remove as friend</ComboButton
         >
         <ComboButton
-          v-else-if="isAcceptingRequests"
+          v-else-if="isAcceptingRequests && canAddFriends"
           alt="Send friend request"
           class="text-sm border border-blue-srk text-blue-srk"
           :loading="isFriendLoading"
@@ -79,6 +83,14 @@
         >
           <PersonAdd class="icon-inline" />
           Send friend request</ComboButton
+        >
+        <ComboButton
+          v-else-if="!canAddFriends"
+          class="text-sm border border-blue-srk text-blue-srk"
+          :disabled="true"
+        >
+          <PersonAdd class="icon-inline" />
+          Email verification required</ComboButton
         >
         <ComboButton
           v-else
@@ -108,7 +120,8 @@
         >
           <div
             v-if="
-              (destinationLists && destinationLists.length) || (isMe && canList)
+              (destinationLists && destinationLists.length) ||
+              (isMe && canCreateLists)
             "
             class="
               grid grid-flow-row grid-cols-2
@@ -119,13 +132,27 @@
               items-center
             "
           >
-            <nuxt-link
-              v-if="isMe && canList"
+            <ComboButton
+              v-if="isMe && canCreateLists"
               key="new"
-              :to="`/u/${route.params.username}/new`"
-              custom
+              class="p-0"
+              alt="Create list"
+              @click="showCreateListModal = true"
             >
               <DestinationListAddAvatar />
+            </ComboButton>
+            <nuxt-link
+              v-if="isMe && !canCreateLists"
+              key="verifRequired"
+              to="/settings"
+              custom
+            >
+              <ComboButton
+                class="p-0 h-full w-full"
+                alt="Email verification required"
+              >
+                <DestinationListAddAvatarDisabled />
+              </ComboButton>
             </nuxt-link>
             <template v-if="destinationLists && destinationLists.length">
               <nuxt-link
@@ -134,10 +161,25 @@
                 :to="`/u/${route.params.username}/${list.id}`"
                 custom
               >
-                <DestinationListAvatar
-                  :list-name="list.name"
-                  :owner="list.owner"
-                />
+                <ComboButton class="p-0 h-full w-full" :alt="list.name">
+                  <DestinationListAvatar>
+                    <div
+                      class="
+                        relative
+                        grid grid-cols-1
+                        items-center
+                        justify-items-center
+                        h-full
+                      "
+                    >
+                      <p class="text-sm font-semibold">{{ list.name }}</p>
+                      <ListVisibilityIndicator
+                        :visibility="list.visibility"
+                        class="absolute -left-2 -bottom-1"
+                      />
+                    </div>
+                  </DestinationListAvatar>
+                </ComboButton>
               </nuxt-link>
             </template>
           </div>
@@ -146,6 +188,87 @@
           </div>
         </div>
       </div>
+
+      <Modal
+        :visible="showCreateListModal"
+        container-class="p-8 w-full max-w-prose"
+        @hide="showCreateListModal = false"
+      >
+        <form
+          class="p-8 bg-gray-200 dark:bg-gray-700 grid grid-cols-1 gap-4"
+          @submit.prevent="onCreate"
+        >
+          <h6 class="text-2xl dark:text-white">Create new list</h6>
+          <div
+            class="
+              grid grid-cols-1
+              gap-4
+              items-center
+              bg-gray-200
+              dark:bg-gray-700
+            "
+          >
+            <Input
+              v-model="formListName"
+              type="text"
+              passive-text="Choose a descriptive name. It must be 1 to 24 characters long."
+              label="Name"
+              class="w-full"
+              classes="p-2 text-sm w-full"
+              minlength="1"
+              maxlength="24"
+              :do-validation="true"
+              required
+            />
+
+            <div class="grid grid-cols-1 gap-1">
+              <label :for="listVisibilityUid">Visibility</label>
+              <select
+                :id="listVisibilityUid"
+                v-model="formListVisibility"
+                class="p-2 text-sm"
+              >
+                <option
+                  v-for="(option, index) in listVisibilityOptions"
+                  :key="index"
+                  :value="option.value"
+                >
+                  {{ option.text }}
+                </option>
+              </select>
+              <p class="text-xs opacity-50">Determine who can see this list.</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-1">
+              <label :for="listDescriptionUid"
+                >Description
+                <span class="italic opacity-50">(optional)</span></label
+              >
+              <textarea
+                v-model="formListDescription"
+                class="list-description-form p-2 text-sm"
+                rows="5"
+                :maxlength="maxDescriptionLength"
+              />
+              <div class="flex flex-row gap-2">
+                <p class="text-xs opacity-50">Give your list a description.</p>
+                <div class="flex-grow"></div>
+                <p class="text-xs opacity-50">
+                  {{ descriptionLengthHelper }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <ComboButton
+            type="submit"
+            class="text-sm border border-blue-srk text-blue-srk"
+            :disabled="isCreatingList"
+            :loading="isCreatingList"
+            >Create list</ComboButton
+          >
+        </form>
+      </Modal>
     </template>
     <template v-else>
       <div class="grid grid-cols-1 place-items-center">
@@ -161,10 +284,12 @@ import { Guard } from "common/types/hrbac";
 import {
   computed,
   defineComponent,
+  onMounted,
   ref,
   useContext,
   useMeta,
   useRoute,
+  useRouter,
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
@@ -175,7 +300,11 @@ import Block from "client/components/icons/Block.vue";
 import PersonAdd from "client/components/icons/PersonAdd.vue";
 import PersonRemove from "client/components/icons/PersonRemove.vue";
 import useSelf from "client/composables/useSelf";
-import { MemberModel } from "client/models";
+import { DestinationListModel, MemberModel } from "client/models";
+import uniqueId from "common/utils/uniqueId";
+import { ListVisibility } from "common/enums";
+import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
+import { CreateListDto } from "common/dto/lists";
 
 export default defineComponent({
   meta: {
@@ -224,26 +353,75 @@ export default defineComponent({
     const isMe = computed(
       () => member.value?.username === self.value?.username
     );
-    const canFriend = hrbacCan({ roles: [Role._self_friends] }, self.value);
-    const canList = hrbacCan(
+    const canAddFriends = hrbacCan({ roles: [Role._self_friends] }, self.value);
+    const canCreateLists = hrbacCan(
       { roles: [Role._self_destination_lists] },
       self.value
     );
 
     const isFriendLoading = ref<boolean>(false);
 
-    const title = computed(
-      () =>
+    useMeta(() => ({
+      title:
         (member.value
           ? `${member.value.nickname}'s profile | `
-          : "Loading... | ") + context.$config.appinfo.name
+          : "Loading... | ") + context.$config.appinfo.name,
+    }));
+
+    // form items
+    const router = useRouter();
+    const listModel = store.$db().model(DestinationListModel);
+    const showCreateListModal = ref<boolean>(false);
+    const maxDescriptionLength = 200;
+
+    const uid = uniqueId();
+    const listDescriptionUid = "list-description-" + uid;
+    const listVisibilityUid = "list-visibility-" + uid;
+
+    const formListName = ref<null | string>(null);
+    const formListDescription = ref<null | string>(null);
+    const formListVisibility = ref<null | ListVisibility>(
+      self.value?.meta.privacySettings?.defaultListVisibility || null
     );
-    useMeta({
-      title: title.value,
+    const descriptionLengthHelper = computed(() => {
+      return `${
+        (formListDescription.value || "").length
+      } / ${maxDescriptionLength}`;
+    });
+    const listVisibilityOptions = useListVisibilityOptions();
+    const isCreatingList = ref<boolean>(false);
+    const onCreate = async () => {
+      isCreatingList.value = true;
+      const response = await listModel.apiCreateList(
+        route.value.params.username,
+        {
+          name: formListName.value || "",
+          description: formListDescription.value,
+          visibility: formListVisibility.value,
+        } as CreateListDto
+      );
+      isCreatingList.value = false;
+
+      if (response.ok) {
+        router.push(
+          "/u/" + route.value.params.username + "/" + response.payload.id
+        );
+      }
+    };
+
+    const pBgBackgroundUrl = ref<{ [key: string]: boolean }>({});
+
+    onMounted(() => {
+      const possibleClasses = ["p1", "p2", "p3"];
+      pBgBackgroundUrl.value = {
+        [possibleClasses[Math.floor(Math.random() * possibleClasses.length)]]:
+          true,
+      };
     });
 
     return {
       route,
+      pBgBackgroundUrl,
 
       member,
       isMe,
@@ -251,10 +429,23 @@ export default defineComponent({
       isAcceptingRequests,
       isFriendLoading,
 
-      canFriend,
-      canList,
+      canAddFriends,
+      canCreateLists,
 
       destinationLists,
+
+      // form
+      showCreateListModal,
+      onCreate,
+      formListName,
+      formListDescription,
+      formListVisibility,
+      maxDescriptionLength,
+      listVisibilityUid,
+      listVisibilityOptions,
+      listDescriptionUid,
+      descriptionLengthHelper,
+      isCreatingList,
     };
   },
   // required for useMeta to work
@@ -264,9 +455,23 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .p-bg {
-  background-image: url("client/assets/images/p1.png");
-  filter: blur(24px) brightness(70%);
   z-index: 1;
+  &.p1 {
+    background-image: url("client/assets/images/p1.png");
+    opacity: 1;
+  }
+  &.p2 {
+    background-image: url("client/assets/images/p2.png");
+    opacity: 1;
+  }
+  &.p3 {
+    background-image: url("client/assets/images/p3.png");
+    opacity: 1;
+  }
+}
+.p-bg-text {
+  --tw-drop-shadow: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.3))
+    drop-shadow(0 4px 3px rgba(0, 0, 0, 0.4));
 }
 .p-contents {
   z-index: 2;

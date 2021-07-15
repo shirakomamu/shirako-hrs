@@ -6,8 +6,19 @@ export type UpdateUserPrivacyDto = {
   defaultListVisibility?: ListVisibility;
 };
 
+export type UpdateUserLocationDto = {
+  defaultLocation?: string | null;
+};
+
 export type Auth0UserMetadataDto = {
   privacySettings?: UpdateUserPrivacyDto;
+  locationSettings?: UpdateUserLocationDto;
+};
+
+export type Auth0AppMetadataDto = {
+  hrs: {
+    rgs: RoleGroup[];
+  };
 };
 
 export type ActorConstructorDto = {

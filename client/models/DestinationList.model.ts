@@ -16,6 +16,7 @@ export default class extends Model {
   public description!: string | null;
   public visibility!: ListVisibility;
   public items!: DestinationItemModel[];
+  private itemsLoaded!: boolean;
 
   public static state() {
     return {
@@ -31,6 +32,7 @@ export default class extends Model {
       description: this.string(null).nullable(),
       visibility: this.string(null),
       items: this.hasMany(DestinationItemModel, "id"),
+      itemsLoaded: this.boolean(false),
     };
   }
 
@@ -55,7 +57,10 @@ export default class extends Model {
 
     if (response.ok) {
       this.insertOrUpdate({
-        data: response.payload,
+        data: {
+          ...response.payload,
+          itemsLoaded: true,
+        },
       });
     }
 
@@ -83,7 +88,7 @@ export default class extends Model {
       .with("items")
       .find([data.username, data.id]);
 
-    if (!storedData) {
+    if (!storedData || !storedData.itemsLoaded) {
       this.commit((state) => (state.fetching = true));
       const response: ISrkResponse<IDestinationListPayload> =
         await this.store().dispatch("api/send", {
@@ -94,7 +99,10 @@ export default class extends Model {
 
       if (response.ok) {
         this.insertOrUpdate({
-          data: response.payload,
+          data: {
+            ...response.payload,
+            itemsLoaded: true,
+          },
         });
 
         return response.payload;

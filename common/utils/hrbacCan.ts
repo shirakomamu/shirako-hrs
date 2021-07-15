@@ -5,14 +5,14 @@ import memoizee from "memoizee";
 
 const DEFAULT_CHECK_BEHAVIOR = GuardBehavior.all;
 
-type Check = {
+interface Check {
   actorRoles: Role[];
   roles: Role[];
 
   // all = all roles must be accessible, by any of the rgs
   // any = any of the roles can be accessible, by any of the rgs
   mode: GuardBehavior;
-};
+}
 
 function validate(actorRoles: Role[], role: Role): boolean {
   return actorRoles.includes(role);

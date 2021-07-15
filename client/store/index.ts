@@ -3,7 +3,7 @@ import { GetterTree, ActionTree, MutationTree } from "vuex";
 
 export const state = () => ({});
 
-export type RootState = ReturnType<typeof state>;
+export interface RootState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<RootState, RootState> = {};
 

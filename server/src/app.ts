@@ -11,6 +11,7 @@ import preErrorHandler from "server/middleware/preErrorHandler";
 
 // Routes
 import routes from "server/routes";
+import baseRateLimiter from "./middleware/baseRateLimiter";
 
 // Re-export DI
 export { DI };
@@ -18,6 +19,7 @@ export { DI };
 // Create express instance
 const app: express.Application = express();
 
+app.use(baseRateLimiter);
 app.use(initializeDi);
 app.use(initializeDb);
 

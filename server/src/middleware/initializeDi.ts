@@ -3,7 +3,7 @@ import { EntityRepository, MikroORM } from "@mikro-orm/core";
 import { EntityManager } from "@mikro-orm/postgresql";
 import ormService, { storage } from "server/services/mikro-orm";
 import { Member } from "server/entities/Member";
-import { DestinationList } from "../entities/DestinationList";
+import { DestinationList } from "server/entities/DestinationList";
 
 export const DI = {} as {
   orm: Promise<MikroORM>;

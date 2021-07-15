@@ -1,7 +1,6 @@
-/* eslint-disable camelcase */
 import { send } from ".";
 
-export interface EmailVerificationResponse {
+interface EmailVerificationResponse {
   status: string;
   type: string;
   created_at: string;

@@ -64,7 +64,7 @@ export default defineComponent({
     },
     animationMs: {
       type: Number,
-      default: 500,
+      default: 300,
     },
   },
   setup(props, { emit }) {

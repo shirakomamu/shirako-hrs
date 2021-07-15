@@ -5,7 +5,7 @@ const REGISTRATION_EMAIL_VERIFICATION_TEMPLATE_ID =
   "d-d01af89c05ff45889c9ec545f2895825";
 
 interface RegistrationEmailVerificationTemplate {
-  appName: string; // HRBAC Demo
+  appName: string; // Shirako Eats
   appLink: string; // https://domain.link/
   callbackOtp: string; // 000000
   callbackLink: string; // https://domain.link/register?cb=<cbToken>

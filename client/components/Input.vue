@@ -15,7 +15,6 @@
               'pr-10': !['failure', 'none'].includes(indicatorState),
             },
           ]"
-          @input.once="setTouched"
           @invalid="onInvalid"
           v-on="{
             ...$listeners,
@@ -130,11 +129,14 @@ export default defineComponent({
       validationChecked.value = true;
     };
 
-    const setTouched = () => {
-      touched.value = true;
+    const setTouched = (state = true) => {
+      touched.value = state;
     };
 
     const onInput = (el: Event) => {
+      if (!touched.value) {
+        setTouched(true);
+      }
       touching.value = true;
       const uid = uniqueId();
       inputContext.value = uid;

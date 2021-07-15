@@ -22,6 +22,7 @@ module.exports = {
         ignores: [],
       },
     ],
+    camelcase: "off",
   },
   ignorePatterns: ["**/migrations/Migration*.js"],
 };

@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { clearCache } from "./getUserCached";
 import { send } from ".";
 

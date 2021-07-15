@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import assert from "common/utils/assert";
 import SrkError from "server/classes/SrkError";
 import {
@@ -10,13 +9,7 @@ import redisGu from "server/services/redis-gu";
 import getUser, { GetUserResponse } from "./getUser";
 import getUserByUsername from "./getUserByUsername";
 
-export default async ({
-  id,
-  username,
-}: {
-  id?: string;
-  username?: string;
-}): Promise<GetUserResponse> => {
+export default async ({ id, username }: { id?: string; username?: string }) => {
   if (!id && !username) {
     throw new SrkError("resourceInvalid");
   }
@@ -41,6 +34,14 @@ export default async ({
   }
 };
 
+const getCacheKeyById = (id: string) => {
+  return GENERAL_USAGE_PREFIX + GEN_USER_INFO_ID_PREFIX + id;
+};
+
+const getCacheKeyByUsername = (username: string) => {
+  return GENERAL_USAGE_PREFIX + GEN_USER_INFO_USERNAME_PREFIX + username;
+};
+
 const getCache = async ({
   id,
   username,
@@ -53,12 +54,11 @@ const getCache = async ({
   }
   let r: string | null = null;
   if (id) {
-    r = await redisGu.get(GENERAL_USAGE_PREFIX + GEN_USER_INFO_ID_PREFIX + id);
+    r = await redisGu.get(getCacheKeyById(id));
+  } else if (username) {
+    r = await redisGu.get(getCacheKeyByUsername(username));
   } else {
-    assert<string>(username);
-    r = await redisGu.get(
-      GENERAL_USAGE_PREFIX + GEN_USER_INFO_USERNAME_PREFIX + username
-    );
+    return null;
   }
   if (!r) return null;
   return JSON.parse(r) as GetUserResponse;
@@ -79,19 +79,20 @@ export const setCache = async (
   }
   if (id) {
     return await redisGu.set(
-      GENERAL_USAGE_PREFIX + GEN_USER_INFO_ID_PREFIX + id,
+      getCacheKeyById(id),
+      JSON.stringify(data),
+      "ex",
+      3600
+    );
+  } else if (username) {
+    return await redisGu.set(
+      getCacheKeyByUsername(username),
       JSON.stringify(data),
       "ex",
       3600
     );
   } else {
-    assert<string>(username);
-    return await redisGu.set(
-      GENERAL_USAGE_PREFIX + GEN_USER_INFO_USERNAME_PREFIX + username,
-      JSON.stringify(data),
-      "ex",
-      3600
-    );
+    return null;
   }
 };
 
@@ -106,13 +107,10 @@ export const clearCache = async ({
     throw new SrkError("resourceInvalid");
   }
   if (id) {
-    return await redisGu.del(
-      GENERAL_USAGE_PREFIX + GEN_USER_INFO_ID_PREFIX + id
-    );
+    return await redisGu.del(getCacheKeyById(id));
+  } else if (username) {
+    return await redisGu.del(getCacheKeyByUsername(username));
   } else {
-    assert<string>(username);
-    return await redisGu.del(
-      GENERAL_USAGE_PREFIX + GEN_USER_INFO_USERNAME_PREFIX + username
-    );
+    return 0;
   }
 };

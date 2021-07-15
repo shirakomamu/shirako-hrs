@@ -1,6 +1,6 @@
 import { DestinationListMetadata } from "./lists";
 
-export type IMemberPayload = {
+export interface IMemberPayload {
   username: string;
   nickname: string;
   avatar: string;
@@ -8,4 +8,4 @@ export type IMemberPayload = {
   isFriend: boolean;
   isAcceptingFriends: boolean;
   lists: DestinationListMetadata[];
-};
+}

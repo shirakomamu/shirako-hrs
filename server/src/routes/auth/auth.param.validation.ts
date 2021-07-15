@@ -84,3 +84,18 @@ export const DefaultListVisibilityParamSchema: ParamSchema = {
     },
   },
 };
+
+export const DefaultLocationParamSchema: ParamSchema = {
+  in: ["body"],
+  optional: {
+    options: {
+      nullable: true,
+    },
+  },
+  isString: true,
+  isLength: {
+    options: {
+      max: 64,
+    },
+  },
+};

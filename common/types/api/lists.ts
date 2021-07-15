@@ -1,16 +1,15 @@
-/* eslint-disable camelcase */
 import { ListVisibility } from "common/enums";
 
-export type DestinationListMetadata = {
+export interface DestinationListMetadata {
   id: string;
   name: string;
   owner: string;
   description: string | null;
   visibility: ListVisibility;
-};
+}
 
 // from yelp API
-export type DestinationItem = {
+export interface DestinationItem {
   id: string;
   // name: string;
   // image: string;
@@ -34,8 +33,8 @@ export type DestinationItem = {
   //   start: string; // 0000
   //   end: string; // 0000
   // }[];
-};
+}
 
-export type IDestinationListPayload = DestinationListMetadata & {
+export interface IDestinationListPayload extends DestinationListMetadata {
   items: DestinationItem[];
-};
+}

@@ -12,8 +12,6 @@
       border-dashed
       p-2
       transition
-      filter
-      hover:drop-shadow-md
     "
   >
     <PlaylistAdd class="list-icon opacity-50" />
