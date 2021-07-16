@@ -28,6 +28,7 @@
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
     "core-js": "^3.9.1",
+    "date-fns": "^2.22.1",
     "express": "^4.17.1",
     "express-openid-connect": "^2.4.0",
     "express-validator": "^6.11.1",

@@ -23,6 +23,7 @@ module.exports = {
       },
     ],
     camelcase: "off",
+    "vue/prop-name-casing": "off",
   },
   ignorePatterns: ["**/migrations/Migration*.js"],
 };

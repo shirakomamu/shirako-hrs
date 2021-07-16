@@ -4,10 +4,13 @@ export interface BusinessSearchResponse {
   total: number;
   businesses: [
     {
-      rating: number;
-      price: string;
-      phone: string;
       id: string;
+      name: string;
+      url: string;
+      price?: string;
+      rating: number;
+      phone: string;
+      display_phone: string;
       alias: string;
       is_closed: false;
       categories: {
@@ -15,8 +18,6 @@ export interface BusinessSearchResponse {
         title: string;
       }[];
       review_count: number;
-      name: string;
-      url: string;
       coordinates: {
         latitude: number;
         longitude: number;
@@ -30,6 +31,7 @@ export interface BusinessSearchResponse {
         zip_code: string;
         country: string;
         state: string;
+        display_address: string[];
       };
       distance: number;
       transactions: ("pickup" | "delivery" | "restaurant_reservation")[];
@@ -57,6 +59,7 @@ export default async ({
     params: {
       term,
       location,
+      categories: "restaurants",
     },
   });
 

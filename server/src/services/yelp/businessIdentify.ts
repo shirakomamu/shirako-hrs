@@ -32,7 +32,7 @@ export interface BusinessIdentifyResponse {
     longitude: number;
   };
   photos: string[];
-  price: string;
+  price?: string;
   hours: {
     open: {
       is_overnight: boolean;

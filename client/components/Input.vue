@@ -123,6 +123,8 @@ export default defineComponent({
     );
 
     // methods
+    const focus = () => inputElem.value?.focus();
+
     const setValidationError = (newValue: string) => {
       (inputElem.value as HTMLInputElement)?.setCustomValidity(newValue);
       validationError.value = newValue;
@@ -202,6 +204,7 @@ export default defineComponent({
       validationError,
       indicatorState,
 
+      focus,
       setTouched,
       onInput,
       onInvalid,

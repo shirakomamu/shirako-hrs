@@ -4,12 +4,14 @@ import { EntityManager } from "@mikro-orm/postgresql";
 import ormService, { storage } from "server/services/mikro-orm";
 import { Member } from "server/entities/Member";
 import { DestinationList } from "server/entities/DestinationList";
+import { Destination } from "server/entities/Destination";
 
 export const DI = {} as {
   orm: Promise<MikroORM>;
   em: EntityManager;
   memberRepo: EntityRepository<Member>;
   destinationListRepo: EntityRepository<DestinationList>;
+  destinationItemRepo: EntityRepository<Destination>;
 };
 
 let initialized: boolean = false;
@@ -28,6 +30,7 @@ export default async (_req: Request, _res: Response, next: NextFunction) => {
     DI.em = (await DI.orm).em as EntityManager;
     DI.memberRepo = DI.em.getRepository(Member);
     DI.destinationListRepo = DI.em.getRepository(DestinationList);
+    DI.destinationItemRepo = DI.em.getRepository(Destination);
 
     initialized = true;
   }

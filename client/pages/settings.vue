@@ -299,11 +299,11 @@
             <label
               class="font-semibold dark:text-white"
               :for="defaultLocationUid"
-              >Default location for search</label
+              >Default location</label
             >
             <p class="text-sm">
-              You can use an address or a ZIP code. This is used to ensure your
-              search results are for destinations close to you.
+              Used when searching for restaurants. You can use an address, city
+              name, or ZIP code.
             </p>
           </div>
           <p v-if="defaultLocationMessage" class="text-sm">
@@ -391,6 +391,7 @@
         </p>
         <form @submit.prevent="requestAccountDelete">
           <Input
+            ref="deleteConfirmationInput"
             v-model="deleteConfirmationDraft"
             type="text"
             classes="p-2 text-sm w-full"
@@ -477,6 +478,9 @@ export default defineComponent({
     const friendRequestPrivacySelect = ref<null | HTMLSelectElement>(null);
     const defaultListVisibilitySelect = ref<null | HTMLSelectElement>(null);
     const defaultLocationInput = ref<null | InstanceType<typeof Input>>(null);
+    const deleteConfirmationInput = ref<null | InstanceType<typeof Input>>(
+      null
+    );
 
     const uid = uniqueId();
     const usernameUid = "username-" + uid;
@@ -645,7 +649,7 @@ export default defineComponent({
         isUsernameEditing.value = state;
         usernameDraft.value = username.value;
         await nextTick();
-        (usernameInput.value?.$refs.inputElem as HTMLInputElement)?.focus();
+        usernameInput.value?.focus();
       } else if (doSubmit && usernameDraft.value !== username.value) {
         if (
           !(
@@ -685,7 +689,7 @@ export default defineComponent({
         isNicknameEditing.value = state;
         nicknameDraft.value = nickname.value;
         await nextTick();
-        (nicknameInput.value?.$refs.inputElem as HTMLInputElement)?.focus();
+        nicknameInput.value?.focus();
       } else if (doSubmit && nicknameDraft.value !== nickname.value) {
         if (
           !(
@@ -725,7 +729,7 @@ export default defineComponent({
         isEmailEditing.value = state;
         emailDraft.value = email.value;
         await nextTick();
-        (emailInput.value?.$refs.inputElem as HTMLInputElement)?.focus();
+        emailInput.value?.focus();
       } else if (doSubmit && emailDraft.value !== email.value) {
         if (
           !(
@@ -870,9 +874,12 @@ export default defineComponent({
       }
     };
 
-    const onShowDeleteConfirmationModal = () => {
+    const onShowDeleteConfirmationModal = async () => {
       showDeleteConfirmationModal.value = true;
       deleteConfirmationDraft.value = null;
+
+      await nextTick();
+      deleteConfirmationInput.value?.focus();
     };
 
     const signOut = () => {
@@ -886,6 +893,7 @@ export default defineComponent({
       friendRequestPrivacySelect,
       defaultListVisibilitySelect,
       defaultLocationInput,
+      deleteConfirmationInput,
 
       // static
       usernameUid,

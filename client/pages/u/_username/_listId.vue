@@ -13,32 +13,23 @@
         <ListVisibilityIndicator :visibility="list.visibility" class="inline" />
       </div>
       <p>{{ list.description }}</p>
-      <div class="grid grid-cols-2 gap-4">
-        <div
-          class="
-            grid grid-cols-1
-            gap-4
-            items-center
-            bg-gray-200
-            dark:bg-gray-700
-            p-8
-          "
-        >
-          <p v-for="(item, index) in list.items" :key="index">{{ item.id }}</p>
-        </div>
-        <div
-          class="
-            grid grid-cols-1
-            gap-4
-            items-center
-            bg-gray-200
-            dark:bg-gray-700
-            p-8
-          "
-        >
-          Box
-        </div>
+      <div
+        class="
+          grid grid-cols-1
+          gap-4
+          items-center
+          bg-gray-200
+          dark:bg-gray-700
+          p-8
+        "
+      >
+        <p v-for="(item, index) in list.items" :key="index">{{ item.id }}</p>
       </div>
+      <ComboButton @click="showSearchModal = true">Show</ComboButton>
+      <YelpSearchModal
+        :visible="showSearchModal"
+        @hide="showSearchModal = false"
+      />
     </template>
     <template v-else>
       <div class="grid grid-cols-1 place-items-center">
@@ -51,6 +42,7 @@
 import {
   computed,
   defineComponent,
+  ref,
   useContext,
   useMeta,
   useRoute,
@@ -77,6 +69,8 @@ export default defineComponent({
       username: route.value.params.username,
       id: route.value.params.listId,
     });
+
+    const showSearchModal = ref<boolean>(false);
 
     watch(
       () => route.value.params.username,
@@ -121,6 +115,8 @@ export default defineComponent({
 
     return {
       route,
+
+      showSearchModal,
 
       list,
       title,
