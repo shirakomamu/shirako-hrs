@@ -1,4 +1,5 @@
 import { checkSchema } from "express-validator";
+import { YelpIdParamSchema } from "../items/items.param.validation";
 import {
   DestinationListIdParamSchema,
   ListNameParamSchema,
@@ -19,5 +20,21 @@ export const GetDestinationListValidators = [
   ...checkSchema({
     username: UsernameParamSchema,
     id: DestinationListIdParamSchema,
+  }),
+];
+
+export const AddItemToDestinationListValidators = [
+  ...checkSchema({
+    username: SelfUsernameParamSchema,
+    id: DestinationListIdParamSchema,
+    destinationId: YelpIdParamSchema,
+  }),
+];
+
+export const RemoveItemFromDestinationListValidators = [
+  ...checkSchema({
+    username: SelfUsernameParamSchema,
+    id: DestinationListIdParamSchema,
+    destinationId: YelpIdParamSchema,
   }),
 ];

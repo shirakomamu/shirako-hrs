@@ -14,6 +14,7 @@
       visible: visibility,
     }"
     :style="{ 'transition-duration': animationMs + 'ms' }"
+    @keyup.esc="onEscPress"
   >
     <div ref="modalContents" class="mx-auto" :class="containerClass">
       <div
@@ -54,6 +55,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    escClose: {
+      type: Boolean,
+      default: true,
+    },
     verticalCenter: {
       type: Boolean,
       default: false,
@@ -79,9 +84,15 @@ export default defineComponent({
       }
     };
 
+    const onEscPress = (_event: Event) => {
+      if (props.escClose && !transition.value && visibility.value) {
+        emit("hide");
+      }
+    };
+
     watch(
       () => props.visible,
-      (newValue: boolean) => {
+      (newValue) => {
         transition.value = true; // prevents onClickOutside
         shown.value = newValue; // immediately begin opacity transition
         if (newValue) {
@@ -109,6 +120,7 @@ export default defineComponent({
       visibility,
       transition,
       onClickOutside,
+      onEscPress,
     };
   },
 });
@@ -135,7 +147,7 @@ export default defineComponent({
 
 .direct-container {
   position: relative;
-  top: -50%;
+  top: -20px;
   transition-property: opacity, top;
   transition-timing-function: ease;
   opacity: 0;

@@ -51,6 +51,12 @@
         </a>
       </div>
     </form>
+    <div class="grid grid-cols-1 text-xs">
+      <div>MANAGED LIST ITEMS</div>
+      <div>{{ managedList.items.map((e) => e.id) }}</div>
+      <div>INLISTREF ITEMS</div>
+      <div>{{ managedList.items.map((e) => e.id) }}</div>
+    </div>
     <div v-if="searchResults.total >= 0" class="grid grid-cols-1 gap-2">
       <div v-for="(item, index) in searchResults.items" :key="index">
         <hr v-if="index === 0" class="mb-2" />
@@ -64,6 +70,10 @@
           :display_address="item.display_address"
           :display_phone="item.display_phone"
           :last-updated="item.lastUpdated"
+          :show-add-button="!!managedList"
+          :is-adding="loadingIds.includes(item.id)"
+          :is-added="!inListRef.includes(item.id)"
+          @pick="onSelect"
         />
         <hr class="mt-2" />
       </div>
@@ -78,30 +88,70 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  ref,
+  useStore,
+} from "@nuxtjs/composition-api";
 import useInternalApi from "client/composables/useInternalApi";
 import useSelf from "client/composables/useSelf";
 import { BusinessSearchDto } from "common/dto/items";
-import {
-  DestinationItemMetadata,
-  IDestinationSearchPayload,
-} from "common/types/api/items";
 import Input from "client/components/Input.vue";
 import Search from "client/components/icons/Search.vue";
 import uniqueId from "common/utils/uniqueId";
+import { DestinationListModel } from "client/models";
+import { Item } from "@vuex-orm/core";
+import { IDestinationSearchPayload } from "common/types/api/items";
+import { ISrkResponse } from "common/types/api";
 
 export default defineComponent({
   name: "YelpSearchModule",
   components: {
     Search,
   },
-  setup() {
+  props: {
+    managedList: {
+      type: Object as PropType<Item<DestinationListModel> | null>,
+      default: null,
+    },
+  },
+  setup({ managedList }, { emit }) {
     const self = useSelf();
     const api = useInternalApi();
+    const store = useStore();
+    const model = store.$db().model(DestinationListModel);
 
     // refs
     const termInput = ref<null | InstanceType<typeof Input>>(null);
     const locationInput = ref<null | InstanceType<typeof Input>>(null);
+    const loadingIds = ref<string[]>([]);
+
+    const inListRef = computed(() => {
+      if (managedList) {
+        return managedList.items.map((e) => e.id);
+      }
+      return [];
+    });
+
+    const onSelect = computed(() => {
+      if (!managedList) {
+        return () => {
+          emit("pick", ...arguments);
+        };
+      }
+
+      return async (destinationId: string) => {
+        loadingIds.value.push(destinationId);
+        await model.apiAddItemToList({
+          id: managedList.id,
+          username: managedList.owner,
+          destinationId,
+        });
+        loadingIds.value = loadingIds.value.filter((e) => e !== destinationId);
+      };
+    });
 
     const uid = uniqueId();
     const termUid = "term-" + uid;
@@ -122,7 +172,7 @@ export default defineComponent({
       if (!term.value || !location.value) return;
 
       isSearching.value = true;
-      const response = await api({
+      const response: ISrkResponse<IDestinationSearchPayload> = await api({
         method: "post",
         url: "/api/items/search",
         data: {
@@ -137,11 +187,7 @@ export default defineComponent({
       }
     };
 
-    const onSelect = (item: DestinationItemMetadata) => {
-      console.log(item);
-    };
-
-    // searchResults.value = {
+    // const searchResults = ref({
     //   total: 339,
     //   items: [
     //     {
@@ -384,13 +430,17 @@ export default defineComponent({
     //       lastUpdated: -1,
     //     },
     //   ],
-    // };
+    // });
 
     const focus = () => termInput.value?.focus();
 
     return {
+      emit,
+
       termInput,
       locationInput,
+      loadingIds,
+      inListRef,
 
       termUid,
       locationUid,

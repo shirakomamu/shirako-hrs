@@ -60,10 +60,10 @@
 import {
   computed,
   defineComponent,
-  PropOptions,
   ref,
   watch,
   nextTick,
+  PropType,
 } from "@nuxtjs/composition-api";
 import zxcvbn, { ZXCVBNResult } from "zxcvbn";
 import Loader from "client/components/icons/Loader.vue";
@@ -98,9 +98,9 @@ export default defineComponent({
       default: 1000,
     },
     dict: {
-      type: Array,
-      default: (): string[] => [],
-    } as PropOptions<string[]>,
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
   },
   setup(props, { emit }) {
     // refs

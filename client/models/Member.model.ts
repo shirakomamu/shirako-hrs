@@ -4,6 +4,10 @@ import { IMemberPayload, ISrkResponse } from "common/types/api";
 import DestinationListModel from "./DestinationList.model";
 import VgtParamModel from "./VgtParam.model";
 
+interface Meta {
+  fetching?: boolean;
+}
+
 export default class extends Model {
   static entity = "user";
   static primaryKey = "username";
@@ -15,12 +19,6 @@ export default class extends Model {
   public isFriend!: boolean;
   public isAcceptingFriends!: boolean;
   public lists!: DestinationListModel[];
-
-  public static state() {
-    return {
-      fetching: false,
-    };
-  }
 
   public static fields() {
     return {
@@ -34,15 +32,22 @@ export default class extends Model {
     };
   }
 
-  private static getMeta() {
+  private static getMeta(): Meta {
     return this.store().getters["orm/getByEntity"](this.entity);
   }
 
-  private static setMeta(data: {
-    visibleKeys?: string[];
-    numRecords?: number;
-  }) {
+  private static setMeta(data: Meta) {
     return this.store().commit("orm/setByEntity", { key: this.entity, data });
+  }
+
+  public static set fetching(isFetching: boolean) {
+    this.setMeta({
+      fetching: isFetching,
+    });
+  }
+
+  public static get fetching(): boolean {
+    return this.getMeta().fetching || false;
   }
 
   public static async apiSendFriendRequest(_username: string) {
@@ -61,13 +66,13 @@ export default class extends Model {
     const storedData = this.query().with("lists").find(username);
 
     if (!storedData) {
-      this.commit((state) => (state.fetching = true));
+      this.fetching = true;
       const response: ISrkResponse<IMemberPayload> =
         await this.store().dispatch("api/send", {
           method: "get",
           url: "/api/users/" + username,
         } as AxiosRequestConfig);
-      this.commit((state) => (state.fetching = false));
+      this.fetching = false;
 
       if (response.ok) {
         this.insertOrUpdate({

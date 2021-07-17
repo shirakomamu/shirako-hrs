@@ -556,7 +556,7 @@ export default defineComponent({
     );
     const defaultLocationDraft = ref<string | null>(defaultLocation.value);
 
-    watch(defaultLocation, (newValue: string | null) => {
+    watch(defaultLocation, (newValue) => {
       defaultLocationDraft.value = newValue;
     });
 

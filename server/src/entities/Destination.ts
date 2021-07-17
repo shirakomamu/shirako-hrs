@@ -67,7 +67,7 @@ export default new EntitySchema<Destination, BaseEntity>({
     rating: { type: "number" },
     review_count: { type: "number" },
     display_address: { type: ArrayType },
-    display_phone: { type: "number" },
+    display_phone: { type: "string" },
     hours: { type: ArrayType },
     special_hours: { type: ArrayType },
   },

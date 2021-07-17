@@ -1,5 +1,6 @@
 import { BusinessIdentifyDto } from "common/dto/items";
 import { IDestinationItemPayload } from "common/types/api/items";
+import { YELP_BUSINESS_MAX_AGE } from "server/config/yelp";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import businessIdentifyCached from "server/services/yelp/businessIdentifyCached";
@@ -11,7 +12,11 @@ export default async (
   const repo = DI.destinationItemRepo;
   let item = await repo.findOne({ yelpId: id });
 
-  if (!item) {
+  if (
+    !item ||
+    item.updatedAt.getTime() <
+      Date.now() - YELP_BUSINESS_MAX_AGE * 24 * 60 * 60 * 1000
+  ) {
     const r = await businessIdentifyCached({ id });
 
     item = repo.create({

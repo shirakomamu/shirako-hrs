@@ -34,6 +34,7 @@ module.exports = {
       dropShadow: ["hover", "focus"],
       fontWeight: ["hover", "focus", "disabled"],
       opacity: ["disabled"],
+      display: ["dark"],
     },
   },
   plugins: [

@@ -77,5 +77,8 @@ export default async (id: string) => {
     });
   }
 
-  return response as BusinessIdentifyResponse;
+  return {
+    ...response,
+    special_hours: response.special_hours || [], // it's sometimes undefined
+  } as BusinessIdentifyResponse;
 };

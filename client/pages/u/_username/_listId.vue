@@ -23,11 +23,13 @@
           p-8
         "
       >
+        <Loader v-if="listLoading" class="loading text-blue-srk" />
         <p v-for="(item, index) in list.items" :key="index">{{ item.id }}</p>
       </div>
       <ComboButton @click="showSearchModal = true">Show</ComboButton>
       <YelpSearchModal
         :visible="showSearchModal"
+        :managed-list="list"
         @hide="showSearchModal = false"
       />
     </template>
@@ -42,14 +44,13 @@
 import {
   computed,
   defineComponent,
+  onMounted,
   ref,
   useContext,
   useMeta,
   useRoute,
   useStore,
-  watch,
 } from "@nuxtjs/composition-api";
-import useList from "client/composables/useList";
 import Loader from "client/components/icons/Loader.vue";
 import ArrowBack from "client/components/icons/ArrowBack.vue";
 import { DestinationListModel } from "client/models";
@@ -65,45 +66,28 @@ export default defineComponent({
     const store = useStore();
     const model = store.$db().model(DestinationListModel);
 
-    const list = useList({
-      username: route.value.params.username,
-      id: route.value.params.listId,
-    });
+    // useList({
+    //   username: route.value.params.username,
+    //   id: route.value.params.listId,
+    // });
+
+    onMounted(() =>
+      model.apiFetch({
+        username: route.value.params.username,
+        id: route.value.params.listId,
+      })
+    );
 
     const showSearchModal = ref<boolean>(false);
 
-    watch(
-      () => route.value.params.username,
-      async (value: string) => {
-        list.value = null;
-        const r = await model.apiFetch({
-          username: value,
-          id: route.value.params.listId,
-        });
-
-        if (!r) {
-          return context.error({ statusCode: 404 });
-        }
-
-        list.value = r;
-      }
+    const list = computed(() =>
+      model
+        .query()
+        .with("items")
+        .find([route.value.params.username, route.value.params.listId])
     );
-    watch(
-      () => route.value.params.listId,
-      async (value: string) => {
-        list.value = null;
-        const r = await model.apiFetch({
-          username: route.value.params.username,
-          id: value,
-        });
 
-        if (!r) {
-          return context.error({ statusCode: 404 });
-        }
-
-        list.value = r;
-      }
-    );
+    const listLoading = computed<boolean>(() => model.fetching);
 
     const title = computed(() => list.value?.name);
 
@@ -115,6 +99,7 @@ export default defineComponent({
 
     return {
       route,
+      listLoading,
 
       showSearchModal,
 
@@ -128,9 +113,6 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.list-description-form {
-  resize: vertical;
-}
 .loading {
   height: 4rem;
   width: 4rem;

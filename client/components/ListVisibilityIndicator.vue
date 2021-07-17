@@ -14,11 +14,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  PropOptions,
-} from "@nuxtjs/composition-api";
+import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import { ListVisibility } from "common/enums";
 import Groups from "client/components/icons/Groups.vue";
@@ -34,9 +30,9 @@ export default defineComponent({
   },
   props: {
     visibility: {
-      type: String,
+      type: String as PropType<ListVisibility>,
       required: true,
-    } as PropOptions<ListVisibility>,
+    },
   },
   setup(props) {
     const listOptions = useListVisibilityOptions();

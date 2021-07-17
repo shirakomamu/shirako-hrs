@@ -1,11 +1,15 @@
 import { GetterTree, MutationTree } from "vuex";
 
-export const state = () => ({});
+export const state = () => ({
+  container: {} as { [key: string]: any },
+});
 
 export interface ModuleState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<ModuleState, ModuleState> = {
-  getByEntity: (state) => (key: keyof ModuleState) => state[key] || {},
+  getByEntity: (state) => (key: keyof ModuleState) => {
+    return state.container[key] || {};
+  },
 };
 
 export const mutations: MutationTree<ModuleState> = {
@@ -13,6 +17,11 @@ export const mutations: MutationTree<ModuleState> = {
     state,
     { key, data }: { key: keyof ModuleState; data: any }
   ) => {
-    state[key] = Object.assign(state[key] || {}, data);
+    const { [key]: keyValue } = state.container;
+    const newState = {
+      ...keyValue,
+      ...data,
+    };
+    state.container = Object.assign({}, state.container, { [key]: newState });
   },
 };

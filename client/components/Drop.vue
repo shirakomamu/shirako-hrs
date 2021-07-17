@@ -73,7 +73,7 @@ export default defineComponent({
 
     watch(
       () => props.visible,
-      (newValue: boolean) => {
+      (newValue) => {
         transition.value = true; // prevents onClickOutside
         shown.value = newValue; // immediately begin opacity transition
         if (newValue) {

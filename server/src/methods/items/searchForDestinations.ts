@@ -28,7 +28,7 @@ export default async (
       display_address: e.location.display_address,
       display_phone: e.display_phone,
       lastUpdated:
-        items.find((e) => e.yelpId === e.id)?.updatedAt.getTime() || -1,
+        items.find((f) => f.yelpId === e.id)?.updatedAt.getTime() || -1,
       // @ts-expect-error
       hours: e.hours,
       // @ts-expect-error

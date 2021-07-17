@@ -12,7 +12,7 @@
             p-8
           "
         >
-          <img
+          <ImageFader
             :src="member.avatar"
             class="profile-avatar rounded-full mx-auto"
             alt="Avatar"
@@ -37,21 +37,50 @@
         </div>
 
         <div class="inset-0 absolute overflow-hidden">
-          <div
-            class="
-              p-bg
-              inset-0
-              w-full
-              h-full
-              filter
-              blur-xl
-              transform-gpu
-              scale-110
-              bg-left bg-no-repeat bg-cover bg-gray-200
-              dark:bg-gray-700
-            "
-            :class="pBgBackgroundUrl"
-          />
+          <div class="p-bg inset-0 w-full h-full bg-gray-200 dark:bg-gray-700">
+            <ImageFader
+              v-if="p[0]"
+              class="
+                inset-0
+                w-full
+                h-full
+                bg-left bg-no-repeat bg-cover
+                filter
+                blur-xl
+                transform-gpu
+                scale-110
+              "
+              :src="require('client/assets/images/p1.png')"
+            />
+            <ImageFader
+              v-if="p[1]"
+              class="
+                inset-0
+                w-full
+                h-full
+                bg-left bg-no-repeat bg-cover
+                filter
+                blur-xl
+                transform-gpu
+                scale-110
+              "
+              :src="require('client/assets/images/p2.png')"
+            />
+            <ImageFader
+              v-if="p[2]"
+              class="
+                inset-0
+                w-full
+                h-full
+                bg-left bg-no-repeat bg-cover
+                filter
+                blur-xl
+                transform-gpu
+                scale-110
+              "
+              :src="require('client/assets/images/p3.png')"
+            />
+          </div>
         </div>
       </div>
 
@@ -137,7 +166,7 @@
               key="new"
               class="p-0"
               alt="Create list"
-              @click="showCreateListModal = true"
+              @click="onShowCreateListModal"
             >
               <DestinationListAddAvatar />
             </ComboButton>
@@ -209,6 +238,7 @@
             "
           >
             <Input
+              ref="listNameInput"
               v-model="formListName"
               type="text"
               passive-text="Choose a descriptive name. It must be 1 to 24 characters long."
@@ -284,6 +314,7 @@ import { Guard } from "common/types/hrbac";
 import {
   computed,
   defineComponent,
+  nextTick,
   onMounted,
   ref,
   useContext,
@@ -305,6 +336,7 @@ import uniqueId from "common/utils/uniqueId";
 import { ListVisibility } from "common/enums";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import { CreateListDto } from "common/dto/lists";
+import Input from "client/components/Input.vue";
 
 export default defineComponent({
   meta: {
@@ -343,6 +375,8 @@ export default defineComponent({
       }
     );
 
+    const listNameInput = ref<null | InstanceType<typeof Input>>(null);
+
     const isFriend = computed(() => member.value?.isFriend);
     const isAcceptingRequests = computed(
       () => member.value?.isAcceptingFriends
@@ -369,6 +403,11 @@ export default defineComponent({
     }));
 
     // form items
+    const onShowCreateListModal = async () => {
+      showCreateListModal.value = true;
+      await nextTick();
+      listNameInput.value?.focus();
+    };
     const router = useRouter();
     const listModel = store.$db().model(DestinationListModel);
     const showCreateListModal = ref<boolean>(false);
@@ -409,19 +448,20 @@ export default defineComponent({
       }
     };
 
-    const pBgBackgroundUrl = ref<{ [key: string]: boolean }>({});
+    const pIndex = ref<number | null>(null);
+    const p = computed(() => {
+      return [false, false, false].map((_e, i) => pIndex.value === i);
+    });
 
     onMounted(() => {
-      const possibleClasses = ["p1", "p2", "p3"];
-      pBgBackgroundUrl.value = {
-        [possibleClasses[Math.floor(Math.random() * possibleClasses.length)]]:
-          true,
-      };
+      pIndex.value = Math.floor(Math.random() * p.value.length);
     });
 
     return {
       route,
-      pBgBackgroundUrl,
+      pIndex,
+      p,
+      // pBgBackgroundUrl,
 
       member,
       isMe,
@@ -435,6 +475,8 @@ export default defineComponent({
       destinationLists,
 
       // form
+      onShowCreateListModal,
+      listNameInput,
       showCreateListModal,
       onCreate,
       formListName,
@@ -456,18 +498,18 @@ export default defineComponent({
 <style lang="less" scoped>
 .p-bg {
   z-index: 1;
-  &.p1 {
-    background-image: url("client/assets/images/p1.png");
-    opacity: 1;
-  }
-  &.p2 {
-    background-image: url("client/assets/images/p2.png");
-    opacity: 1;
-  }
-  &.p3 {
-    background-image: url("client/assets/images/p3.png");
-    opacity: 1;
-  }
+  // &.p1 {
+  //   background-image: url("client/assets/images/p1.png");
+  //   opacity: 1;
+  // }
+  // &.p2 {
+  //   background-image: url("client/assets/images/p2.png");
+  //   opacity: 1;
+  // }
+  // &.p3 {
+  //   background-image: url("client/assets/images/p3.png");
+  //   opacity: 1;
+  // }
 }
 .p-bg-text {
   --tw-drop-shadow: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.3))

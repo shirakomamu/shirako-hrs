@@ -49,9 +49,9 @@ import {
   defineComponent,
   ref,
   computed,
-  PropOptions,
   nextTick,
   watch,
+  PropType,
 } from "@nuxtjs/composition-api";
 import Loader from "client/components/icons/Loader.vue";
 import Check from "client/components/icons/Check.vue";
@@ -79,9 +79,9 @@ export default defineComponent({
     // if it's an empty string or true, then it will be valid
     // if it's false, then it will be invalid without a validation error
     validator: {
-      type: Function,
+      type: Function as PropType<(...args: any) => Promise<string>>,
       default: () => "",
-    } as PropOptions<(...args: any) => Promise<string>>,
+    },
     passiveText: {
       type: String,
       default: "",

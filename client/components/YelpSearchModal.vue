@@ -5,14 +5,26 @@
     @hide="emit('hide', ...arguments)"
   >
     <div class="p-8 bg-gray-200 dark:bg-gray-700">
-      <YelpSearchModule ref="module" @pick="emit('pick', ...arguments)" />
+      <YelpSearchModule
+        ref="module"
+        :managed-list="managedList"
+        @pick="emit('pick', ...arguments)"
+      />
     </div>
   </Modal>
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, ref, watch } from "@nuxtjs/composition-api";
+import {
+  defineComponent,
+  nextTick,
+  PropType,
+  ref,
+  watch,
+} from "@nuxtjs/composition-api";
+import { Item } from "@vuex-orm/core";
 import YelpSearchModule from "client/components/YelpSearchModule.vue";
+import { DestinationListModel } from "client/models";
 
 export default defineComponent({
   name: "YelpSearchModal",
@@ -20,6 +32,10 @@ export default defineComponent({
     visible: {
       type: Boolean,
       default: false,
+    },
+    managedList: {
+      type: Object as PropType<Item<DestinationListModel> | null>,
+      default: null,
     },
   },
   setup(props, { emit }) {

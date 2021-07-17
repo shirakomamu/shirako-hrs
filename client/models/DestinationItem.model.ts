@@ -5,6 +5,10 @@ import { ISrkResponse } from "common/types/api";
 import { IDestinationItemPayload } from "common/types/api/items";
 import VgtParamModel from "./VgtParam.model";
 
+interface Meta {
+  fetching?: boolean;
+}
+
 export default class extends Model {
   static entity = "destinationItem";
   static primaryKey = "id";
@@ -38,12 +42,6 @@ export default class extends Model {
 
   private detailsLoaded!: boolean;
 
-  public static state() {
-    return {
-      fetching: false,
-    };
-  }
-
   public static fields() {
     return {
       id: this.string(null),
@@ -61,28 +59,35 @@ export default class extends Model {
     };
   }
 
-  private static getMeta() {
+  private static getMeta(): Meta {
     return this.store().getters["orm/getByEntity"](this.entity);
   }
 
-  private static setMeta(data: {
-    visibleKeys?: string[];
-    numRecords?: number;
-  }) {
+  private static setMeta(data: Meta) {
     return this.store().commit("orm/setByEntity", { key: this.entity, data });
+  }
+
+  public static set fetching(isFetching: boolean) {
+    this.setMeta({
+      fetching: isFetching,
+    });
+  }
+
+  public static get fetching(): boolean {
+    return this.getMeta().fetching || false;
   }
 
   public static async apiFetch(data: BusinessIdentifyDto) {
     const storedData = this.query().with("items").find(data.id);
 
     if (!storedData || !storedData.detailsLoaded) {
-      this.commit((state) => (state.fetching = true));
+      this.fetching = true;
       const response: ISrkResponse<IDestinationItemPayload> =
         await this.store().dispatch("api/send", {
           method: "get",
           url: "/api/items/identify/" + data.id,
         } as AxiosRequestConfig);
-      this.commit((state) => (state.fetching = false));
+      this.fetching = false;
 
       if (response.ok) {
         this.insertOrUpdate({

@@ -42,18 +42,38 @@
       </div>
 
       <div class="inset-0 absolute overflow-hidden">
-        <div
-          class="
-            tag-bg
-            inset-0
-            w-full
-            h-full
-            filter
-            transform-gpu
-            scale-110
-            bg-left bg-no-repeat bg-cover
-          "
-        />
+        <div class="tag-bg inset-0 w-full h-full">
+          <ImageFader
+            class="
+              dark:hidden
+              inset-0
+              w-full
+              h-full
+              bg-left bg-no-repeat bg-cover
+              filter
+              blur-xl
+              transform-gpu
+              scale-110
+            "
+            :src="require('client/assets/images/t5.png')"
+          />
+          <ImageFader
+            class="
+              hidden
+              dark:block
+              inset-0
+              w-full
+              h-full
+              bg-left bg-no-repeat bg-cover
+              filter
+              blur-xl
+              brightness-50
+              transform-gpu
+              scale-110
+            "
+            :src="require('client/assets/images/t6.png')"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -87,13 +107,13 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .tag-bg {
-  background-image: url("client/assets/images/t5.png");
-  filter: blur(24px);
+  // background-image: url("client/assets/images/t5.png");
+  // filter: blur(24px);
 
-  @media (prefers-color-scheme: dark) {
-    background-image: url("client/assets/images/t6.png");
-    filter: brightness(50%) blur(24px);
-  }
+  // @media (prefers-color-scheme: dark) {
+  //   background-image: url("client/assets/images/t6.png");
+  //   filter: brightness(50%) blur(24px);
+  // }
 
   z-index: 1;
 }

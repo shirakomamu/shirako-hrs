@@ -24,20 +24,35 @@
       </a>
     </div>
 
-    <div class="grid grid-cols-1 text-sm">
-      <template v-if="display_address">
-        <p v-for="(line, index) in display_address" :key="index">{{ line }}</p>
-      </template>
-      <p class="text-green-600 dark:text-green-500">{{ display_phone }}</p>
+    <div class="flex flex-row items-center">
+      <div class="flex-grow grid grid-cols-1 text-sm">
+        <template v-if="display_address">
+          <p v-for="(line, index) in display_address" :key="index">
+            {{ line }}
+          </p>
+        </template>
+        <p class="text-green-600 dark:text-green-500">{{ display_phone }}</p>
+      </div>
+      <div v-if="showAddButton">
+        <ComboButton
+          :alt="isAdded ? 'Add to list' : 'Added'"
+          class="text-sm bg-blue-srk text-white"
+          :disabled="!isAdded || isAdding"
+          :loading="isAdding"
+          @click="addItem"
+          ><Add class="icon-inline" />
+          {{ isAdded ? "Add to list" : "Added" }}</ComboButton
+        >
+      </div>
     </div>
 
     <div class="grid grid-cols-1 text-xs">
-      <p class="text-orange-srk">
+      <div class="text-orange-srk">
         <StarRating :rating="rating" :max-rating="5" /> ({{
           review_count
         }}
         review{{ review_count === 1 ? "" : "s" }})
-      </p>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 opacity-50 text-xs">
@@ -47,14 +62,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropOptions } from "@nuxtjs/composition-api";
+import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import { format } from "date-fns";
 import OpenInNew from "client/components/icons/OpenInNew.vue";
+import Add from "client/components/icons/Add.vue";
 
 export default defineComponent({
   name: "YelpSearchModuleItem",
   components: {
     OpenInNew,
+    Add,
   },
   props: {
     id: {
@@ -82,9 +99,9 @@ export default defineComponent({
       required: true,
     },
     display_address: {
-      type: Array,
+      type: Array as PropType<string[]>,
       required: true,
-    } as PropOptions<string[]>,
+    },
     display_phone: {
       type: String,
       required: true,
@@ -93,14 +110,31 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    showAddButton: {
+      type: Boolean,
+      default: false,
+    },
+    isAdded: {
+      type: Boolean,
+      default: false,
+    },
+    isAdding: {
+      type: Boolean,
+      default: false,
+    },
   },
-  setup(props) {
-    const lastUpdatedString =
+  setup(props, { emit }) {
+    const lastUpdatedString = computed(() =>
       props.lastUpdated > 0
         ? format(props.lastUpdated, "yyyy-MM-dd HH:mm")
-        : "never";
+        : "never"
+    );
 
-    return { lastUpdatedString };
+    const addItem = () => {
+      emit("pick", props.id);
+    };
+
+    return { lastUpdatedString, addItem };
   },
 });
 </script>

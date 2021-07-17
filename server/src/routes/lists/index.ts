@@ -4,6 +4,7 @@ import { route } from "server/middleware/route";
 import useSimpleGuard from "server/middleware/useSimpleGuard";
 import ListsController from "./lists.controller";
 import {
+  AddItemToDestinationListValidators,
   CreateDestinationListValidators,
   GetDestinationListValidators,
 } from "./lists.validation";
@@ -24,6 +25,24 @@ router.get(
   "/:username/:id",
   [...GetDestinationListValidators],
   route(controller.getDestinationList)
+);
+
+router.post(
+  "/:username/:id/items/:destinationId",
+  [
+    useSimpleGuard([Role._self_destination_lists]),
+    ...AddItemToDestinationListValidators,
+  ],
+  route(controller.addItemToList)
+);
+
+router.delete(
+  "/:username/:id/items/:destinationId",
+  [
+    useSimpleGuard([Role._self_destination_lists]),
+    ...AddItemToDestinationListValidators,
+  ],
+  route(controller.removeItemFromList)
 );
 
 export default router;

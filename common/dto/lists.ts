@@ -10,3 +10,11 @@ export type GetListDto = {
   username: string;
   id: string;
 };
+
+export type AddItemToListDto = {
+  username: string;
+  id: string;
+  destinationId: string;
+};
+
+export type RemoveItemFromListDto = AddItemToListDto;
