@@ -1,8 +1,5 @@
 import { BusinessIdentifyDto } from "common/dto/items";
-import {
-  GENERAL_USAGE_PREFIX,
-  GEN_BUSINESS_IDENTIFY_PREFIX,
-} from "server/config/redis";
+import { GEN_BUSINESS_IDENTIFY_PREFIX } from "server/config/redis";
 import redisGu from "server/services/redis-gu";
 import businessIdentify, { BusinessIdentifyResponse } from "./businessIdentify";
 
@@ -18,7 +15,7 @@ export default async ({ id }: BusinessIdentifyDto) => {
 };
 
 const getCacheKey = ({ id }: BusinessIdentifyDto) => {
-  return GENERAL_USAGE_PREFIX + GEN_BUSINESS_IDENTIFY_PREFIX + id;
+  return GEN_BUSINESS_IDENTIFY_PREFIX + id;
 };
 
 const getCache = async ({ id }: BusinessIdentifyDto) => {

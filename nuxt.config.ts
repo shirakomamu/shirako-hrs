@@ -147,6 +147,13 @@ export default {
         })
       );
     },
+    loaders: {
+      vue: {
+        transformAssetUrls: {
+          ImageFader: ["src"],
+        },
+      },
+    },
     // babel: {
     //   plugins: ["@nuxtjs/composition-api/dist/babel-plugin"],
     // },

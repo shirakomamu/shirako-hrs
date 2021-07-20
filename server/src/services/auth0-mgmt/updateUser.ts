@@ -34,7 +34,7 @@ export default async (
     },
   });
 
-  await setCache({ id }, response);
+  await setCache({ id, username: response.username }, response);
 
   return response;
 };
