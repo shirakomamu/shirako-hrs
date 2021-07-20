@@ -1,8 +1,5 @@
 import { BusinessSearchDto } from "common/dto/items";
-import {
-  GENERAL_USAGE_PREFIX,
-  GEN_BUSINESS_SEARCH_PREFIX,
-} from "server/config/redis";
+import { GEN_BUSINESS_SEARCH_PREFIX } from "server/config/redis";
 import redisGu from "server/services/redis-gu";
 import businessSearch, { BusinessSearchResponse } from "./businessSearch";
 
@@ -17,9 +14,7 @@ export default async ({ term, location }: BusinessSearchDto) => {
 };
 
 const getCacheKey = ({ term, location }: BusinessSearchDto) => {
-  return (
-    GENERAL_USAGE_PREFIX + GEN_BUSINESS_SEARCH_PREFIX + term + "//" + location
-  );
+  return GEN_BUSINESS_SEARCH_PREFIX + term + "//" + location;
 };
 
 const getCache = async ({ term, location }: BusinessSearchDto) => {
