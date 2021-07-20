@@ -1,7 +1,7 @@
-import Actor from "src/classes/Actor";
+import Actor from "server/classes/Actor";
 import { AuthType } from "./jwt.enums";
 
-export type SrkCookie = {
+export interface SrkCookie {
   authType: AuthType;
   actor?: Actor;
-};
+}

@@ -3,10 +3,16 @@
     :type="type"
     :disabled="disabled"
     class="
+      transition
       button-container
-      hover:font-semibold
-      focus:font-semibold
-      disabled:font-normal
+      bg-opacity-80
+      hover:bg-opacity-100
+      focus:bg-opacity-100
+      disabled:bg-opacity-50
+      border-opacity-80
+      hover:border-opacity-100
+      focus:border-opacity-100
+      disabled:border-opacity-50
     "
     :class="{
       'opacity-50': loading || disabled,
@@ -15,7 +21,7 @@
     v-on="$listeners"
   >
     <Loader v-if="loading" class="loader" />
-    <div :class="{ hide: loading }">
+    <div :class="{ hide: loading }" class="w-full h-full">
       <slot />
     </div>
   </button>

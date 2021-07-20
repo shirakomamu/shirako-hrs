@@ -60,10 +60,10 @@
 import {
   computed,
   defineComponent,
-  PropOptions,
   ref,
   watch,
   nextTick,
+  PropType,
 } from "@nuxtjs/composition-api";
 import zxcvbn, { ZXCVBNResult } from "zxcvbn";
 import Loader from "client/components/icons/Loader.vue";
@@ -71,8 +71,8 @@ import Check from "client/components/icons/Check.vue";
 import Error from "client/components/icons/Error.vue";
 import Visibility from "client/components/icons/Visibility.vue";
 import VisibilityOff from "client/components/icons/VisibilityOff.vue";
-import uniqueId from "@@/common/utils/uniqueId";
-import endWithString from "@@/common/utils/endWithString";
+import uniqueId from "common/utils/uniqueId";
+import endWithString from "common/utils/endWithString";
 
 export default defineComponent({
   name: "PasswordInput",
@@ -98,9 +98,9 @@ export default defineComponent({
       default: 1000,
     },
     dict: {
-      type: Array,
-      default: (): string[] => [],
-    } as PropOptions<string[]>,
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
   },
   setup(props, { emit }) {
     // refs

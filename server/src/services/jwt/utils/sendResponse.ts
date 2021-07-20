@@ -1,15 +1,16 @@
 import { Response } from "express";
-import SrkError from "src/classes/SrkError";
-import SrkResponse from "src/classes/SrkResponse";
-import ISrkResponse from "@@/common/interfaces/api";
-import {
-  AUTH_JWT_COOKIE_NAME,
-  AUTH_JWT_COOKIE_PARAMETERS,
-} from "src/config/cookie";
-import { SrkExpressResponse, WithSrkExpressResponse } from "../jwt.interfaces";
+import SrkError from "server/classes/SrkError";
+import SrkResponse from "server/classes/SrkResponse";
+import { ISrkResponse } from "common/types/api";
+// import {
+//   AUTH_JWT_COOKIE_NAME,
+//   AUTH_JWT_COOKIE_PARAMETERS,
+// } from "server/config/cookie";
+import assert from "common/utils/assert";
+import { SrkExpressResponse } from "../jwt.interfaces";
 
 async function sendResponse(
-  res: Response | SrkExpressResponse | WithSrkExpressResponse,
+  res: Response | SrkExpressResponse,
   srk: SrkResponse
 ) {
   res.status(srk.status);
@@ -18,9 +19,9 @@ async function sendResponse(
     res.header(header, srk.headers[header]);
   }
 
-  if (srk.error?.status === 401) {
-    res.clearCookie(AUTH_JWT_COOKIE_NAME, AUTH_JWT_COOKIE_PARAMETERS);
-  }
+  // if (srk.error?.status === 401) {
+  //   res.clearCookie(AUTH_JWT_COOKIE_NAME, AUTH_JWT_COOKIE_PARAMETERS);
+  // }
 
   const srkResponse = {
     ok: srk.ok,
@@ -36,12 +37,13 @@ async function sendResponse(
   } as ISrkResponse<typeof srk.payload>;
 
   if (res.locals.controllerResult.payload) {
+    assert<SrkExpressResponse>(res);
     await res.locals.controllerResult.payload;
   }
 
   return res.json(srkResponse);
 }
 
-export default (res: WithSrkExpressResponse) => {
+export default (res: SrkExpressResponse) => {
   return sendResponse(res, res.locals.controllerResult);
 };

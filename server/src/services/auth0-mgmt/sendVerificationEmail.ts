@@ -1,7 +1,6 @@
-/* eslint-disable camelcase */
 import { send } from ".";
 
-export interface EmailVerificationResponse {
+interface EmailVerificationResponse {
   status: string;
   type: string;
   created_at: string;
@@ -30,10 +29,14 @@ export default async ({
 }) => {
   const ENDPOINT = "api/v2/jobs/verification-email"; // added onto issuer base url
 
-  const response = await send<EmailVerificationResponse>(ENDPOINT, "post", {
-    user_id: id,
-    identity,
-    organization_id: organizationId,
+  const response = await send<EmailVerificationResponse>(ENDPOINT, {
+    method: "post",
+    data: {
+      user_id: id,
+      identity,
+      organization_id: organizationId,
+    },
+    headers: {},
   });
 
   return response;

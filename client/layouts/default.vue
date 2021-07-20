@@ -109,20 +109,4 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less" scoped>
-.bg-flat {
-  background-color: #fff;
-  @media (prefers-color-scheme: dark) {
-    background-color: #191919;
-  }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
+<style lang="less" scoped></style>

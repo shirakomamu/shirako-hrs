@@ -1,19 +1,45 @@
-import appinfo from "@@/appinfo";
+// import appinfo from "appinfo";
+import fs from "fs";
+import { promisify } from "util";
 import { Client } from "@sendgrid/client";
 
-const REGISTRATION_EMAIL_VERIFICATION_TEMPLATE_ID =
-  "d-d01af89c05ff45889c9ec545f2895825";
+const readFile = promisify(fs.readFile);
 
-interface RegistrationEmailVerificationTemplate {
-  appName: string; // HRBAC Demo
-  appLink: string; // https://domain.link/
-  callbackOtp: string; // 000000
-  callbackLink: string; // https://domain.link/register?cb=<cbToken>
-}
+// const REGISTRATION_EMAIL_VERIFICATION_TEMPLATE_ID =
+//   "d-d01af89c05ff45889c9ec545f2895825";
 
-interface RegistrationEmailVerificationOptions {
-  callbackOtp: string;
-  callbackToken: string;
+// interface RegistrationEmailVerificationTemplate {
+//   appName: string; // Shirako Eats
+//   appLink: string; // https://domain.link/
+//   callbackOtp: string; // 000000
+//   callbackLink: string; // https://domain.link/register?cb=<cbToken>
+// }
+
+// interface RegistrationEmailVerificationOptions {
+//   callbackOtp: string;
+//   callbackToken: string;
+// }
+
+interface SendMailOptions {
+  from: {
+    email: string;
+    name: string;
+  };
+  reply_to?: {
+    email: string;
+    name: string;
+  };
+  content: {
+    type: string; // "text/html"
+    value: string; // "<html><p>Hello, world!</p></html>"
+  }[];
+  personalizations: {
+    subject: string;
+    to: {
+      email: string;
+      name: string;
+    }[];
+  }[];
 }
 
 class SendGrid {
@@ -24,44 +50,53 @@ class SendGrid {
     this.client.setApiKey(apiKey);
   }
 
-  public async sendRegistrationEmailVerification(
-    to: {
-      email: string;
-      name?: string;
-    },
-    options: RegistrationEmailVerificationOptions
-  ) {
-    const templateData: RegistrationEmailVerificationTemplate = {
-      appName: appinfo.name,
-      appLink: "https://hrs.shirako.dev/",
-      callbackOtp: options.callbackOtp,
-      callbackLink: `https://hrs.shirako.dev/register?cb=${options.callbackToken}`,
-    };
+  public async sendAccountDeletionConfirmation({
+    email,
+    name,
+  }: {
+    email: string;
+    name: string;
+  }) {
+    const html = await readFile(
+      "./server/src/templates/HRS_STATIC_account-deleted.html",
+      {
+        encoding: "utf-8",
+      }
+    );
 
-    const [r] = await this.client.request({
-      method: "POST",
-      url: "/v3/mail/send",
-      body: {
-        from: {
-          email: "noreply@shirako.dev",
-          name: appinfo.name,
-        },
-        personalizations: [
-          {
-            to: [to],
-            dynamic_template_data: templateData,
-          },
-        ],
-        template_id: REGISTRATION_EMAIL_VERIFICATION_TEMPLATE_ID,
+    await this.send({
+      from: {
+        email: "noreply@shirako.dev",
+        name: "shirako",
       },
+      content: [
+        {
+          type: "text/html",
+          value: html,
+        },
+      ],
+      personalizations: [
+        {
+          subject: "[Shirako Eats] Account deleted",
+          to: [{ email, name }],
+        },
+      ],
+    });
+  }
+
+  public async send(data: SendMailOptions) {
+    const [r] = await this.client.request({
+      method: "post",
+      url: "/v3/mail/send",
+      body: data,
     });
 
-    return r;
+    return r.body;
   }
 
   public async checkQuota() {
     const [r] = await this.client.request({
-      method: "GET",
+      method: "get",
       url: "/v3/user/credits",
     });
 

@@ -1,11 +1,11 @@
-import Snowflake from "src/classes/Snowflake";
+import Snowflake from "server/classes/Snowflake";
 import {
   SNOWFLAKE_EPOCH,
   SNOWFLAKE_WORKER_ID,
   SNOWFLAKE_WORKER_BITS,
   SNOWFLAKE_PROCESS_BITS,
   SNOWFLAKE_INCREMENT_BITS,
-} from "src/config/snowflake";
+} from "server/config/snowflake";
 
 const worker = new Snowflake({
   epoch: SNOWFLAKE_EPOCH,

@@ -13,13 +13,28 @@ module.exports = {
     textColor: (theme) => ({
       ...theme("colors"),
       "blue-srk": "#0089ff",
+      "orange-srk": "#ff7600",
+    }),
+    borderColor: (theme) => ({
+      ...theme("colors"),
+      "blue-srk": "#0089ff",
+      "orange-srk": "#ff7600",
+    }),
+    backgroundColor: (theme) => ({
+      ...theme("colors"),
+      "blue-srk": "#0089ff",
+      "orange-srk": "#ff7600",
     }),
   },
   variants: {
     extend: {
-      opacity: ["disabled"],
+      backgroundOpacity: ["disabled"],
+      borderOpacity: ["disabled"],
       cursor: ["disabled"],
+      dropShadow: ["hover", "focus"],
       fontWeight: ["hover", "focus", "disabled"],
+      opacity: ["disabled"],
+      display: ["dark"],
     },
   },
   plugins: [

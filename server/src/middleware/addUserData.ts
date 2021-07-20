@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 // import { JwtHeader } from "jsonwebtoken";
 // import jwksClient from "jwks-rsa";
-import { SrkCookie, AuthType } from "src/services/jwt";
-import Actor from "src/classes/Actor";
-import hrbac, { RoleGroup } from "src/services/hrbac";
-import { Auth0UserMetadataDto } from "@@/common/dto/auth";
-import getUserCached from "src/services/auth0-mgmt/getUserCached";
+import { SrkCookie, AuthType } from "server/services/jwt";
+import Actor from "server/classes/Actor";
+import getUserCached from "server/services/auth0-mgmt/getUserCached";
+import transformUserToActor from "server/services/auth0-mgmt/transformUserToActor";
 
 // .getUserInfo()
 // {
@@ -43,48 +42,35 @@ import getUserCached from "src/services/auth0-mgmt/getUserCached";
 //   sub: 'auth0|60cd8d8f34a3650069ed5923'
 // }
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, _res: Response, next: NextFunction) => {
+  if (!req.locals) {
+    req.locals = {};
+  }
+
   if (
     !req.oidc.isAuthenticated() ||
     !req.oidc.user ||
     !req.oidc.accessToken ||
     !req.oidc.idTokenClaims
   ) {
-    res.locals.authResult = {
+    req.locals.authResult = {
       authType: AuthType.none,
     } as SrkCookie;
     return next();
   }
 
   try {
-    const userinfo = await getUserCached(req.oidc.user.sub);
-    // const userinfo = await req.oidc.fetchUserInfo();
-    const rro = await hrbac.rro;
+    const [userinfo] = await Promise.all([
+      getUserCached({ id: req.oidc.user.sub }),
+      req.oidc.accessToken.isExpired() ? req.oidc.accessToken.refresh() : null,
+    ]);
 
-    res.locals.authResult = {
+    req.locals.authResult = {
       authType: AuthType.auth0,
-      actor: new Actor(
-        {
-          id: userinfo.user_id || "N/A",
-          username: userinfo.username || "N/A",
-          nickname: userinfo.nickname || "N/A",
-          email: userinfo.email || "N/A",
-          avatar:
-            process.env.DEFAULT_PROFILE_PICTURE_OVERRIDE_URL ||
-            userinfo.picture ||
-            "",
-          cohort: null,
-          key: null,
-          rgs: userinfo.email_verified
-            ? [RoleGroup.member_verified]
-            : [RoleGroup.member],
-          meta: (userinfo.user_metadata as Auth0UserMetadataDto) || {},
-        },
-        rro
-      ),
+      actor: new Actor(transformUserToActor(userinfo)),
     } as SrkCookie;
   } catch (e) {
-    res.locals.authResult = {
+    req.locals.authResult = {
       authType: AuthType.none,
     } as SrkCookie;
   } finally {

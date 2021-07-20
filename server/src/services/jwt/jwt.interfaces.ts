@@ -1,16 +1,15 @@
-import { Response } from "express";
-import SrkResponse from "src/classes/SrkResponse";
+import { Request, Response } from "express";
+import SrkResponse from "server/classes/SrkResponse";
 import { SrkCookie } from "./jwt.types";
 
-export type SrkExpressResponse = Response & {
+export interface SrkExpressRequest extends Request {
   locals: {
     authResult: SrkCookie;
   };
-};
+}
 
-export type WithSrkExpressResponse<T = any> = SrkExpressResponse & {
+export interface SrkExpressResponse<T = any> extends Response {
   locals: {
-    authResult: SrkCookie;
     controllerResult: SrkResponse<T>;
   };
-};
+}

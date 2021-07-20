@@ -1,5 +1,5 @@
 import { BigIntType, EntitySchema } from "@mikro-orm/core";
-import snowflake from "src/services/snowflake";
+import snowflake from "server/services/snowflake";
 
 export class BaseEntity {
   id!: string;

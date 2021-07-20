@@ -1,5 +1,5 @@
-import configuration from "src/config/srkError";
-import { SrkErrorInstance } from "src/services/srk-error";
+import configuration from "server/config/srkError";
+import { SrkErrorInstance } from "server/services/srk-error";
 
 export default class SrkError<T = any> implements SrkErrorInstance {
   public name: string;

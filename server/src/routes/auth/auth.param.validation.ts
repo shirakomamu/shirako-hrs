@@ -1,11 +1,13 @@
 import { ParamSchema } from "express-validator";
-import { ListVisibility, FriendRequestPrivacy } from "@@/common/enums";
+import { ListVisibility, FriendRequestPrivacy } from "common/enums";
+import hrbacCan from "common/utils/hrbacCan";
+import { Role } from "common/enums/hrbac";
+import { SrkExpressRequest } from "server/services/jwt";
 
+const protectedUsernames = [/^me$/i, /.{0,}mamu.{0,}/i, /.{0,}shirako.{0,}/i];
 export const UsernameParamSchema: ParamSchema = {
-  in: ["body"],
   isString: {
     errorMessage: "Username must be a string",
-    bail: true,
   },
   trim: true,
   isLength: {
@@ -15,12 +17,22 @@ export const UsernameParamSchema: ParamSchema = {
       max: 24,
     },
   },
+  toLowerCase: true,
   custom: {
     errorMessage:
-      "Username is limited to alphanumeric characters and these symbols: @, ^, $, ., !, `, -, #, +, ', ~, _",
-    options: (value: string) => {
+      "Username is limited to alphanumeric characters and the symbols [@, ^, $, ., !, `, -, #, +, ', ~, _], or you cannot use this username",
+    options: (value: string, { req }) => {
+      const actor = (req as SrkExpressRequest).locals.authResult.actor;
+
+      const tests: boolean[] = [];
       // https://auth0.com/docs/connections/database/require-username
-      return /^[A-z0-9@^$.!`\-#+'~_]+$/.test(value);
+      tests.push(/^[A-z0-9@^$.!`\-#+'~_]+$/.test(value));
+
+      if (!hrbacCan({ roles: [Role._protected_usernames] }, actor)) {
+        tests.push(!protectedUsernames.some((e) => e.test(value)));
+      }
+
+      return tests.every((e) => e);
     },
   },
   isEmail: {
@@ -30,7 +42,6 @@ export const UsernameParamSchema: ParamSchema = {
 };
 
 export const NicknameParamSchema: ParamSchema = {
-  in: ["body"],
   isString: {
     errorMessage: "Nickname must be a string",
   },
@@ -45,14 +56,12 @@ export const NicknameParamSchema: ParamSchema = {
 };
 
 export const EmailParamSchema: ParamSchema = {
-  in: ["body"],
   isEmail: {
     errorMessage: "Email address is not valid",
   },
 };
 
 export const FriendRequestPrivacyParamSchema: ParamSchema = {
-  in: ["body"],
   custom: {
     errorMessage: "Option is invalid",
     options: (value: any) => {
@@ -62,11 +71,24 @@ export const FriendRequestPrivacyParamSchema: ParamSchema = {
 };
 
 export const DefaultListVisibilityParamSchema: ParamSchema = {
-  in: ["body"],
   custom: {
     errorMessage: "Option is invalid",
     options: (value: any) => {
       return Object.values(ListVisibility).includes(value);
+    },
+  },
+};
+
+export const DefaultLocationParamSchema: ParamSchema = {
+  optional: {
+    options: {
+      nullable: true,
+    },
+  },
+  isString: true,
+  isLength: {
+    options: {
+      max: 64,
     },
   },
 };

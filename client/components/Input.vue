@@ -1,8 +1,10 @@
 <template>
   <div class="grid grid-cols-1 gap-1">
+    <label :for="thisUid">{{ label }}</label>
     <div class="flex flex-row items-center container">
       <div class="flex-grow">
         <input
+          :id="thisUid"
           ref="inputElem"
           :value="value"
           v-bind="$attrs"
@@ -13,7 +15,6 @@
               'pr-10': !['failure', 'none'].includes(indicatorState),
             },
           ]"
-          @input.once="setTouched"
           @invalid="onInvalid"
           v-on="{
             ...$listeners,
@@ -48,13 +49,14 @@ import {
   defineComponent,
   ref,
   computed,
-  PropOptions,
   nextTick,
+  watch,
+  PropType,
 } from "@nuxtjs/composition-api";
 import Loader from "client/components/icons/Loader.vue";
 import Check from "client/components/icons/Check.vue";
 import Error from "client/components/icons/Error.vue";
-import uniqueId from "@@/common/utils/uniqueId";
+import uniqueId from "common/utils/uniqueId";
 
 export default defineComponent({
   name: "Input",
@@ -77,9 +79,9 @@ export default defineComponent({
     // if it's an empty string or true, then it will be valid
     // if it's false, then it will be invalid without a validation error
     validator: {
-      type: Function,
+      type: Function as PropType<(...args: any) => Promise<string>>,
       default: () => "",
-    } as PropOptions<(...args: any) => Promise<string>>,
+    },
     passiveText: {
       type: String,
       default: "",
@@ -88,19 +90,27 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    label: {
+      type: String,
+      default: "",
+    },
   },
   setup(props, { emit }) {
     // refs
     const inputElem = ref<HTMLInputElement | null>(null);
 
+    const uid = uniqueId();
+
+    const thisUid = "input-" + uid;
+
     // data
-    const inputContext = ref("0");
-    const validating = ref(false);
-    const touching = ref(false);
-    const touched = ref(false);
-    const validationChecked = ref(false);
+    const inputContext = ref<string>("0");
+    const validating = ref<boolean>(false);
+    const touching = ref<boolean>(false);
+    const touched = ref<boolean>(false);
+    const validationChecked = ref<boolean>(false);
     const timer = ref<any>(null);
-    const validationError = ref("");
+    const validationError = ref<string>("");
 
     const indicatorState = computed(
       (): "success" | "loading" | "failure" | "none" => {
@@ -113,17 +123,22 @@ export default defineComponent({
     );
 
     // methods
+    const focus = () => inputElem.value?.focus();
+
     const setValidationError = (newValue: string) => {
       (inputElem.value as HTMLInputElement)?.setCustomValidity(newValue);
       validationError.value = newValue;
       validationChecked.value = true;
     };
 
-    const setTouched = () => {
-      touched.value = true;
+    const setTouched = (state = true) => {
+      touched.value = state;
     };
 
     const onInput = (el: Event) => {
+      if (!touched.value) {
+        setTouched(true);
+      }
       touching.value = true;
       const uid = uniqueId();
       inputContext.value = uid;
@@ -165,7 +180,20 @@ export default defineComponent({
       setValidationError((el.target as HTMLInputElement).validationMessage);
     };
 
+    watch(
+      () => props.value,
+      () => {
+        if (!touching.value) {
+          validating.value = false;
+          touching.value = false;
+          setValidationError("");
+        }
+      }
+    );
+
     return {
+      thisUid,
+
       inputElem,
       inputContext,
       validating,
@@ -176,6 +204,7 @@ export default defineComponent({
       validationError,
       indicatorState,
 
+      focus,
       setTouched,
       onInput,
       onInvalid,

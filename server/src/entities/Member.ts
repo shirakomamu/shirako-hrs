@@ -14,31 +14,37 @@ export class Member extends BaseEntity {
     this.sub = sub;
   }
 
-  get confirmedFriends(): Friend[] {
+  get confirmedFriends(): Member[] {
     const outFriends = this.outgoingFriends.getItems();
     const inFriends = this.incomingFriends.getItems();
 
-    return outFriends.filter((e) => {
-      return inFriends.includes(e);
-    });
+    return outFriends
+      .filter((e) => {
+        return inFriends.includes(e);
+      })
+      .map((e) => e.friend);
   }
 
-  get pendingOutgoingFriends(): Friend[] {
+  get pendingOutgoingFriends(): Member[] {
     const outFriends = this.outgoingFriends.getItems();
     const inFriends = this.incomingFriends.getItems();
 
-    return outFriends.filter((e) => {
-      return !inFriends.includes(e);
-    });
+    return outFriends
+      .filter((e) => {
+        return !inFriends.includes(e);
+      })
+      .map((e) => e.friend);
   }
 
-  get pendingIncomingFriends(): Friend[] {
+  get pendingIncomingFriends(): Member[] {
     const outFriends = this.outgoingFriends.getItems();
     const inFriends = this.incomingFriends.getItems();
 
-    return inFriends.filter((e) => {
-      return !outFriends.includes(e);
-    });
+    return inFriends
+      .filter((e) => {
+        return !outFriends.includes(e);
+      })
+      .map((e) => e.user);
   }
 }
 

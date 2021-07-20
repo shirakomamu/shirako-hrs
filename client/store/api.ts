@@ -1,10 +1,10 @@
 import { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import { ActionTree } from "vuex";
-import ISrkResponse from "@@/common/interfaces/api";
+import { ISrkResponse } from "common/types/api";
 
 export const state = () => ({});
 
-export type ModuleState = ReturnType<typeof state>;
+export interface ModuleState extends ReturnType<typeof state> {}
 
 export const actions: ActionTree<ModuleState, ModuleState> = {
   async send(
@@ -37,24 +37,5 @@ export const actions: ActionTree<ModuleState, ModuleState> = {
         }
       );
     }
-  },
-  showNotification({ rootGetters: _rootGetters }, response) {
-    if (process.client) {
-      // rootGetters["uikit/instance"].notification({
-      //   message: `<div class="uk-flex uk-flex-middle"><span uk-icon="icon: ${
-      //     response.ok ? "check" : "warning"
-      //   };" class="${
-      //     response.ok ? "success-mark" : "error-mark"
-      //   } uk-margin-small-right"></span><span>${
-      //     response.ok
-      //       ? "Request processed successfully."
-      //       : `Error: [${response.error}]`
-      //   }</span></div>`,
-      //   pos: "top-right",
-      //   timeout: 5000,
-      // });
-    }
-
-    return response;
   },
 };

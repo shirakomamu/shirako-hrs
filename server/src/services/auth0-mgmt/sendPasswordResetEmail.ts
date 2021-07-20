@@ -1,7 +1,6 @@
-/* eslint-disable camelcase */
 import { send } from ".";
 
-export interface EmailVerificationResponse {
+interface EmailVerificationResponse {
   status: string;
   type: string;
   created_at: string;
@@ -19,18 +18,15 @@ export interface EmailVerificationResponse {
 export default async ({ email }: { email: string }) => {
   const ENDPOINT = "dbconnections/change_password"; // added onto issuer base url
 
-  const response = await send<EmailVerificationResponse>(
-    ENDPOINT,
-    "post",
-    {
+  const response = await send<EmailVerificationResponse>(ENDPOINT, {
+    method: "post",
+    data: {
       client_id: process.env.AUTH0_CLIENT_ID,
       email,
       connection: "Username-Password-Authentication",
     },
-    {
-      includeAccessToken: false,
-    }
-  );
+    headers: {},
+  });
 
   // it always returns successfully
 

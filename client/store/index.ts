@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 import { GetterTree, ActionTree, MutationTree } from "vuex";
-// import cookie from "cookie";
-// import ISrkResponse, { ISelfIdentifyPayload } from "@@/common/interfaces/api";
 
 export const state = () => ({});
 
-export type RootState = ReturnType<typeof state>;
+export interface RootState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<RootState, RootState> = {};
 

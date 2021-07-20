@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import SrkError from "src/classes/SrkError";
-import SrkResponse from "src/classes/SrkResponse";
+import SrkError from "server/classes/SrkError";
+import SrkResponse from "server/classes/SrkResponse";
 import {
   declareResponse,
   sendResponse,
+  SrkExpressRequest,
   SrkExpressResponse,
-  WithSrkExpressResponse,
-} from "src/services/jwt";
+} from "server/services/jwt";
 
 export default (
   error: Error | SrkError | null,
-  _req: Request,
-  res: Response | SrkExpressResponse | WithSrkExpressResponse,
+  _req: Request | SrkExpressRequest,
+  res: Response | SrkExpressResponse,
   _next: NextFunction
 ) => {
   if (error instanceof SrkError) {

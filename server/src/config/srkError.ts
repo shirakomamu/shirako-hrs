@@ -1,4 +1,4 @@
-import { SrkErrorInstance } from "src/services/srk-error";
+import { SrkErrorInstance } from "server/services/srk-error";
 
 const config = {
   internalError: {
@@ -61,10 +61,10 @@ const config = {
     status: 429,
     message: "Too many requests have been performed. Try again later.",
   },
-  failedLogin: {
-    name: "failed_login",
+  notAllowed: {
+    name: "not_allowed",
     status: 400,
-    message: "Login credentials are incorrect. Check them and try again.",
+    message: "Data was rejected. Try again with different data.",
   },
 };
 

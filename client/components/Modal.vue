@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="modalOverlay"
     class="
       modal-overlay
       bg-opacity-50
@@ -13,7 +14,9 @@
       active: shown,
       visible: visibility,
     }"
-    :style="{ 'transition-duration': animationMs + 'ms' }"
+    :style="{ 'transition-duration': animationMs + 'ms', 'z-index': zIndex }"
+    tabindex="0"
+    @keydown.esc="onEscPress"
   >
     <div ref="modalContents" class="mx-auto" :class="containerClass">
       <div
@@ -30,7 +33,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "@nuxtjs/composition-api";
+import {
+  defineComponent,
+  nextTick,
+  onUnmounted,
+  ref,
+  watch,
+} from "@nuxtjs/composition-api";
 import vClickOutside from "v-click-outside";
 
 export default defineComponent({
@@ -54,6 +63,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    escClose: {
+      type: Boolean,
+      default: true,
+    },
     verticalCenter: {
       type: Boolean,
       default: false,
@@ -64,28 +77,65 @@ export default defineComponent({
     },
     animationMs: {
       type: Number,
-      default: 500,
+      default: 300,
     },
+    // zIndex: {
+    //   type: Number,
+    //   default: 999,
+    // },
   },
   setup(props, { emit }) {
+    const modalOverlay = ref<null | HTMLDivElement>(null);
     const modalContents = ref<null | HTMLDivElement>(null);
     const shown = ref<boolean>(props.visible);
     const visibility = ref<boolean>(props.visible);
     const transition = ref<boolean>(false);
 
-    const onClickOutside = (_event: Event) => {
-      if (props.clickClose && !transition.value && visibility.value) {
+    const onClickOutside = (event: Event) => {
+      if (
+        props.clickClose &&
+        !transition.value &&
+        visibility.value &&
+        event.target === modalOverlay.value // ensures it's not another modal
+      ) {
         emit("hide");
+      }
+    };
+
+    const onEscPress = (event: KeyboardEvent) => {
+      if (
+        props.escClose &&
+        !transition.value &&
+        visibility.value &&
+        modalOverlay.value?.contains(event.target as Node) // ensures it's not another modal
+      ) {
+        emit("hide");
+      }
+    };
+
+    const zIndex = ref<string>("1001");
+
+    const removeOverflowIfApplicable = () => {
+      // 1 because it includes itself
+      if (document.querySelectorAll(".modal-overlay.visible").length <= 1) {
+        document.querySelector("body")?.classList.remove("no-overflow");
       }
     };
 
     watch(
       () => props.visible,
-      (newValue: boolean) => {
+      async (newValue) => {
         transition.value = true; // prevents onClickOutside
         shown.value = newValue; // immediately begin opacity transition
         if (newValue) {
+          if (modalOverlay.value) {
+            // always make it higher than the last overlay
+            zIndex.value = (
+              1001 + document.querySelectorAll(".modal-overlay.visible").length
+            ).toString();
+          }
           visibility.value = true; // make it visible immediately
+
           const elem = modalContents.value;
           if (elem) {
             elem.scrollIntoView({ behavior: "smooth" });
@@ -94,21 +144,37 @@ export default defineComponent({
         if (props.overlay) {
           if (newValue)
             document.querySelector("body")?.classList.add("no-overflow");
-          else document.querySelector("body")?.classList.remove("no-overflow");
+          else removeOverflowIfApplicable();
         }
+
+        // focus if there is no other focus
+        await nextTick();
+        if (!modalOverlay.value?.contains(document.activeElement)) {
+          modalOverlay.value?.focus();
+        }
+
         setTimeout(() => {
           if (!newValue) visibility.value = false; // remove visibility after it's done
           transition.value = false; // re-enables onClickOutside
+          emit(newValue ? "shown" : "hidden");
         }, props.animationMs);
       }
     );
 
+    // ensures no orphan modal that's abruptly destroyed makes body stuck without scrolling
+    onUnmounted(() => {
+      removeOverflowIfApplicable();
+    });
+
     return {
+      modalOverlay,
       modalContents,
       shown,
       visibility,
       transition,
       onClickOutside,
+      onEscPress,
+      zIndex,
     };
   },
 });
@@ -118,7 +184,6 @@ export default defineComponent({
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 999; // 50 is appheader
   margin: 0px !important;
   visibility: hidden;
   opacity: 0;
@@ -135,7 +200,7 @@ export default defineComponent({
 
 .direct-container {
   position: relative;
-  top: -50%;
+  top: -20px;
   transition-property: opacity, top;
   transition-timing-function: ease;
   opacity: 0;

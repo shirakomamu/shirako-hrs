@@ -4,8 +4,8 @@ import {
   RateLimiterRes,
   RateLimiterRedis,
 } from "rate-limiter-flexible";
-import SrkError from "src/classes/SrkError";
-import redisRl from "src/services/redis-rl";
+import SrkError from "server/classes/SrkError";
+import redisRl from "server/services/redis-rl";
 import {
   BASE_POINTS,
   BASE_DURATION,
@@ -13,7 +13,7 @@ import {
   BASE_BURST_DURATION,
   BASE_SUBPREFIX,
   BASE_BURST_SUBPREFIX,
-} from "src/config/rateLimiter";
+} from "server/config/rateLimiter";
 
 const burstyLimiter = new BurstyRateLimiter(
   new RateLimiterRedis({

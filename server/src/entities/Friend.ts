@@ -1,4 +1,4 @@
-import assert from "@@/common/utils/assert";
+import assert from "common/utils/assert";
 import { ChangeSetType, EntitySchema, FlushEventArgs } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Member } from "./Member";
@@ -34,12 +34,8 @@ export class Friend extends BaseEntity {
           const targetUser = thisEntity.friend;
 
           return repo.findOne({
-            user: {
-              $eq: targetUser,
-            },
-            friend: {
-              $eq: originatingUser,
-            },
+            user: targetUser,
+            friend: originatingUser,
           });
         })
       )

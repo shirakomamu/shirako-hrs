@@ -18,7 +18,7 @@
     <div class="flex-grow" />
     <div class="flex items-center text-sm">
       <a
-        v-if="!user"
+        v-if="!self"
         key="sign-in-link"
         href="/api/auth/login"
         class="
@@ -50,7 +50,7 @@
             >
             <button class="p-0" @click="showPopup">
               <img
-                :src="user && user.avatar"
+                :src="self && self.avatar"
                 class="profile-avatar rounded-full pointer"
                 alt="Avatar"
                 width="32"
@@ -69,10 +69,10 @@
             <hr />
 
             <div class="grid grid-cols-1 gap-4 justify-items-center">
-              <nuxt-link to="/lists" class="text-blue-srk"
-                ><ViewStream class="icon-inline" />
+              <nuxt-link :to="'/u/' + username" class="text-blue-srk"
+                ><Person class="icon-inline" />
                 <span class="hover:underline focus:underline"
-                  >My lists</span
+                  >Profile</span
                 ></nuxt-link
               >
               <nuxt-link to="/friends" class="text-blue-srk"
@@ -81,10 +81,10 @@
                   >Friends</span
                 ></nuxt-link
               >
-              <nuxt-link to="/me" class="text-blue-srk"
+              <nuxt-link to="/settings" class="text-blue-srk"
                 ><Settings class="icon-inline" />
                 <span class="hover:underline focus:underline"
-                  >My account</span
+                  >Settings</span
                 ></nuxt-link
               >
             </div>
@@ -105,19 +105,18 @@
 </template>
 
 <script lang="ts">
-import { ActorDto } from "@@/common/dto/auth";
 import {
   computed,
   defineComponent,
   ref,
   useContext,
-  useStore,
 } from "@nuxtjs/composition-api";
+import useSelf from "client/composables/useSelf";
 import Dashboard from "client/components/icons/Dashboard.vue";
 import Logout from "client/components/icons/Logout.vue";
 import People from "client/components/icons/People.vue";
+import Person from "client/components/icons/Person.vue";
 import Settings from "client/components/icons/Settings.vue";
-import ViewStream from "client/components/icons/ViewStream.vue";
 
 export default defineComponent({
   name: "AppHeader",
@@ -125,18 +124,20 @@ export default defineComponent({
     Dashboard,
     Logout,
     People,
+    Person,
     Settings,
-    ViewStream,
   },
   setup() {
     const context = useContext();
-    const store = useStore();
+    const self = useSelf();
 
     const appName = context.$config.appinfo.name;
     const popupVisible = ref<boolean>(false);
-    const user = computed<ActorDto | null>(() => store.getters["auth/actor"]);
+    const username = computed(
+      (): string | null => self.value?.username || null
+    );
     const nickname = computed(
-      (): string | null => user.value?.nickname || null
+      (): string | null => self.value?.nickname || null
     );
 
     const showPopup = () => (popupVisible.value = true);
@@ -145,7 +146,15 @@ export default defineComponent({
       window.location.href = "/api/auth/logout";
     };
 
-    return { appName, user, nickname, popupVisible, showPopup, signOut };
+    return {
+      appName,
+      self,
+      username,
+      nickname,
+      popupVisible,
+      showPopup,
+      signOut,
+    };
   },
 });
 </script>
@@ -156,23 +165,14 @@ export default defineComponent({
 }
 
 .app-icon {
-  content: url("client/assets/images/icons/hrs-128bi.png");
+  content: url("client/assets/images/icons/icon-512xt.png");
 
   @media (prefers-color-scheme: dark) {
-    content: url("client/assets/images/icons/hrs-128bi.png");
+    content: url("client/assets/images/icons/icon-512ft.png");
   }
 }
 
 .min-w-48 {
   min-width: 12rem;
-}
-
-.icon-inline {
-  display: inline;
-  height: 1.2em;
-  width: 1.2em;
-  cursor: pointer;
-  position: relative;
-  top: -2px;
 }
 </style>

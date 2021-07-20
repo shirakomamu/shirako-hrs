@@ -1,9 +1,9 @@
+import { Role } from "common/enums/hrbac";
 import { NextFunction, Request, Response } from "express";
-import { Role } from "src/services/hrbac";
-import { SrkExpressResponse } from "src/services/jwt";
+import { SrkExpressRequest } from "server/services/jwt";
 import useGuard from "./useGuard";
 
 export default (roles: Role[]) =>
-  (req: Request, res: Response | SrkExpressResponse, next: NextFunction) => {
+  (req: Request | SrkExpressRequest, res: Response, next: NextFunction) => {
     return useGuard({ roles })(req, res, next);
   };

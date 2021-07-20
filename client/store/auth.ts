@@ -1,12 +1,12 @@
 import { GetterTree, MutationTree, ActionTree } from "vuex";
-import { ActorDto } from "@@/common/dto/auth";
-import ISrkResponse, { ISelfIdentifyPayload } from "@@/common/interfaces/api";
+import { ActorDto } from "common/dto/auth";
+import { ISrkResponse, ISelfIdentifyPayload } from "common/types/api";
 
 export const state = () => ({
   actor: null as ActorDto | null,
 });
 
-export type ModuleState = ReturnType<typeof state>;
+export interface ModuleState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<ModuleState, ModuleState> = {
   actor: (state) => state.actor,

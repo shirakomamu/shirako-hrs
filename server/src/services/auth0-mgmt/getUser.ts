@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+import { Auth0AppMetadataDto, Auth0UserMetadataDto } from "common/dto/auth";
 import { send } from ".";
 
 export interface GetUserResponse {
@@ -18,8 +18,8 @@ export interface GetUserResponse {
       isSocial: boolean;
     }
   ];
-  app_metadata?: object;
-  user_metadata?: object;
+  app_metadata?: Auth0AppMetadataDto;
+  user_metadata?: Auth0UserMetadataDto;
   picture?: string;
   name?: string;
   nickname?: string;
@@ -35,7 +35,7 @@ export interface GetUserResponse {
 export default async (id: string) => {
   const ENDPOINT = "api/v2/users/" + id; // added onto issuer base url
 
-  const response = await send<GetUserResponse>(ENDPOINT, "get");
+  const response = await send<GetUserResponse>(ENDPOINT, { method: "get" });
 
   return response;
 };
