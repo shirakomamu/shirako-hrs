@@ -50,7 +50,7 @@
                 transform-gpu
                 scale-110
               "
-              :src="require('client/assets/images/p1.png')"
+              src="@/assets/images/p1.png"
             />
             <ImageFader
               v-if="p[1]"
@@ -64,7 +64,7 @@
                 transform-gpu
                 scale-110
               "
-              :src="require('client/assets/images/p2.png')"
+              src="@/assets/images/p2.png"
             />
             <ImageFader
               v-if="p[2]"
@@ -78,7 +78,7 @@
                 transform-gpu
                 scale-110
               "
-              :src="require('client/assets/images/p3.png')"
+              src="@/assets/images/p3.png"
             />
           </div>
         </div>

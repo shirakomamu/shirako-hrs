@@ -55,7 +55,7 @@
               transform-gpu
               scale-110
             "
-            :src="require('client/assets/images/t5.png')"
+            src="@/assets/images/t5.png"
           />
           <ImageFader
             class="
@@ -71,7 +71,7 @@
               transform-gpu
               scale-110
             "
-            :src="require('client/assets/images/t6.png')"
+            src="@/assets/images/t6.png"
           />
         </div>
       </div>
