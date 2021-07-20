@@ -60,7 +60,10 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
   }
 
   try {
-    const userinfo = await getUserCached({ id: req.oidc.user.sub });
+    const [userinfo] = await Promise.all([
+      getUserCached({ id: req.oidc.user.sub }),
+      req.oidc.accessToken.isExpired() ? req.oidc.accessToken.refresh() : null,
+    ]);
 
     req.locals.authResult = {
       authType: AuthType.auth0,

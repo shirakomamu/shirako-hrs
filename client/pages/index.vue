@@ -49,7 +49,7 @@
               inset-0
               w-full
               h-full
-              bg-left bg-no-repeat bg-cover
+              object-cover
               filter
               blur-xl
               transform-gpu
@@ -64,7 +64,7 @@
               inset-0
               w-full
               h-full
-              bg-left bg-no-repeat bg-cover
+              object-cover
               filter
               blur-xl
               brightness-50

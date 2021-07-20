@@ -44,7 +44,7 @@
                 inset-0
                 w-full
                 h-full
-                bg-left bg-no-repeat bg-cover
+                object-cover
                 filter
                 blur-xl
                 transform-gpu
@@ -58,7 +58,7 @@
                 inset-0
                 w-full
                 h-full
-                bg-left bg-no-repeat bg-cover
+                object-cover
                 filter
                 blur-xl
                 transform-gpu
@@ -72,7 +72,7 @@
                 inset-0
                 w-full
                 h-full
-                bg-left bg-no-repeat bg-cover
+                object-cover
                 filter
                 blur-xl
                 transform-gpu
@@ -149,8 +149,7 @@
         >
           <div
             v-if="
-              (destinationLists && destinationLists.length) ||
-              (isMe && canCreateLists)
+              (destinationLists && destinationLists.length) || canCreateList
             "
             class="
               grid grid-flow-row grid-cols-2
@@ -162,7 +161,7 @@
             "
           >
             <ComboButton
-              v-if="isMe && canCreateLists"
+              v-if="isMe && canCreateList"
               key="new"
               class="p-0"
               alt="Create list"
@@ -171,7 +170,7 @@
               <DestinationListAddAvatar />
             </ComboButton>
             <nuxt-link
-              v-if="isMe && !canCreateLists"
+              v-else-if="isMe && !canCreateList"
               key="verifRequired"
               to="/settings"
               custom
@@ -335,7 +334,6 @@ import { DestinationListModel, MemberModel } from "client/models";
 import uniqueId from "common/utils/uniqueId";
 import { ListVisibility } from "common/enums";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
-import { CreateListDto } from "common/dto/lists";
 import Input from "client/components/Input.vue";
 
 export default defineComponent({
@@ -387,11 +385,13 @@ export default defineComponent({
     const isMe = computed(
       () => member.value?.username === self.value?.username
     );
-    const canAddFriends = hrbacCan({ roles: [Role._self_friends] }, self.value);
-    const canCreateLists = hrbacCan(
-      { roles: [Role._self_destination_lists] },
-      self.value
+    const canAddFriends = computed(() =>
+      hrbacCan({ roles: [Role._self_friends] }, self.value)
     );
+    const canCreateList = computed(() =>
+      hrbacCan({ roles: [Role._self_destination_lists] }, self.value)
+    );
+    // const canCreateLists = false;
 
     const isFriendLoading = ref<boolean>(false);
 
@@ -436,8 +436,8 @@ export default defineComponent({
         {
           name: formListName.value || "",
           description: formListDescription.value,
-          visibility: formListVisibility.value,
-        } as CreateListDto
+          visibility: formListVisibility.value as ListVisibility,
+        }
       );
       isCreatingList.value = false;
 
@@ -448,6 +448,7 @@ export default defineComponent({
       }
     };
 
+    // used for randomly selecting the background
     const pIndex = ref<number | null>(null);
     const p = computed(() => {
       return [false, false, false].map((_e, i) => pIndex.value === i);
@@ -470,7 +471,7 @@ export default defineComponent({
       isFriendLoading,
 
       canAddFriends,
-      canCreateLists,
+      canCreateList,
 
       destinationLists,
 

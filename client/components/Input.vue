@@ -104,13 +104,13 @@ export default defineComponent({
     const thisUid = "input-" + uid;
 
     // data
-    const inputContext = ref("0");
-    const validating = ref(false);
-    const touching = ref(false);
-    const touched = ref(false);
-    const validationChecked = ref(false);
+    const inputContext = ref<string>("0");
+    const validating = ref<boolean>(false);
+    const touching = ref<boolean>(false);
+    const touched = ref<boolean>(false);
+    const validationChecked = ref<boolean>(false);
     const timer = ref<any>(null);
-    const validationError = ref("");
+    const validationError = ref<string>("");
 
     const indicatorState = computed(
       (): "success" | "loading" | "failure" | "none" => {

@@ -367,7 +367,7 @@
 
     <Modal
       :visible="showDeleteConfirmationModal"
-      container-class="p-8 w-full max-w-prose"
+      container-class="p-8 w-full max-w-prose grid grid-cols-1 place-items-center"
       @hide="showDeleteConfirmationModal = false"
     >
       <div class="p-8 bg-gray-200 dark:bg-gray-700 grid grid-cols-1 gap-4">
@@ -674,6 +674,9 @@ export default defineComponent({
         if (response.ok) {
           await store.dispatch("auth/fetch");
           isUsernameEditing.value = state;
+        } else if (usernameInput.value) {
+          usernameInput.value.validationError =
+            response.error.message || response.error.name;
         }
         isUsernameLoading.value = false;
       } else {
@@ -714,6 +717,9 @@ export default defineComponent({
         if (response.ok) {
           await store.dispatch("auth/fetch");
           isNicknameEditing.value = state;
+        } else if (nicknameInput.value) {
+          nicknameInput.value.validationError =
+            response.error.message || response.error.name;
         }
         isNicknameLoading.value = false;
       } else {
@@ -754,6 +760,9 @@ export default defineComponent({
         if (response.ok) {
           await store.dispatch("auth/fetch");
           isEmailEditing.value = state;
+        } else if (emailInput.value) {
+          emailInput.value.validationError =
+            response.error.message || response.error.name;
         }
         isEmailLoading.value = false;
       } else {

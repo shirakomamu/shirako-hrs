@@ -19,7 +19,6 @@ import { defineComponent } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   name: "Star",
-  setup() {},
 });
 </script>
 

@@ -1,6 +1,12 @@
 import { Model } from "@vuex-orm/core";
 import { AxiosRequestConfig } from "axios";
-import { AddItemToListDto, CreateListDto, GetListDto } from "common/dto/lists";
+import {
+  AddItemToListDto,
+  CreateListDto,
+  EditListDto,
+  GetListDto,
+  RemoveItemFromListDto,
+} from "common/dto/lists";
 import { ListVisibility } from "common/enums";
 import { IDestinationListPayload, ISrkResponse } from "common/types/api";
 import DestinationItemModel from "./DestinationItem.model";
@@ -80,28 +86,51 @@ export default class extends Model {
     return response;
   }
 
-  public static async apiDeleteList(_data: GetListDto) {
-    return await null;
-    // DELETE to /api/lists/:username/:id
+  public static async apiDeleteList(params: GetListDto) {
+    const response: ISrkResponse<IDestinationListPayload> =
+      await this.store().dispatch("api/send", {
+        method: "delete",
+        url: "/api/lists/" + params.username + "/" + params.id,
+      });
+
+    if (response.ok) {
+      await DestinationListItemModel.delete(
+        (pivot) => pivot.listId === params.id
+      );
+      await this.delete([params.username, params.id]);
+    }
+
+    return response;
   }
 
-  public static async apiUpdateList(_data: string) {
-    return await null;
-    // PATCH to /api/lists/:username/:id
+  public static async apiUpdateList(params: GetListDto, data: EditListDto) {
+    const response: ISrkResponse<IDestinationListPayload> =
+      await this.store().dispatch("api/send", {
+        method: "patch",
+        url: "/api/lists/" + params.username + "/" + params.id,
+        data,
+      });
+
+    if (response.ok) {
+      this.insertOrUpdate({
+        data: response.payload,
+      });
+    }
+
+    return response;
   }
 
-  public static async apiAddItemToList(data: AddItemToListDto) {
-    // POST to /api/lists/:username/:id/items/dest-id
+  public static async apiAddItemToList(params: AddItemToListDto) {
     const response: ISrkResponse<IDestinationListPayload> =
       await this.store().dispatch("api/send", {
         method: "post",
         url:
           "/api/lists/" +
-          data.username +
+          params.username +
           "/" +
-          data.id +
+          params.id +
           "/items/" +
-          data.destinationId,
+          params.destinationId,
       });
 
     if (response.ok) {
@@ -116,9 +145,37 @@ export default class extends Model {
     return response;
   }
 
-  public static async apiRemoveItemFromList(id: string, destinationId: string) {
-    await console.log("Removing", id, destinationId);
-    // DELETE to /api/lists/:username/:id/items/dest-id
+  public static async apiRemoveItemFromList(params: RemoveItemFromListDto) {
+    const response: ISrkResponse<IDestinationListPayload> =
+      await this.store().dispatch("api/send", {
+        method: "delete",
+        url:
+          "/api/lists/" +
+          params.username +
+          "/" +
+          params.id +
+          "/items/" +
+          params.destinationId,
+      });
+
+    if (response.ok) {
+      // https://github.com/vuex-orm/vuex-orm/issues/122
+      // relations aren't automatically deleted
+      await DestinationListItemModel.delete(
+        (pivot) =>
+          pivot.listId === params.id && pivot.itemId === params.destinationId
+      );
+      this.update({
+        where: (list) =>
+          list.owner === params.username && list.id === params.id,
+        data: {
+          ...response.payload,
+          itemsLoaded: true,
+        },
+      });
+    }
+
+    return response;
   }
 
   public static async apiAddUserToList(_username: string) {
@@ -131,17 +188,17 @@ export default class extends Model {
     // DELETE to /api/lists/:username/:id/members/:shareToUsername
   }
 
-  public static async apiFetch(data: GetListDto) {
+  public static async apiFetch(params: GetListDto) {
     const storedData = this.query()
       .with("items")
-      .find([data.username, data.id]);
+      .find([params.username, params.id]);
 
     if (!storedData || !storedData.itemsLoaded) {
       this.fetching = true;
       const response: ISrkResponse<IDestinationListPayload> =
         await this.store().dispatch("api/send", {
           method: "get",
-          url: "/api/lists/" + data.username + "/" + data.id,
+          url: "/api/lists/" + params.username + "/" + params.id,
         } as AxiosRequestConfig);
       this.fetching = false;
 

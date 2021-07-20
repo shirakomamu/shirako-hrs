@@ -21,7 +21,7 @@
     v-on="$listeners"
   >
     <Loader v-if="loading" class="loader" />
-    <div :class="{ hide: loading }">
+    <div :class="{ hide: loading }" class="w-full h-full">
       <slot />
     </div>
   </button>

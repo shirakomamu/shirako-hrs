@@ -13,7 +13,6 @@ export default async ({ id, username }: { id?: string; username?: string }) => {
   if (!id && !username) {
     throw new SrkError("resourceInvalid");
   }
-
   const cached = await getCache({ id, username });
   if (cached) return cached;
 

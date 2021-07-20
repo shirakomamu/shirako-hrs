@@ -4,6 +4,7 @@ import { YELP_BUSINESS_MAX_AGE } from "server/config/yelp";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import businessIdentifyCached from "server/services/yelp/businessIdentifyCached";
+import zipToTz from "server/services/zip-to-tz";
 
 export default async (
   _authResult: SrkCookie,
@@ -28,6 +29,7 @@ export default async (
       review_count: r.review_count,
       display_address: r.location.display_address,
       display_phone: r.display_phone,
+      timezone: zipToTz(r.location.zip_code),
       hours: r.hours,
       special_hours: r.special_hours,
     });
@@ -45,6 +47,7 @@ export default async (
     display_address: item.display_address,
     display_phone: item.display_phone,
     lastUpdated: item.updatedAt.getTime(),
+    timezone: item.timezone,
     hours: item.hours,
     special_hours: item.special_hours,
   };

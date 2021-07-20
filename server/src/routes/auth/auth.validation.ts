@@ -12,13 +12,22 @@ import {
 export const UpdateUserValidators = [
   oneOf([
     checkSchema({
-      username: UsernameParamSchema,
+      username: {
+        in: ["body"],
+        ...UsernameParamSchema,
+      },
     }),
     checkSchema({
-      nickname: NicknameParamSchema,
+      nickname: {
+        in: ["body"],
+        ...NicknameParamSchema,
+      },
     }),
     checkSchema({
-      email: EmailParamSchema,
+      email: {
+        in: ["body"],
+        ...EmailParamSchema,
+      },
     }),
   ]),
 ];
@@ -26,43 +35,22 @@ export const UpdateUserValidators = [
 export const UpdateUserPreferencesValidators = [
   oneOf([
     checkSchema({
-      "privacySettings.friendRequestPrivacy": FriendRequestPrivacyParamSchema,
+      "privacySettings.friendRequestPrivacy": {
+        in: ["body"],
+        ...FriendRequestPrivacyParamSchema,
+      },
     }),
     checkSchema({
-      "privacySettings.defaultListVisibility": DefaultListVisibilityParamSchema,
+      "privacySettings.defaultListVisibility": {
+        in: ["body"],
+        ...DefaultListVisibilityParamSchema,
+      },
     }),
     checkSchema({
-      "locationSettings.defaultLocation": DefaultLocationParamSchema,
+      "locationSettings.defaultLocation": {
+        in: ["body"],
+        ...DefaultLocationParamSchema,
+      },
     }),
   ]),
 ];
-
-// export const OtpTokenValidators = [
-//   checkSchema({
-//     otpToken: OtpTokenCheckParamSchema,
-//     otpCode: OtpCodeCheckParamSchema,
-//   }),
-// ];
-
-// export const NameCheckValidators = [
-//   oneOf([
-//     checkSchema({
-//       type: NameCheckTypeIsUsernameParamSchema,
-//       name: UsernameParamSchema,
-//     }),
-//     checkSchema({
-//       type: NameCheckTypeIsDisplayNameParamSchema,
-//       name: DisplayNameParamSchema,
-//     }),
-//   ]),
-// ];
-
-// export const PageAuthValidators = [
-//   body().isArray(),
-//   checkSchema({
-//     "*": PageCheckElementParamSchema,
-//   }),
-//   body().customSanitizer((value: string[]) =>
-//     value.filter((e, i, a) => a.indexOf(e) === i)
-//   ),
-// ];

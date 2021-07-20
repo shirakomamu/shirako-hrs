@@ -4,6 +4,7 @@ import { SrkCookie } from "server/services/jwt";
 import { IDestinationListPayload } from "common/types/api";
 import { AddItemToListDto } from "common/dto/lists";
 import identifyDestination from "../items/identifyDestination";
+import mapItems from "./_mapItems";
 
 export default async (
   authResult: SrkCookie,
@@ -40,18 +41,6 @@ export default async (
     owner: authResult.actor.username,
     description: list.description,
     visibility: list.visibility,
-    items: list.destinations.getItems().map((e) => ({
-      id: e.yelpId,
-      name: e.name,
-      url: e.url,
-      price: e.price,
-      rating: e.rating,
-      review_count: e.review_count,
-      display_address: e.display_address,
-      display_phone: e.display_phone,
-      lastUpdated: e.updatedAt.getTime(),
-      hours: e.hours,
-      special_hours: e.special_hours,
-    })),
+    items: mapItems(list.destinations.getItems()),
   };
 };

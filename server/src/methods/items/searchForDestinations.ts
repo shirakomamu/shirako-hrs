@@ -29,10 +29,6 @@ export default async (
       display_phone: e.display_phone,
       lastUpdated:
         items.find((f) => f.yelpId === e.id)?.updatedAt.getTime() || -1,
-      // @ts-expect-error
-      hours: e.hours,
-      // @ts-expect-error
-      special_hours: e.special_hours,
     })),
   };
 };

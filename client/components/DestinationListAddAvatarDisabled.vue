@@ -5,19 +5,16 @@
       grid grid-cols-1
       items-center
       text-center
-      border border-black
-      dark:border-white
-      border-opacity-50
-      hover:border-opacity-100
-      border-dashed
       p-2
       transition
+      bg-white bg-opacity-50
+      dark:bg-opacity-5
     "
   >
     <PlaylistAdd class="list-icon opacity-50" />
     <div class="grid grid-cols-1 gap-2 place-items-center">
       <Error class="icon-inline text-red-500" />
-      <p class="text-sm">Email verification required</p>
+      <p class="text-sm">Verify email to create lists</p>
     </div>
   </div>
 </template>

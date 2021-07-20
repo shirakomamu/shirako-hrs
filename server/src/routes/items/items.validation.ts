@@ -7,13 +7,22 @@ import {
 
 export const DestinationItemSearchValidators = [
   ...checkSchema({
-    term: SearchTermParamSchema,
-    location: LocationParamSchema,
+    term: {
+      in: ["body"],
+      ...SearchTermParamSchema,
+    },
+    location: {
+      in: ["body"],
+      ...LocationParamSchema,
+    },
   }),
 ];
 
 export const DestinationItemIdentifyValidators = [
   ...checkSchema({
-    id: YelpIdParamSchema,
+    id: {
+      in: ["params"],
+      ...YelpIdParamSchema,
+    },
   }),
 ];

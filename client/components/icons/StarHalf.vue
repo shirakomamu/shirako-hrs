@@ -25,7 +25,6 @@ import { defineComponent } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   name: "StarHalf",
-  setup() {},
 });
 </script>
 

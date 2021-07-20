@@ -2,7 +2,11 @@ import { checkSchema } from "express-validator";
 import { YelpIdParamSchema } from "../items/items.param.validation";
 import {
   DestinationListIdParamSchema,
+  ListDescriptionOptionalParamSchema,
+  ListDescriptionParamSchema,
+  ListNameOptionalParamSchema,
   ListNameParamSchema,
+  ListVisibilityOptionalParamSchema,
   ListVisibilityParamSchema,
   SelfUsernameParamSchema,
   UsernameParamSchema,
@@ -10,31 +14,106 @@ import {
 
 export const CreateDestinationListValidators = [
   ...checkSchema({
-    username: SelfUsernameParamSchema,
-    name: ListNameParamSchema,
-    visibility: ListVisibilityParamSchema,
+    username: {
+      in: ["params"],
+      ...SelfUsernameParamSchema,
+    },
+    name: {
+      in: ["body"],
+      ...ListNameParamSchema,
+    },
+    visibility: {
+      in: ["body"],
+      ...ListVisibilityParamSchema,
+    },
+    description: {
+      in: ["body"],
+      ...ListDescriptionParamSchema,
+    },
   }),
 ];
 
 export const GetDestinationListValidators = [
   ...checkSchema({
-    username: UsernameParamSchema,
-    id: DestinationListIdParamSchema,
+    username: {
+      in: ["params"],
+      ...UsernameParamSchema,
+    },
+    id: {
+      in: ["params"],
+      ...DestinationListIdParamSchema,
+    },
+  }),
+];
+
+export const EditDestinationListValidators = [
+  ...checkSchema({
+    username: {
+      in: ["params"],
+      ...SelfUsernameParamSchema,
+    },
+    id: {
+      in: ["params"],
+      ...DestinationListIdParamSchema,
+    },
+    name: {
+      in: ["body"],
+      ...ListNameOptionalParamSchema,
+    },
+    visibility: {
+      in: ["body"],
+      ...ListVisibilityOptionalParamSchema,
+    },
+    description: {
+      in: ["body"],
+      ...ListDescriptionOptionalParamSchema,
+    },
+  }),
+];
+
+export const DeleteDestinationListValidators = [
+  ...checkSchema({
+    username: {
+      in: ["params"],
+      ...SelfUsernameParamSchema,
+    },
+    id: {
+      in: ["params"],
+      ...DestinationListIdParamSchema,
+    },
   }),
 ];
 
 export const AddItemToDestinationListValidators = [
   ...checkSchema({
-    username: SelfUsernameParamSchema,
-    id: DestinationListIdParamSchema,
-    destinationId: YelpIdParamSchema,
+    username: {
+      in: ["params"],
+      ...SelfUsernameParamSchema,
+    },
+    id: {
+      in: ["params"],
+      ...DestinationListIdParamSchema,
+    },
+    destinationId: {
+      in: ["params"],
+      ...YelpIdParamSchema,
+    },
   }),
 ];
 
 export const RemoveItemFromDestinationListValidators = [
   ...checkSchema({
-    username: SelfUsernameParamSchema,
-    id: DestinationListIdParamSchema,
-    destinationId: YelpIdParamSchema,
+    username: {
+      in: ["params"],
+      ...SelfUsernameParamSchema,
+    },
+    id: {
+      in: ["params"],
+      ...DestinationListIdParamSchema,
+    },
+    destinationId: {
+      in: ["params"],
+      ...YelpIdParamSchema,
+    },
   }),
 ];

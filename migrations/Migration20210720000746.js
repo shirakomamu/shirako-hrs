@@ -2,10 +2,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const Migration = require('@mikro-orm/migrations').Migration;
 
-class Migration20210702025953 extends Migration {
+class Migration20210720000746 extends Migration {
 
   async up() {
-    this.addSql('create table "destination" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "yelp_id" varchar(255) not null);');
+    this.addSql('create table "destination" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "yelp_id" varchar(255) not null, "name" varchar(255) not null, "url" varchar(512) not null, "price" varchar(255) not null, "rating" int4 not null, "review_count" int4 not null, "display_address" jsonb not null, "display_phone" varchar(255) not null, "timezone" varchar(255) not null, "hours" jsonb not null, "special_hours" jsonb not null);');
     this.addSql('alter table "destination" add constraint "destination_yelp_id_unique" unique ("yelp_id");');
 
     this.addSql('create table "member" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "sub" varchar(255) not null);');
@@ -36,4 +36,4 @@ class Migration20210702025953 extends Migration {
   }
 
 }
-exports.Migration20210702025953 = Migration20210702025953;
+exports.Migration20210720000746 = Migration20210720000746;

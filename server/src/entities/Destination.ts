@@ -1,8 +1,9 @@
-import { ArrayType, EntitySchema } from "@mikro-orm/core";
+import { EntitySchema } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 
 interface Hour {
   is_open_now: boolean;
+  hours_type: string;
   open: {
     is_overnight: boolean;
     start: string; // 0000
@@ -28,6 +29,7 @@ export class Destination extends BaseEntity {
   review_count: number;
   display_address: string[];
   display_phone: string;
+  timezone: string | null;
   hours: Hour[];
   special_hours: SpecialHour[];
 
@@ -40,6 +42,7 @@ export class Destination extends BaseEntity {
     review_count: number,
     display_address: string[],
     display_phone: string,
+    timezone: string | null,
     hours: Hour[],
     special_hours: SpecialHour[]
   ) {
@@ -52,6 +55,7 @@ export class Destination extends BaseEntity {
     this.review_count = review_count;
     this.display_address = display_address;
     this.display_phone = display_phone;
+    this.timezone = timezone;
     this.hours = hours;
     this.special_hours = special_hours;
   }
@@ -62,13 +66,14 @@ export default new EntitySchema<Destination, BaseEntity>({
   properties: {
     yelpId: { type: "string", unique: true },
     name: { type: "string" },
-    url: { type: "string" },
+    url: { type: "string", length: 512 },
     price: { type: "string" },
     rating: { type: "number" },
     review_count: { type: "number" },
-    display_address: { type: ArrayType },
+    display_address: { type: "json" },
     display_phone: { type: "string" },
-    hours: { type: ArrayType },
-    special_hours: { type: ArrayType },
+    timezone: { type: "string", nullable: true },
+    hours: { type: "json" },
+    special_hours: { type: "json" },
   },
 });

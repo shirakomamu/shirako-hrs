@@ -4,10 +4,8 @@ import { SrkExpressRequest } from "server/services/jwt";
 import snowflake from "server/services/snowflake";
 
 export const ListNameParamSchema: ParamSchema = {
-  in: ["body"],
   isString: {
     errorMessage: "List name must be a string",
-    bail: true,
   },
   trim: true,
   isLength: {
@@ -19,8 +17,25 @@ export const ListNameParamSchema: ParamSchema = {
   },
 };
 
+export const ListDescriptionParamSchema: ParamSchema = {
+  optional: {
+    options: {
+      nullable: true,
+    },
+  },
+  isString: {
+    errorMessage: "List description must be a string",
+  },
+  trim: true,
+  isLength: {
+    errorMessage: "List description must 200 or fewer characters",
+    options: {
+      max: 200,
+    },
+  },
+};
+
 export const ListVisibilityParamSchema: ParamSchema = {
-  in: ["body"],
   custom: {
     errorMessage: "List visibility is invalid",
     options: (value: any) => {
@@ -29,11 +44,21 @@ export const ListVisibilityParamSchema: ParamSchema = {
   },
 };
 
+export const ListNameOptionalParamSchema: ParamSchema = {
+  ...ListNameParamSchema,
+  optional: true,
+};
+export const ListDescriptionOptionalParamSchema: ParamSchema = {
+  ...ListDescriptionParamSchema,
+};
+export const ListVisibilityOptionalParamSchema: ParamSchema = {
+  ...ListVisibilityParamSchema,
+  optional: true,
+};
+
 export const UsernameParamSchema: ParamSchema = {
-  in: ["params"],
   isString: {
     errorMessage: "Username must be a string",
-    bail: true,
   },
   trim: true,
   isLength: {
@@ -58,7 +83,6 @@ export const SelfUsernameParamSchema: ParamSchema = {
 };
 
 export const DestinationListIdParamSchema: ParamSchema = {
-  in: ["params"],
   custom: {
     errorMessage: "Destination list ID is invalid",
     options: (value: any) => {

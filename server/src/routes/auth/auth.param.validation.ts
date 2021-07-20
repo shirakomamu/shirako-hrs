@@ -6,10 +6,8 @@ import { SrkExpressRequest } from "server/services/jwt";
 
 const protectedUsernames = [/^me$/i, /.{0,}mamu.{0,}/i, /.{0,}shirako.{0,}/i];
 export const UsernameParamSchema: ParamSchema = {
-  in: ["body"],
   isString: {
     errorMessage: "Username must be a string",
-    bail: true,
   },
   trim: true,
   isLength: {
@@ -44,7 +42,6 @@ export const UsernameParamSchema: ParamSchema = {
 };
 
 export const NicknameParamSchema: ParamSchema = {
-  in: ["body"],
   isString: {
     errorMessage: "Nickname must be a string",
   },
@@ -59,14 +56,12 @@ export const NicknameParamSchema: ParamSchema = {
 };
 
 export const EmailParamSchema: ParamSchema = {
-  in: ["body"],
   isEmail: {
     errorMessage: "Email address is not valid",
   },
 };
 
 export const FriendRequestPrivacyParamSchema: ParamSchema = {
-  in: ["body"],
   custom: {
     errorMessage: "Option is invalid",
     options: (value: any) => {
@@ -76,7 +71,6 @@ export const FriendRequestPrivacyParamSchema: ParamSchema = {
 };
 
 export const DefaultListVisibilityParamSchema: ParamSchema = {
-  in: ["body"],
   custom: {
     errorMessage: "Option is invalid",
     options: (value: any) => {
@@ -86,7 +80,6 @@ export const DefaultListVisibilityParamSchema: ParamSchema = {
 };
 
 export const DefaultLocationParamSchema: ParamSchema = {
-  in: ["body"],
   optional: {
     options: {
       nullable: true,

@@ -24,8 +24,8 @@
       </a>
     </div>
 
-    <div class="flex flex-row items-center">
-      <div class="flex-grow grid grid-cols-1 text-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <div class="grid grid-cols-1 text-sm">
         <template v-if="display_address">
           <p v-for="(line, index) in display_address" :key="index">
             {{ line }}
@@ -33,10 +33,13 @@
         </template>
         <p class="text-green-600 dark:text-green-500">{{ display_phone }}</p>
       </div>
+
+      <div class="flex-grow" />
+
       <div v-if="showAddButton">
         <ComboButton
           :alt="isAdded ? 'Add to list' : 'Added'"
-          class="text-sm bg-blue-srk text-white"
+          class="w-full sm:w-max text-sm bg-blue-srk text-white"
           :disabled="!isAdded || isAdding"
           :loading="isAdding"
           @click="addItem"

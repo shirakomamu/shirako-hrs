@@ -10,7 +10,7 @@ const config: ConfigParams = {
   authorizationParams: {
     response_type: "code id_token",
     audience: process.env.AUTH0_API_AUDIENCE_HRS,
-    scope: "openid profile email",
+    scope: "openid profile email offline_access",
   },
   authRequired: false,
   auth0Logout: true,

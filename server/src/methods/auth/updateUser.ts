@@ -21,11 +21,15 @@ export default async (
     }
   }
 
-  const response = await updateUser(authResult.actor.id, {
-    username,
-    nickname,
-    email,
-  });
+  try {
+    const response = await updateUser(authResult.actor.id, {
+      username,
+      nickname,
+      email,
+    });
 
-  return response;
+    return response;
+  } catch (e) {
+    throw new SrkError("notAllowed");
+  }
 };

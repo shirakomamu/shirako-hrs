@@ -6,6 +6,8 @@ import ListsController from "./lists.controller";
 import {
   AddItemToDestinationListValidators,
   CreateDestinationListValidators,
+  DeleteDestinationListValidators,
+  EditDestinationListValidators,
   GetDestinationListValidators,
 } from "./lists.validation";
 
@@ -25,6 +27,18 @@ router.get(
   "/:username/:id",
   [...GetDestinationListValidators],
   route(controller.getDestinationList)
+);
+
+router.patch(
+  "/:username/:id",
+  [...EditDestinationListValidators],
+  route(controller.editDestinationList)
+);
+
+router.delete(
+  "/:username/:id",
+  [...DeleteDestinationListValidators],
+  route(controller.deleteDestinationList)
 );
 
 router.post(

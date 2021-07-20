@@ -1,7 +1,6 @@
 import { ParamSchema } from "express-validator";
 
 export const SearchTermParamSchema: ParamSchema = {
-  in: ["body"],
   isString: true,
   isLength: {
     options: {
@@ -12,7 +11,6 @@ export const SearchTermParamSchema: ParamSchema = {
 };
 
 export const LocationParamSchema: ParamSchema = {
-  in: ["body"],
   isString: true,
   isLength: {
     options: {
@@ -23,7 +21,6 @@ export const LocationParamSchema: ParamSchema = {
 };
 
 export const YelpIdParamSchema: ParamSchema = {
-  in: ["params"],
   isString: true,
   isLength: {
     options: {

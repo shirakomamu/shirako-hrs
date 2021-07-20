@@ -5,44 +5,38 @@
       grid grid-cols-1
       items-center
       text-center
-      p-2
+      p-4
+      h-full
       transition
       bg-white bg-opacity-50
       dark:bg-opacity-5
-      hover:bg-opacity-70
-      dark:hover:bg-opacity-10
     "
   >
-    <List class="list-icon opacity-50" />
-    <slot />
+    <div class="grid grid-cols-1 gap-2 place-items-center">
+      <Error class="icon-inline text-red-500" />
+      <p class="text-sm">Verify email to add to list</p>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-import List from "client/components/icons/List.vue";
+import Error from "client/components/icons/Error.vue";
 
 export default defineComponent({
-  name: "DestinationListAvatar",
+  name: "DestinationItemAddAvatarDisabled",
   components: {
-    List,
-  },
-  setup() {
-    return {};
+    Error,
   },
 });
 </script>
 
 <style lang="less" scoped>
 .container {
-  aspect-ratio: 1 / 1;
   position: relative;
 }
-.list-icon {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  height: 1.5rem;
-  width: 1.5rem;
+.icon-inline {
+  width: 3rem;
+  height: 3rem;
 }
 </style>

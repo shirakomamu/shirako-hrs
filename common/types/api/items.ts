@@ -12,8 +12,10 @@ export interface DestinationItemMetadata {
 }
 
 export interface IDestinationItemPayload extends DestinationItemMetadata {
+  timezone: string | null;
   hours: {
     is_open_now: boolean;
+    hours_type: string;
     open: {
       is_overnight: boolean;
       start: string; // 0000

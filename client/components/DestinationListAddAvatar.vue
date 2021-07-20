@@ -5,18 +5,18 @@
       grid grid-cols-1
       items-center
       text-center
-      border border-black
-      dark:border-white
-      border-opacity-50
-      hover:border-opacity-100
-      border-dashed
       p-2
       transition
+      bg-white bg-opacity-50
+      dark:bg-opacity-5
+      hover:bg-opacity-70
+      dark:hover:bg-opacity-10
     "
   >
     <PlaylistAdd class="list-icon opacity-50" />
     <div class="grid grid-cols-1 gap-2 place-items-center">
       <Add class="icon-inline" />
+      <p>Create list...</p>
     </div>
   </div>
 </template>

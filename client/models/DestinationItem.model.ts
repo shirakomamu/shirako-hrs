@@ -3,6 +3,8 @@ import { AxiosRequestConfig } from "axios";
 import { BusinessIdentifyDto } from "common/dto/items";
 import { ISrkResponse } from "common/types/api";
 import { IDestinationItemPayload } from "common/types/api/items";
+import DestinationListModel from "./DestinationList.model";
+import DestinationListItemModel from "./DestinationListItem.model";
 import VgtParamModel from "./VgtParam.model";
 
 interface Meta {
@@ -19,11 +21,13 @@ export default class extends Model {
   public price!: string;
   public rating!: number;
   public review_count!: number;
+  public timezone!: string;
   public display_address!: string[];
   public display_phone!: string;
   public lastUpdated!: number;
   public hours!: {
     is_open_now: boolean;
+    hours_type: string;
     open: {
       is_overnight: boolean;
       start: string; // 0000
@@ -40,6 +44,8 @@ export default class extends Model {
     end: string; // 0000
   }[];
 
+  public lists!: DestinationListModel[];
+
   private detailsLoaded!: boolean;
 
   public static fields() {
@@ -53,8 +59,15 @@ export default class extends Model {
       display_address: this.attr([]),
       display_phone: this.string(null),
       lastUpdated: this.number(null),
+      timezone: this.string(null).nullable(),
       hours: this.attr([]),
       special_hours: this.attr([]),
+      lists: this.belongsToMany(
+        DestinationListModel,
+        DestinationListItemModel,
+        "itemId",
+        "listId"
+      ),
       detailsLoaded: this.boolean(false),
     };
   }
