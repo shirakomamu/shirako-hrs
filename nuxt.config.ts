@@ -76,7 +76,7 @@ export default {
     [
       "@dansmaculotte/nuxt-security",
       {
-        dev: true,
+        dev: false,
         hsts: {
           maxAge: 63072000,
           includeSubDomains: true,
