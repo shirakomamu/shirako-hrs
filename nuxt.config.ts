@@ -72,6 +72,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     "@nuxtjs/axios",
+    "modules/base",
     "modules/api",
     [
       "@dansmaculotte/nuxt-security",
