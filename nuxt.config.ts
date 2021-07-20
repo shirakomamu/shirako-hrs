@@ -72,11 +72,12 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     "@nuxtjs/axios",
+    "modules/base",
     "modules/api",
     [
       "@dansmaculotte/nuxt-security",
       {
-        dev: true,
+        dev: false,
         hsts: {
           maxAge: 63072000,
           includeSubDomains: true,
