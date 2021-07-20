@@ -76,7 +76,7 @@ export default {
     [
       "@dansmaculotte/nuxt-security",
       {
-        dev: false,
+        dev: true,
         hsts: {
           maxAge: 63072000,
           includeSubDomains: true,
@@ -89,7 +89,7 @@ export default {
             objectSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             // fontSrc: ["'self'"],
-            imgSrc: ["'self'"],
+            imgSrc: ["'self'", "data:"],
           },
           reportOnly: false,
         },
