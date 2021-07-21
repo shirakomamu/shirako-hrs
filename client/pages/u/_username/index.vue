@@ -148,9 +148,7 @@
           "
         >
           <div
-            v-if="
-              (destinationLists && destinationLists.length) || canCreateList
-            "
+            v-if="(destinationLists && destinationLists.length) || isMe"
             class="
               grid grid-flow-row grid-cols-2
               md:grid-cols-4

@@ -83,14 +83,14 @@ export const setCache = async (
   if (id) {
     await Promise.all([
       id
-        ? redisGu.set(getCacheKeyById(id), JSON.stringify(data), "ex", 3600)
+        ? redisGu.set(getCacheKeyById(id), JSON.stringify(data), "ex", 600)
         : null,
       username
         ? redisGu.set(
             getCacheKeyByUsername(username),
             JSON.stringify(data),
             "ex",
-            3600
+            600
           )
         : null,
     ]);

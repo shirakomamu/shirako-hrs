@@ -463,6 +463,7 @@ export default defineComponent({
     } as Guard,
   },
   setup() {
+    // TODO: add force refresh button to clear server user cache (such as after email verification)
     const context = useContext();
     const self = useSelf();
     const store = useStore();

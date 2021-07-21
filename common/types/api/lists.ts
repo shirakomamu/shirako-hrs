@@ -12,3 +12,7 @@ export interface DestinationListMetadata {
 export interface IDestinationListPayload extends DestinationListMetadata {
   items: IDestinationItemPayload[];
 }
+
+export interface IDestinationListsPayload {
+  lists: DestinationListMetadata[];
+}

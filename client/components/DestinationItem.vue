@@ -75,19 +75,11 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  PropType,
-  ref,
-} from "@nuxtjs/composition-api";
+import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import Delete from "client/components/icons/Delete.vue";
 import OpenInNew from "client/components/icons/OpenInNew.vue";
 import timeAgo from "common/utils/timeAgo";
 import { format } from "date-fns";
-import getTimeUntilClose from "common/utils/getTimeUntilClose";
 
 export default defineComponent({
   name: "DestinationItem",
@@ -159,6 +151,14 @@ export default defineComponent({
       >,
       required: true,
     },
+    regularHours: {
+      type: Array,
+      default: () => [],
+    },
+    timeUntilClose: {
+      type: Number,
+      default: null,
+    },
     lastUpdated: {
       type: Number,
       required: true,
@@ -184,23 +184,6 @@ export default defineComponent({
         : "never"
     );
 
-    const regularHours = computed(
-      () => props.hours.find((e) => e.hours_type === "REGULAR")?.open || []
-    );
-
-    const now = ref<number>(Date.now());
-
-    const x = ref<any>(null);
-
-    onMounted(
-      () => (x.value = setInterval(() => (now.value = Date.now()), 60000))
-    );
-    onUnmounted(() => clearInterval(x.value));
-
-    const timeUntilClose = computed(() =>
-      getTimeUntilClose(now.value, regularHours.value, props.timezone)
-    );
-
     const removeItem = () => {
       emit("pick", props.id);
     };
@@ -209,8 +192,6 @@ export default defineComponent({
       lastUpdatedTs,
       lastUpdatedString,
       removeItem,
-      regularHours,
-      timeUntilClose,
     };
   },
 });

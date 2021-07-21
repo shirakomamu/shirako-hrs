@@ -34,7 +34,6 @@
     "express-openid-connect": "^2.4.0",
     "express-validator": "^6.11.1",
     "hashids": "^2.2.8",
-    "heroku-ssl-redirect": "^0.1.1",
     "ioredis": "^4.27.5",
     "javascript-time-ago": "^2.3.8",
     "js-cookie": "^2.2.1",

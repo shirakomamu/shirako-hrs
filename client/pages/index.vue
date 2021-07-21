@@ -15,7 +15,7 @@
             </div>
             <div class="text-xl">
               <p>Just tell us which restaurants you like,</p>
-              <p>and we'll do the rest.</p>
+              <p>and we'll pick for you.</p>
             </div>
           </div>
         </div>
@@ -24,9 +24,23 @@
           <div v-if="self">
             <p>Welcome back{{ nickname ? ", " + nickname : "" }}.</p>
             <nuxt-link
+              v-if="emailVerified"
               to="/dashboard"
               class="font-semibold hover:underline focus:underline"
               >Go to dashboard →</nuxt-link
+            >
+            <nuxt-link
+              v-else
+              to="/settings"
+              class="font-semibold hover:underline focus:underline"
+              ><Error
+                class="
+                  icon-inline
+                  text-red-500
+                  md:text-white md:dark:text-red-500
+                "
+              />
+              Please verify your email address →</nuxt-link
             >
           </div>
           <div v-else>
@@ -87,19 +101,26 @@ import {
   useMeta,
 } from "@nuxtjs/composition-api";
 import useSelf from "client/composables/useSelf";
+import { Role } from "common/enums/hrbac";
+import hrbacCan from "common/utils/hrbacCan";
+import Error from "client/components/icons/Error.vue";
 
 export default defineComponent({
   name: "Index",
+  components: {
+    Error,
+  },
   setup() {
     const context = useContext();
     const self = useSelf();
     useMeta({ title: "Home | " + context.$config.appinfo.name });
 
-    const nickname = computed(
-      (): string | null => self.value?.nickname || null
+    const nickname = computed(() => self.value?.nickname || null);
+    const emailVerified = computed(() =>
+      hrbacCan({ roles: [Role._email_verified] }, self.value)
     );
 
-    return { self, nickname };
+    return { self, nickname, emailVerified };
   },
   head: {},
 });

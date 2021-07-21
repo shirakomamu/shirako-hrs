@@ -9,10 +9,20 @@ import {
   DeleteDestinationListValidators,
   EditDestinationListValidators,
   GetDestinationListValidators,
+  SearchDestinationListsValidators,
 } from "./lists.validation";
 
 const controller = new ListsController();
 const router: Router = Router();
+
+router.get(
+  "/",
+  [
+    // useSimpleGuard([Role._self_destination_lists]),
+    ...SearchDestinationListsValidators,
+  ],
+  route(controller.searchDestinationLists)
+);
 
 router.post(
   "/:username",

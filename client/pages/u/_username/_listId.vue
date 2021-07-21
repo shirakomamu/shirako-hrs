@@ -68,6 +68,8 @@
             :timezone="item.timezone"
             :hours="item.hours"
             :special_hours="item.special_hours"
+            :regular-hours="item.regularHours"
+            :time-until-close="item.timeUntilClose"
             :last-updated="item.lastUpdated"
             :show-remove-button="canModifyList"
             :is-removing="loadingIds.includes(item.id)"

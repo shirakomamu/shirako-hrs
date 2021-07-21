@@ -17,6 +17,10 @@ export type GetListDto = {
   id: string;
 };
 
+export type SearchListsDto = {
+  keyword: string;
+};
+
 export type AddItemToListDto = {
   username: string;
   id: string;

@@ -11,7 +11,10 @@
           name="searchTerm"
           classes="p-2 text-sm w-full"
           passive-text="Restaurant or food to search for."
+          min="1"
+          max="64"
           required
+          :do-validation="true"
           :disabled="isSearching"
         />
       </div>
@@ -25,7 +28,10 @@
           name="location"
           classes="p-2 text-sm w-full"
           passive-text="Location to search near. You can use an address, ZIP code, or city name."
+          min="1"
+          max="64"
           required
+          :do-validation="true"
           :disabled="isSearching"
         />
       </div>
