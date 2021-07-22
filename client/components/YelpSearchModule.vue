@@ -63,6 +63,7 @@
         <YelpSearchModuleItem
           :id="item.id"
           :name="item.name"
+          :image_url="item.image_url"
           :url="item.url"
           :price="item.price"
           :rating="item.rating"

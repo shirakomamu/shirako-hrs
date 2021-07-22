@@ -5,6 +5,7 @@ import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import businessIdentifyCached from "server/services/yelp/businessIdentifyCached";
 import zipToTz from "server/services/zip-to-tz";
+// import cityTimezones from "city-timezones";
 
 export default async (
   _authResult: SrkCookie,
@@ -20,16 +21,19 @@ export default async (
   ) {
     const r = await businessIdentifyCached({ id });
 
+    const timezone = zipToTz(r.location.zip_code);
+
     item = repo.create({
       yelpId: r.id,
       name: r.name,
+      image_url: r.image_url,
       url: r.url,
       price: r.price || "n/a",
       rating: r.rating,
       review_count: r.review_count,
       display_address: r.location.display_address,
       display_phone: r.display_phone,
-      timezone: zipToTz(r.location.zip_code),
+      timezone,
       hours: r.hours,
       special_hours: r.special_hours,
     });
@@ -40,6 +44,7 @@ export default async (
   return {
     id: item.yelpId,
     name: item.name,
+    image_url: item.image_url,
     url: item.url,
     price: item.price,
     rating: item.rating,

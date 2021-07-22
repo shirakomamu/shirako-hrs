@@ -5,10 +5,11 @@ import getUserCached from "server/services/auth0-mgmt/getUserCached";
 import { ListVisibility } from "common/enums";
 import { IDestinationListsPayload } from "common/types/api";
 import SrkError from "server/classes/SrkError";
+import { searchForUsersByUsername } from "server/services/auth0-mgmt/getUserByUsername";
 
 export default async (
   authResult: SrkCookie,
-  { keyword }: SearchListsDto
+  { keyword, pickedIds }: SearchListsDto
 ): Promise<IDestinationListsPayload> => {
   if (!authResult.actor) {
     throw new SrkError("unauthorized");
@@ -17,9 +18,12 @@ export default async (
   const repo = DI.destinationListRepo;
   const memberRepo = DI.memberRepo;
 
-  const user = await memberRepo.findOneOrFail({ sub: authResult.actor?.id }, [
-    "outgoingFriends",
-    "incomingFriends",
+  const [user, targetUsers] = await Promise.all([
+    memberRepo.findOneOrFail({ sub: authResult.actor?.id }, [
+      "outgoingFriends",
+      "incomingFriends",
+    ]),
+    searchForUsersByUsername(keyword),
   ]);
 
   const confirmedFriends = user.confirmedFriends.map((e) => e.id) || [];
@@ -27,6 +31,13 @@ export default async (
   const lists = await repo.find(
     {
       $and: [
+        // already-picked lists
+        {
+          id: {
+            $nin: pickedIds || [],
+          },
+        },
+
         // keyword
         {
           $or: [
@@ -38,6 +49,13 @@ export default async (
             {
               description: {
                 $ilike: `%${keyword}%`,
+              },
+            },
+            {
+              owner: {
+                sub: {
+                  $in: targetUsers.map((e) => e.user_id),
+                },
               },
             },
           ],
@@ -70,7 +88,7 @@ export default async (
         },
       ],
     },
-    ["sharedWith"],
+    ["owner"],
     undefined, // order by
     5, // limit
     0 // offset
@@ -80,18 +98,23 @@ export default async (
     .map((e) => e.owner.sub)
     .filter((e, i, a) => a.indexOf(e) === i);
 
-  const identifiedOwners = (
-    await Promise.all(distinctOwners.map((e) => getUserCached({ id: e })))
-  ).map((e) => e.username || "n/a");
+  const identifiedOwners = await Promise.all(
+    distinctOwners.map((e) => getUserCached({ id: e }))
+  );
 
   return {
-    lists: lists.map((list) => ({
-      id: list.id,
-      name: list.name,
-      owner: identifiedOwners[distinctOwners.indexOf(list.owner.sub)],
-      description: list.description,
-      visibility: list.visibility,
-      // items: mapItems(list.destinations.getItems()),
-    })),
+    lists: lists.map((list) => {
+      const ownerIdentified =
+        identifiedOwners[distinctOwners.indexOf(list.owner.sub)];
+
+      return {
+        id: list.id,
+        name: list.name,
+        owner: ownerIdentified.username || "n/a",
+        description: list.description,
+        visibility: list.visibility,
+        // items: mapItems(list.destinations.getItems()),
+      };
+    }),
   };
 };

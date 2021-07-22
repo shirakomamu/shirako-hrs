@@ -37,7 +37,7 @@
       <Drop
         v-else
         :visible="popupVisible"
-        container-class="p-8 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-2xl"
+        container-class="p-8 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg"
         @hide="popupVisible = false"
       >
         <template #default>
@@ -45,7 +45,7 @@
             <nuxt-link
               v-if="emailVerified"
               to="/dashboard"
-              class="text-blue-srk"
+              class="text-orange-srk dark:text-blue-srk"
               ><Dashboard class="icon-inline" />
               <span class="hover:underline focus:underline"
                 >Dashboard</span
@@ -72,7 +72,9 @@
             <hr />
 
             <div class="grid grid-cols-1 gap-4 justify-items-center">
-              <nuxt-link :to="'/u/' + username" class="text-blue-srk"
+              <nuxt-link
+                :to="'/u/' + username"
+                class="text-orange-srk dark:text-blue-srk"
                 ><Person class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Profile</span
@@ -81,13 +83,15 @@
               <nuxt-link
                 v-if="emailVerified"
                 to="/friends"
-                class="text-blue-srk"
+                class="text-orange-srk dark:text-blue-srk"
                 ><People class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Friends</span
                 ></nuxt-link
               >
-              <nuxt-link to="/settings" class="text-blue-srk"
+              <nuxt-link
+                to="/settings"
+                class="text-orange-srk dark:text-blue-srk"
                 ><Settings class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Settings</span

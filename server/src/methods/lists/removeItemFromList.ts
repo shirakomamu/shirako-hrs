@@ -21,7 +21,7 @@ export default async (
         },
         id,
       },
-      ["destinations", "sharedWith"]
+      ["destinations"]
     ),
     DI.destinationItemRepo.findOneOrFail({
       yelpId: destinationId,

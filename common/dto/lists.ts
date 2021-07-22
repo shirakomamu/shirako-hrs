@@ -19,6 +19,7 @@ export type GetListDto = {
 
 export type SearchListsDto = {
   keyword: string;
+  pickedIds?: string[];
 };
 
 export type AddItemToListDto = {

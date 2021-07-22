@@ -22,7 +22,7 @@ export default async (
         },
         id,
       },
-      ["destinations", "sharedWith"]
+      ["destinations"]
     ),
     identifyDestination(authResult, {
       id: destinationId,

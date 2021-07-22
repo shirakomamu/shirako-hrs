@@ -89,7 +89,7 @@ export default {
             objectSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"], // inline required by vue2
             // fontSrc: ["'self'"],
-            imgSrc: ["'self'", "data:"],
+            imgSrc: ["'self'", "data:", "*.yelpcdn.com"],
           },
           reportOnly: false,
         },
@@ -179,5 +179,5 @@ export default {
   //   optimizeImagesInDev: true,
   // },
 
-  ignore: ["**/*.test.*", ["./migrations/*.*"]],
+  ignore: ["**/*.test.*", ["**/migrations/Migration*.js"]],
 } as NuxtConfig;

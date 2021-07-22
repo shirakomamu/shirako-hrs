@@ -1,65 +1,77 @@
 <template>
-  <div class="grid grid-cols-1 gap-2">
-    <div class="flex flex-row gap-2 items-center">
-      <div class="font-semibold">
-        <p>
-          {{ name }}
-          <span class="text-sm opacity-60">{{ price }}</span>
-        </p>
-      </div>
-      <a v-if="url" :href="url" rel="noopener noreferrer" target="_blank">
-        <button
-          type="button"
-          alt="Open in Yelp"
-          class="
-            p-0
-            text-blue-srk
-            opacity-80
-            hover:opacity-100
-            focus:opacity-100
-          "
-        >
-          <OpenInNew class="text-sm icon-inline" />
-        </button>
-      </a>
+  <div class="flex flex-row gap-4 items-center">
+    <div
+      v-if="image_url"
+      class="flex-shrink-0 relative h-32 w-32 overflow-hidden"
+    >
+      <ImageFader
+        :src="image_url"
+        class="absolute h-full w-full object-cover"
+      />
     </div>
-
-    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-      <div class="grid grid-cols-1 text-sm">
-        <template v-if="display_address">
-          <p v-for="(line, index) in display_address" :key="index">
-            {{ line }}
+    <div class="flex-grow grid grid-cols-1 gap-2">
+      <div class="flex flex-row gap-2 items-center">
+        <div class="font-semibold">
+          <p>
+            {{ name }}
+            <span class="text-sm opacity-60">{{ price }}</span>
           </p>
-        </template>
-        <p class="text-green-600 dark:text-green-500">{{ display_phone }}</p>
+        </div>
+        <a v-if="url" :href="url" rel="noopener noreferrer" target="_blank">
+          <button
+            type="button"
+            alt="Open in Yelp"
+            class="
+              p-0
+              text-orange-srk
+              dark:text-blue-srk
+              opacity-80
+              hover:opacity-100
+              focus:opacity-100
+            "
+          >
+            <OpenInNew class="text-sm icon-inline" />
+          </button>
+        </a>
       </div>
 
-      <div class="flex-grow" />
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+        <div class="grid grid-cols-1 text-sm">
+          <template v-if="display_address">
+            <p v-for="(line, index) in display_address" :key="index">
+              {{ line }}
+            </p>
+          </template>
+          <p class="text-green-600 dark:text-green-500">{{ display_phone }}</p>
+        </div>
 
-      <div v-if="showAddButton">
-        <ComboButton
-          :alt="isAdded ? 'Add to list' : 'Added'"
-          class="w-full sm:w-max text-sm bg-blue-srk text-white"
-          :disabled="!isAdded || isAdding"
-          :loading="isAdding"
-          @click="addItem"
-          ><Add class="icon-inline" />
-          {{ isAdded ? "Add to list" : "Added" }}</ComboButton
-        >
+        <div class="flex-grow" />
+
+        <div v-if="showAddButton">
+          <ComboButton
+            :alt="isAdded ? 'Add to list' : 'Added'"
+            class="w-full sm:w-max text-sm bg-blue-srk text-white"
+            :disabled="!isAdded || isAdding"
+            :loading="isAdding"
+            @click="addItem"
+            ><Add class="icon-inline" />
+            {{ isAdded ? "Add to list" : "Added" }}</ComboButton
+          >
+        </div>
       </div>
-    </div>
 
-    <div class="grid grid-cols-1 text-xs">
-      <div class="text-orange-srk">
-        <StarRating :rating="rating" :max-rating="5" /> ({{
-          review_count
-        }}
-        review{{ review_count === 1 ? "" : "s" }})
+      <div class="grid grid-cols-1 text-xs">
+        <div class="text-orange-srk">
+          <StarRating :rating="rating" :max-rating="5" /> ({{
+            review_count
+          }}
+          review{{ review_count === 1 ? "" : "s" }})
+        </div>
       </div>
-    </div>
 
-    <div class="grid grid-cols-1 opacity-50 text-xs">
-      <p>Hours last updated: {{ lastUpdatedString }}</p>
+      <div class="grid grid-cols-1 opacity-50 text-xs">
+        <p :title="lastUpdatedTs">{{ lastUpdatedString }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -69,6 +81,7 @@ import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import { format } from "date-fns";
 import OpenInNew from "client/components/icons/OpenInNew.vue";
 import Add from "client/components/icons/Add.vue";
+import timeAgo from "common/utils/timeAgo";
 
 export default defineComponent({
   name: "YelpSearchModuleItem",
@@ -84,6 +97,10 @@ export default defineComponent({
     name: {
       type: String,
       required: true,
+    },
+    image_url: {
+      type: String,
+      default: null,
     },
     url: {
       type: String,
@@ -127,9 +144,14 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const lastUpdatedString = computed(() =>
+    const lastUpdatedTs = computed(() =>
       props.lastUpdated > 0
         ? format(props.lastUpdated, "yyyy-MM-dd HH:mm")
+        : "never"
+    );
+    const lastUpdatedString = computed(() =>
+      props.lastUpdated > 0
+        ? timeAgo.format(props.lastUpdated, "round-minute")
         : "never"
     );
 
@@ -137,7 +159,7 @@ export default defineComponent({
       emit("pick", props.id);
     };
 
-    return { lastUpdatedString, addItem };
+    return { lastUpdatedString, lastUpdatedTs, addItem };
   },
 });
 </script>

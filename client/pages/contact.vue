@@ -35,7 +35,12 @@
         <p>Visit our online Help Center to submit an inquiry.</p>
         <a
           href="https://shirako.atlassian.net/servicedesk/customer/portals"
-          class="hover:underline focus:underline text-blue-srk"
+          class="
+            hover:underline
+            focus:underline
+            text-orange-srk
+            dark:text-blue-srk
+          "
           target="_blank"
           rel="noopener noreferrer"
           >https://shirako.atlassian.net/servicedesk/customer/portals</a
@@ -65,7 +70,12 @@
         <p>Contact us via email.</p>
         <a
           href="mailto:support@shirako.atlassian.net"
-          class="hover:underline focus:underline text-blue-srk"
+          class="
+            hover:underline
+            focus:underline
+            text-orange-srk
+            dark:text-blue-srk
+          "
           >support@shirako.atlassian.net</a
         >
       </div>
@@ -75,7 +85,12 @@
       This project is created and maintained by
       <a
         href="https://shirako.dev"
-        class="hover:underline focus:underline text-blue-srk"
+        class="
+          hover:underline
+          focus:underline
+          text-orange-srk
+          dark:text-blue-srk
+        "
         target="_blank"
         >shirako</a
       >.

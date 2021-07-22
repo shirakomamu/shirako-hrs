@@ -1,27 +1,35 @@
 <template>
   <div class="space-y-8">
-    <template v-if="list">
+    <div v-if="list" class="grid grid-cols-1 gap-4">
       <nuxt-link
-        class="text-lg text-blue-srk hover:underline focus:underline"
+        class="
+          text-lg text-orange-srk
+          dark:text-blue-srk
+          hover:underline
+          focus:underline
+        "
         :to="`/u/${route.params.username}`"
         ><ArrowBack class="icon-inline" /> Back to {{ route.params.username }}'s
         profile</nuxt-link
       >
       <div class="space-x-2">
+        <h6 class="text-2xl dark:text-white inline">{{ title }}</h6>
         <ComboButton
           v-if="canModifyList && isMe"
-          class="p-0"
+          class="p-0 text-orange-srk dark:text-blue-srk text-sm"
           @click="onShowEditListModal"
-          ><Edit class="icon-inline text-blue-srk"
-        /></ComboButton>
-        <h6 class="text-2xl dark:text-white inline">{{ title }}</h6>
-        <ListVisibilityIndicator :visibility="list.visibility" class="inline" />
+          ><Edit class="icon-inline" /> Edit</ComboButton
+        >
       </div>
+      <ListVisibilityIndicator :visibility="list.visibility" class="inline" />
       <p :class="{ italic: !list.description }">
         {{ list.description || "No description provided." }}
       </p>
       <div class="items-center bg-gray-200 dark:bg-gray-700 p-8">
-        <Loader v-if="listLoading" class="loading text-blue-srk" />
+        <Loader
+          v-if="listLoading"
+          class="loading text-orange-srk dark:text-blue-srk"
+        />
         <div
           v-else
           class="
@@ -29,13 +37,14 @@
             sm:grid-cols-2
             lg:grid-cols-3
             xl:grid-cols-4
-            gap-8
+            2xl:grid-cols-5
+            gap-4
           "
         >
           <ComboButton
             v-if="isMe && canModifyList"
             key="add"
-            class="p-0"
+            class="p-0 h-full w-full"
             alt="Add to list"
             @click="showSearchModal = true"
           >
@@ -59,6 +68,7 @@
             :id="item.id"
             :key="item.id"
             :name="item.name"
+            :image_url="item.image_url"
             :url="item.url"
             :price="item.price"
             :rating="item.rating"
@@ -127,13 +137,14 @@
           @submit.prevent="onEditList"
         >
           <div class="flex flex-row gap-4 items-center">
+            <h6 class="text-2xl dark:text-white">Edit list</h6>
+            <div class="flex-grow" />
             <ComboButton
-              alt="Remove from list"
+              alt="Delete"
               class="text-sm bg-red-500 text-white"
               @click="onShowDeleteConfirmationModal"
-              ><Delete class="icon-inline"
-            /></ComboButton>
-            <h6 class="text-2xl dark:text-white">Edit list</h6>
+              ><Delete class="icon-inline" /> Delete</ComboButton
+            >
           </div>
 
           <div
@@ -207,11 +218,12 @@
           >
         </form>
       </Modal>
-    </template>
-    <template v-else>
+    </div>
+    <div v-else>
       <div class="grid grid-cols-1 place-items-center">
-        <Loader class="loading text-blue-srk" /></div
-    ></template>
+        <Loader class="loading text-orange-srk dark:text-blue-srk" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -276,6 +288,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      window.scrollTo(0, 0);
       await refreshModel();
     });
 

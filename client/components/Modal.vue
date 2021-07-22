@@ -96,7 +96,7 @@ export default defineComponent({
         props.clickClose &&
         !transition.value &&
         visibility.value &&
-        event.target === modalOverlay.value // ensures it's not another modal
+        modalOverlay.value?.contains(event.target as Node) // ensures it's not another modal
       ) {
         emit("hide");
       }

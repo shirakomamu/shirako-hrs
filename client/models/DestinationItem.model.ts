@@ -18,6 +18,7 @@ export default class extends Model {
 
   public id!: string;
   public name!: string;
+  public image_url!: string | null;
   public url!: string;
   public price!: string;
   public rating!: number;
@@ -65,6 +66,7 @@ export default class extends Model {
     return {
       id: this.string(null),
       name: this.string(null),
+      image_url: this.string(null).nullable(),
       url: this.string(null),
       price: this.string(null),
       rating: this.number(null),

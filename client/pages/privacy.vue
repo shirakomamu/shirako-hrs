@@ -43,7 +43,12 @@
       site to Auth0. Please refer to their privacy policy at
       <a
         href="https://auth0.com/privacy"
-        class="hover:underline focus:underline text-blue-srk"
+        class="
+          hover:underline
+          focus:underline
+          text-orange-srk
+          dark:text-blue-srk
+        "
         target="_blank"
         rel="noopener noreferrer"
         >https://auth0.com/privacy</a
@@ -54,7 +59,14 @@
       We ask you for your email address when you create an account. We will only
       use it to contact you regarding your account. You may also manage or erase
       your account through the
-      <nuxt-link to="/me" class="text-blue-srk hover:underline focus:underline"
+      <nuxt-link
+        to="/me"
+        class="
+          text-orange-srk
+          dark:text-blue-srk
+          hover:underline
+          focus:underline
+        "
         >My account</nuxt-link
       >
       page at any time. These are some of the basic scenarios regarding which we
@@ -95,7 +107,12 @@
       Please see their privacy policy at
       <a
         href="https://www.atlassian.com/legal/privacy-policy"
-        class="hover:underline focus:underline text-blue-srk"
+        class="
+          hover:underline
+          focus:underline
+          text-orange-srk
+          dark:text-blue-srk
+        "
         target="_blank"
         rel="noopener noreferrer"
         >https://www.atlassian.com/legal/privacy-policy</a
@@ -110,7 +127,12 @@
       metadata or IP address. Please see their privacy policy at
       <a
         href="https://www.salesforce.com/company/privacy"
-        class="hover:underline focus:underline text-blue-srk"
+        class="
+          hover:underline
+          focus:underline
+          text-orange-srk
+          dark:text-blue-srk
+        "
         target="_blank"
         rel="noopener noreferrer"
         >https://www.salesforce.com/company/privacy</a

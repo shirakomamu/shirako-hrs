@@ -22,6 +22,7 @@ export default async (
       id: e.id,
       name: e.name,
       url: e.url,
+      image_url: e.image_url,
       price: e.price || "n/a",
       rating: e.rating,
       review_count: e.review_count,

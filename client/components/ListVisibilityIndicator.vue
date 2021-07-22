@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="py-1 px-2 uppercase w-max text-xs font-semibold"
-    :class="classAdder"
-  >
+  <div class="uppercase w-max text-xs font-semibold" :class="classAdder">
     <Person v-if="visibility === ListVisibility.list" class="icon-inline" />
     <People
       v-else-if="visibility === ListVisibility.friends"

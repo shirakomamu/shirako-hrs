@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@nuxtjs/composition-api";
+import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import timeAgo from "common/utils/timeAgo";
 import Schedule from "client/components/icons/Schedule.vue";
 
@@ -23,9 +23,21 @@ export default defineComponent({
       type: Number,
       default: null,
     },
+    textOverride: {
+      type: String,
+      default: null,
+    },
+    classAdderOverride: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
   },
   setup(props) {
     const displayText = computed(() => {
+      if (props.textOverride) {
+        return props.textOverride;
+      }
+
       if (props.timeUntilClose === null || props.timeUntilClose === 0) {
         return "Closed";
       }
@@ -52,6 +64,9 @@ export default defineComponent({
     });
 
     const classAdder = computed(() => {
+      if (props.classAdderOverride.length) {
+        return props.classAdderOverride;
+      }
       if (!props.timeUntilClose) {
         return ["bg-red-500"];
       }

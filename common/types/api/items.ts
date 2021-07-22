@@ -2,6 +2,7 @@
 export interface DestinationItemMetadata {
   id: string;
   name: string;
+  image_url: string | null;
   url: string;
   price: string;
   rating: number;

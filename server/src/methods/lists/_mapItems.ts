@@ -5,6 +5,7 @@ const mapItems = (items: Destination[]) => {
     id: e.yelpId,
     name: e.name,
     url: e.url,
+    image_url: e.image_url,
     price: e.price,
     rating: e.rating,
     review_count: e.review_count,

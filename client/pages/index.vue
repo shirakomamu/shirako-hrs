@@ -56,36 +56,34 @@
       </div>
 
       <div class="inset-0 absolute overflow-hidden">
-        <div class="tag-bg inset-0 w-full h-full">
+        <div class="w-full h-full">
           <ImageFader
             class="
               dark:hidden
-              inset-0
               w-full
               h-full
               object-cover
               filter
-              blur-xl
+              blur-2xl
               transform-gpu
               scale-110
             "
-            src="@/assets/images/t5.png"
+            src="@/assets/images/t3.png"
           />
           <ImageFader
             class="
               hidden
               dark:block
-              inset-0
               w-full
               h-full
               object-cover
               filter
-              blur-xl
+              blur-2xl
               brightness-50
               transform-gpu
               scale-110
             "
-            src="@/assets/images/t6.png"
+            src="@/assets/images/t4.png"
           />
         </div>
       </div>
@@ -110,6 +108,7 @@ export default defineComponent({
   components: {
     Error,
   },
+
   setup() {
     const context = useContext();
     const self = useSelf();
@@ -128,14 +127,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .tag-bg {
-  // background-image: url("client/assets/images/t5.png");
-  // filter: blur(24px);
-
-  // @media (prefers-color-scheme: dark) {
-  //   background-image: url("client/assets/images/t6.png");
-  //   filter: brightness(50%) blur(24px);
-  // }
-
   z-index: 1;
 }
 
@@ -144,7 +135,7 @@ export default defineComponent({
 
   @media (min-width: theme("screens.md")) {
     margin-left: 33%;
-    background-color: rgb(255, 118, 0);
+    background-color: lighten(desaturate(#ff7600, 30%), 5%);
     color: white;
 
     @media (prefers-color-scheme: dark) {

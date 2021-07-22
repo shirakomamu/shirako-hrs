@@ -2,7 +2,7 @@
   <div
     class="
       container
-      grid grid-cols-1
+      flex flex-col
       items-center
       text-center
       p-2
@@ -14,9 +14,9 @@
     "
   >
     <PlaylistAdd class="list-icon opacity-50" />
-    <div class="grid grid-cols-1 gap-2 place-items-center">
+    <div class="grid grid-cols-1 gap-2 place-items-center my-8 w-full">
       <Add class="icon-inline" />
-      <p>Create list...</p>
+      <p>Create list</p>
     </div>
   </div>
 </template>
@@ -37,7 +37,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .container {
-  aspect-ratio: 1 / 1;
   position: relative;
 }
 .list-icon {
@@ -48,7 +47,7 @@ export default defineComponent({
   width: 1.5rem;
 }
 .icon-inline {
-  width: 3rem;
-  height: 3rem;
+  width: 2rem;
+  height: 2rem;
 }
 </style>
