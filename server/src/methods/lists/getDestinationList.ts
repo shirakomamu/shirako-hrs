@@ -64,7 +64,7 @@ export default async (
       },
       $or: orArray,
     },
-    ["destinations", "sharedWith"]
+    ["destinations"]
   );
 
   return {

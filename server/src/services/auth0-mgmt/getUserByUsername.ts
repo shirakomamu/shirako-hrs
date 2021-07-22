@@ -9,6 +9,7 @@ export default async (username: string) => {
   // https://www.lucenetutorial.com/lucene-query-syntax.html
   const params = {
     q: lucene.field("username", lucene.term(username)),
+    per_page: 1,
   };
 
   try {
@@ -28,3 +29,24 @@ export default async (username: string) => {
     throw new SrkError("resourceInvalid");
   }
 };
+
+const searchForUsersByUsername = async (username: string) => {
+  const ENDPOINT = "api/v2/users"; // added onto issuer base url
+
+  // https://www.lucenetutorial.com/lucene-query-syntax.html
+  const params = {
+    q: lucene.field("username", `${username}*`),
+    per_page: 5,
+  };
+
+  try {
+    return await send<GetUserResponse[]>(ENDPOINT, {
+      method: "get",
+      params,
+    });
+  } catch (e) {
+    return [];
+  }
+};
+
+export { searchForUsersByUsername };

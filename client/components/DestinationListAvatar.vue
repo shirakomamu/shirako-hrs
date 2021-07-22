@@ -2,7 +2,7 @@
   <div
     class="
       container
-      grid grid-cols-1
+      flex flex-col
       items-center
       text-center
       p-2
@@ -11,6 +11,7 @@
       dark:bg-opacity-5
       hover:bg-opacity-70
       dark:hover:bg-opacity-10
+      h-full
     "
   >
     <List class="list-icon opacity-50" />
@@ -35,7 +36,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .container {
-  aspect-ratio: 1 / 1;
   position: relative;
 }
 .list-icon {

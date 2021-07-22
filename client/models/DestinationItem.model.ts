@@ -3,6 +3,7 @@ import { AxiosRequestConfig } from "axios";
 import { BusinessIdentifyDto } from "common/dto/items";
 import { ISrkResponse } from "common/types/api";
 import { IDestinationItemPayload } from "common/types/api/items";
+import getTimeUntilClose from "common/utils/getTimeUntilClose";
 import DestinationListModel from "./DestinationList.model";
 import DestinationListItemModel from "./DestinationListItem.model";
 import VgtParamModel from "./VgtParam.model";
@@ -17,6 +18,7 @@ export default class extends Model {
 
   public id!: string;
   public name!: string;
+  public image_url!: string | null;
   public url!: string;
   public price!: string;
   public rating!: number;
@@ -46,12 +48,25 @@ export default class extends Model {
 
   public lists!: DestinationListModel[];
 
+  public get regularHours() {
+    return this.hours.find((e) => e.hours_type === "REGULAR")?.open;
+  }
+
+  public get timeUntilClose() {
+    if (!this.regularHours || !this.timezone) {
+      return null;
+    }
+
+    return getTimeUntilClose(Date.now(), this.regularHours, this.timezone);
+  }
+
   private detailsLoaded!: boolean;
 
   public static fields() {
     return {
       id: this.string(null),
       name: this.string(null),
+      image_url: this.string(null).nullable(),
       url: this.string(null),
       price: this.string(null),
       rating: this.number(null),

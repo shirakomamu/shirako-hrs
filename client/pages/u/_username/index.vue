@@ -32,21 +32,20 @@
             <p class="text-4xl font-bold">
               {{ member.nickname }}
             </p>
-            <p class="opacity-50">@{{ member.username }}</p>
+            <p class="font-semibold">@{{ member.username }}</p>
           </div>
         </div>
 
         <div class="inset-0 absolute overflow-hidden">
-          <div class="p-bg inset-0 w-full h-full bg-gray-200 dark:bg-gray-700">
+          <div class="p-bg w-full h-full bg-gray-200 dark:bg-gray-700">
             <ImageFader
               v-if="p[0]"
               class="
-                inset-0
                 w-full
                 h-full
                 object-cover
                 filter
-                blur-xl
+                blur-2xl
                 transform-gpu
                 scale-110
               "
@@ -55,12 +54,11 @@
             <ImageFader
               v-if="p[1]"
               class="
-                inset-0
                 w-full
                 h-full
                 object-cover
                 filter
-                blur-xl
+                blur-2xl
                 transform-gpu
                 scale-110
               "
@@ -69,12 +67,11 @@
             <ImageFader
               v-if="p[2]"
               class="
-                inset-0
                 w-full
                 h-full
                 object-cover
                 filter
-                blur-xl
+                blur-2xl
                 transform-gpu
                 scale-110
               "
@@ -148,22 +145,19 @@
           "
         >
           <div
-            v-if="
-              (destinationLists && destinationLists.length) || canCreateList
-            "
+            v-if="(destinationLists && destinationLists.length) || isMe"
             class="
-              grid grid-flow-row grid-cols-2
+              grid grid-cols-2
               md:grid-cols-4
               lg:grid-cols-6
               xl:grid-cols-8
               gap-4
-              items-center
             "
           >
             <ComboButton
               v-if="isMe && canCreateList"
               key="new"
-              class="p-0"
+              class="p-0 h-full w-full"
               alt="Create list"
               @click="onShowCreateListModal"
             >
@@ -198,12 +192,14 @@
                         items-center
                         justify-items-center
                         h-full
+                        w-full
+                        py-8
                       "
                     >
                       <p class="text-sm font-semibold">{{ list.name }}</p>
                       <ListVisibilityIndicator
                         :visibility="list.visibility"
-                        class="absolute -left-2 -bottom-1"
+                        class="absolute left-0 bottom-0"
                       />
                     </div>
                   </DestinationListAvatar>
@@ -391,7 +387,7 @@ export default defineComponent({
     const canCreateList = computed(() =>
       hrbacCan({ roles: [Role._self_destination_lists] }, self.value)
     );
-    // const canCreateLists = false;
+    // const canCreateList = false;
 
     const isFriendLoading = ref<boolean>(false);
 
@@ -513,8 +509,11 @@ export default defineComponent({
   // }
 }
 .p-bg-text {
-  --tw-drop-shadow: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.3))
-    drop-shadow(0 4px 3px rgba(0, 0, 0, 0.4));
+  // --tw-drop-shadow: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.3))
+  //   drop-shadow(0 4px 3px rgba(0, 0, 0, 0.4));
+  // text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2), 2px -2px 2px rgba(0, 0, 0, 0.2),
+  //   -2px 2px 2px rgba(0, 0, 0, 0.2), -2px -2px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
 }
 .p-contents {
   z-index: 2;

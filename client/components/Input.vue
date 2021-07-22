@@ -122,6 +122,13 @@ export default defineComponent({
       }
     );
 
+    watch(indicatorState, (value) =>
+      emit("indicatorChange", {
+        state: value,
+        value: inputElem.value?.value,
+      })
+    );
+
     // methods
     const focus = () => inputElem.value?.focus();
 

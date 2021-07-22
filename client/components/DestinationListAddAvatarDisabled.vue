@@ -2,17 +2,19 @@
   <div
     class="
       container
-      grid grid-cols-1
+      flex flex-col
       items-center
       text-center
       p-2
       transition
       bg-white bg-opacity-50
       dark:bg-opacity-5
+      hover:bg-opacity-70
+      dark:hover:bg-opacity-10
     "
   >
     <PlaylistAdd class="list-icon opacity-50" />
-    <div class="grid grid-cols-1 gap-2 place-items-center">
+    <div class="grid grid-cols-1 gap-2 place-items-center my-8 w-full">
       <Error class="icon-inline text-red-500" />
       <p class="text-sm">Verify email to create lists</p>
     </div>
@@ -35,7 +37,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .container {
-  aspect-ratio: 1 / 1;
   position: relative;
 }
 .list-icon {

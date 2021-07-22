@@ -13,7 +13,14 @@
     </article>
     <div>
       <ComboButton
-        class="font-semibold text-blue-srk hover:underline focus:underline p-0"
+        class="
+          font-semibold
+          text-orange-srk
+          dark:text-blue-srk
+          hover:underline
+          focus:underline
+          p-0
+        "
         @click="goHome"
       >
         <ArrowBack class="icon-inline" /> Back to home page

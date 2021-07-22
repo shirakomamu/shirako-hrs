@@ -15,6 +15,7 @@ export default defineComponent({
       roles: [Role._self_destination_lists],
     } as Guard,
   },
+
   setup() {
     const context = useContext();
     useMeta({ title: "Friends | " + context.$config.appinfo.name });

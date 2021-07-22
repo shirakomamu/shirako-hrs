@@ -23,7 +23,7 @@ export default async (
     {
       id,
     },
-    ["destinations", "sharedWith"]
+    ["destinations"]
   );
 
   list.name = name || list.name;

@@ -37,12 +37,15 @@
       <Drop
         v-else
         :visible="popupVisible"
-        container-class="p-8 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-2xl"
+        container-class="p-8 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg"
         @hide="popupVisible = false"
       >
         <template #default>
           <div class="flex flex-row gap-8 items-center">
-            <nuxt-link to="/dashboard" class="text-blue-srk"
+            <nuxt-link
+              v-if="emailVerified"
+              to="/dashboard"
+              class="text-orange-srk dark:text-blue-srk"
               ><Dashboard class="icon-inline" />
               <span class="hover:underline focus:underline"
                 >Dashboard</span
@@ -69,19 +72,26 @@
             <hr />
 
             <div class="grid grid-cols-1 gap-4 justify-items-center">
-              <nuxt-link :to="'/u/' + username" class="text-blue-srk"
+              <nuxt-link
+                :to="'/u/' + username"
+                class="text-orange-srk dark:text-blue-srk"
                 ><Person class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Profile</span
                 ></nuxt-link
               >
-              <nuxt-link to="/friends" class="text-blue-srk"
+              <nuxt-link
+                v-if="emailVerified"
+                to="/friends"
+                class="text-orange-srk dark:text-blue-srk"
                 ><People class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Friends</span
                 ></nuxt-link
               >
-              <nuxt-link to="/settings" class="text-blue-srk"
+              <nuxt-link
+                to="/settings"
+                class="text-orange-srk dark:text-blue-srk"
                 ><Settings class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Settings</span
@@ -117,6 +127,8 @@ import Logout from "client/components/icons/Logout.vue";
 import People from "client/components/icons/People.vue";
 import Person from "client/components/icons/Person.vue";
 import Settings from "client/components/icons/Settings.vue";
+import hrbacCan from "common/utils/hrbacCan";
+import { Role } from "common/enums/hrbac";
 
 export default defineComponent({
   name: "AppHeader",
@@ -133,11 +145,10 @@ export default defineComponent({
 
     const appName = context.$config.appinfo.name;
     const popupVisible = ref<boolean>(false);
-    const username = computed(
-      (): string | null => self.value?.username || null
-    );
-    const nickname = computed(
-      (): string | null => self.value?.nickname || null
+    const username = computed(() => self.value?.username || null);
+    const nickname = computed(() => self.value?.nickname || null);
+    const emailVerified = computed(() =>
+      hrbacCan({ roles: [Role._email_verified] }, self.value)
     );
 
     const showPopup = () => (popupVisible.value = true);
@@ -151,6 +162,7 @@ export default defineComponent({
       self,
       username,
       nickname,
+      emailVerified,
       popupVisible,
       showPopup,
       signOut,

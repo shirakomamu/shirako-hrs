@@ -33,16 +33,18 @@ export interface BusinessIdentifyResponse {
   };
   photos: string[];
   price?: string;
-  hours: {
-    open: {
-      is_overnight: boolean;
-      start: string;
-      end: string;
-      day: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-    }[];
-    hours_type: string;
-    is_open_now: boolean;
-  }[];
+  hours:
+    | {
+        open: {
+          is_overnight: boolean;
+          start: string;
+          end: string;
+          day: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+        }[];
+        hours_type: string;
+        is_open_now: boolean;
+      }[]
+    | null;
   transactions: ("pickup" | "delivery" | "restaurant_reservation")[];
   special_hours: {
     date: string;
@@ -79,6 +81,7 @@ export default async (id: string) => {
 
   return {
     ...response,
+    hours: response.hours || [],
     special_hours: response.special_hours || [], // it's sometimes undefined
   } as BusinessIdentifyResponse;
 };

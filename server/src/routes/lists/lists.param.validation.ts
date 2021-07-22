@@ -3,6 +3,20 @@ import { ParamSchema } from "express-validator";
 import { SrkExpressRequest } from "server/services/jwt";
 import snowflake from "server/services/snowflake";
 
+export const ListSearchKeywordParamSchema: ParamSchema = {
+  isString: {
+    errorMessage: "Search term must be a string",
+  },
+  trim: true,
+  isLength: {
+    errorMessage: "Search term must be 1 to 64 characters long",
+    options: {
+      min: 1,
+      max: 64,
+    },
+  },
+};
+
 export const ListNameParamSchema: ParamSchema = {
   isString: {
     errorMessage: "List name must be a string",

@@ -10,13 +10,27 @@ import {
   EditListDto,
   GetListDto,
   RemoveItemFromListDto,
+  SearchListsDto,
 } from "common/dto/lists";
 import addItemToList from "server/methods/lists/addItemToList";
 import removeItemFromList from "server/methods/lists/removeItemFromList";
 import editDestinationList from "server/methods/lists/editDestinationList";
 import deleteDestinationList from "server/methods/lists/deleteDestinationList";
+import searchDestinationLists from "server/methods/lists/searchDestinationLists";
 
 export default class {
+  public searchDestinationLists = async (
+    req: SrkExpressRequest,
+    _res: SrkExpressResponse
+  ) => {
+    const payload = await searchDestinationLists(
+      req.locals.authResult,
+      req.query as SearchListsDto
+    );
+
+    return new SrkResponse({ payload });
+  };
+
   public createDestinationList = async (
     req: SrkExpressRequest,
     _res: SrkExpressResponse

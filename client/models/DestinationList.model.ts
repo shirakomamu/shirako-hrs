@@ -6,9 +6,14 @@ import {
   EditListDto,
   GetListDto,
   RemoveItemFromListDto,
+  SearchListsDto,
 } from "common/dto/lists";
 import { ListVisibility } from "common/enums";
-import { IDestinationListPayload, ISrkResponse } from "common/types/api";
+import {
+  IDestinationListPayload,
+  IDestinationListsPayload,
+  ISrkResponse,
+} from "common/types/api";
 import DestinationItemModel from "./DestinationItem.model";
 import DestinationListItemModel from "./DestinationListItem.model";
 import VgtParamModel from "./VgtParam.model";
@@ -217,6 +222,29 @@ export default class extends Model {
     } else {
       return storedData.$toJson() as IDestinationListPayload;
     }
+  }
+
+  public static async apiSearch(params: SearchListsDto) {
+    this.fetching = true;
+    const response: ISrkResponse<IDestinationListsPayload> =
+      await this.store().dispatch("api/send", {
+        method: "get",
+        url: "/api/lists",
+        params,
+      } as AxiosRequestConfig);
+    this.fetching = false;
+
+    if (response.ok) {
+      this.insertOrUpdate({
+        data: response.payload.lists,
+      });
+
+      return this.query().findIn(
+        response.payload.lists.map((e) => [e.owner, e.id])
+      );
+    }
+
+    return [];
   }
 
   private static initialize() {

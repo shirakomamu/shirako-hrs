@@ -24,6 +24,7 @@ export class Destination extends BaseEntity {
   yelpId: string;
   name: string;
   url: string;
+  image_url: string | null;
   price: string;
   rating: number;
   review_count: number;
@@ -37,6 +38,7 @@ export class Destination extends BaseEntity {
     yelpId: string,
     name: string,
     url: string,
+    image_url: string | null,
     price: string,
     rating: number,
     review_count: number,
@@ -49,6 +51,7 @@ export class Destination extends BaseEntity {
     super();
     this.yelpId = yelpId;
     this.name = name;
+    this.image_url = image_url;
     this.url = url;
     this.price = price;
     this.rating = rating;
@@ -66,6 +69,7 @@ export default new EntitySchema<Destination, BaseEntity>({
   properties: {
     yelpId: { type: "string", unique: true },
     name: { type: "string" },
+    image_url: { type: "string", nullable: true },
     url: { type: "string", length: 512 },
     price: { type: "string" },
     rating: { type: "number" },

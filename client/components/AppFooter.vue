@@ -14,19 +14,34 @@
         |
         <nuxt-link
           to="/privacy"
-          class="text-blue-srk hover:underline focus:underline"
+          class="
+            text-orange-srk
+            dark:text-blue-srk
+            hover:underline
+            focus:underline
+          "
           >privacy</nuxt-link
         >
         |
         <nuxt-link
           to="/tos"
-          class="text-blue-srk hover:underline focus:underline"
+          class="
+            text-orange-srk
+            dark:text-blue-srk
+            hover:underline
+            focus:underline
+          "
           >terms</nuxt-link
         >
         |
         <nuxt-link
           to="/contact"
-          class="text-blue-srk hover:underline focus:underline"
+          class="
+            text-orange-srk
+            dark:text-blue-srk
+            hover:underline
+            focus:underline
+          "
           >contact</nuxt-link
         >
       </div>

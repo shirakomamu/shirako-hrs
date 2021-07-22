@@ -1,422 +1,435 @@
 <template>
-  <div class="space-y-8">
-    <h5 class="text-4xl dark:text-white">Settings</h5>
-    <div class="grid grid-cols-1 justify-center gap-4">
-      <div
-        v-if="!emailVerified"
-        class="
-          grid grid-cols-1
-          gap-8
-          items-center
-          bg-gray-200
-          dark:bg-gray-700
-          p-8
-          bg-opacity-50
-        "
-      >
-        <p>
-          Your email address is currently unverified. Please verify your email
-          address to continue.
-        </p>
-        <div class="flex flex-row items-center gap-4">
-          <ComboButton
-            class="text-sm bg-black dark:bg-white text-white dark:text-black"
-            alt="Resend verification email"
-            :loading="isSendingVerificationEmail"
-            :disabled="isSendingVerificationEmail"
-            @click="resendVerificationEmail"
-          >
-            Resend verification email
-          </ComboButton>
+  <div>
+    <div class="space-y-8 w-full max-w-screen-lg mx-auto">
+      <h5 class="text-4xl dark:text-white">Settings</h5>
+      <div class="grid grid-cols-1 justify-center gap-4">
+        <div
+          v-if="!emailVerified"
+          class="
+            grid grid-cols-1
+            gap-4
+            items-center
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+            bg-opacity-50
+          "
+        >
           <p>
-            {{ verificationEmailMessage }}
+            Your email address is currently unverified. Please verify your email
+            address to continue.
           </p>
-        </div>
-      </div>
 
-      <h6 class="text-2xl dark:text-white">Account information</h6>
-      <div
-        class="
-          grid grid-cols-1
-          sm:grid-cols-2
-          gap-8
-          items-center
-          bg-gray-200
-          dark:bg-gray-700
-          p-8
-        "
-      >
-        <div class="avatar-container text-center space-y-4">
-          <img
-            :src="avatar"
-            class="profile-avatar rounded-full mx-auto"
-            alt="Avatar"
-            width="150"
-            height="150"
-          />
-          <p class="text-gray-600 dark:text-gray-400">
-            (Sorry, profile picture isn't customizable at this time.)
+          <p class="text-orange-srk text-sm italic">
+            * Verification status may take up to 10 minutes to update.
           </p>
-        </div>
-        <div class="grid grid-cols-1 gap-4 flex-grow w-full sm:w-auto">
-          <div class="grid grid-cols-1 gap-1">
-            <label class="text-lg font-semibold dark:text-white">User ID</label>
-            <div class="text-sm w-full font-mono">
-              {{ id }}
-            </div>
-            <div class="text-xs opacity-50">
-              Your ID uniquely identifies you in our system and cannot be
-              changed. It is not visible to anyone except you.
-            </div>
-          </div>
 
-          <div class="grid grid-cols-1 gap-1">
-            <label
-              :for="usernameUid"
-              class="text-lg font-semibold dark:text-white"
-              >Username</label
-            >
-            <div v-if="!isUsernameEditing" class="text-sm w-full">
-              <button
-                type="button"
-                class="p-0"
-                alt="Change username"
-                @click="showUsernameEditor(true)"
-              >
-                {{ username }}
-                <Edit v-if="emailVerified" class="icon-inline" />
-              </button>
-            </div>
-            <Input
-              v-show="isUsernameEditing"
-              :id="usernameUid"
-              ref="usernameInput"
-              v-model="usernameDraft"
-              type="text"
-              name="username"
-              classes="p-2 text-sm w-full"
-              passive-text="Your username allows other people to find you."
-              minlength="1"
-              maxlength="24"
-              required
-              :disabled="isUsernameLoading"
-              :do-validation="true"
-              :validator="usernameValidator"
-              @keyup.esc.prevent="showUsernameEditor(false, false)"
-              @keyup.enter.prevent="showUsernameEditor(false)"
-              @blur.prevent="showUsernameEditor(false)"
-            />
-          </div>
-
-          <div class="grid grid-cols-1 gap-1">
-            <label
-              :for="nicknameUid"
-              class="text-lg font-semibold dark:text-white"
-              >Nickname</label
-            >
-            <div v-if="!isNicknameEditing" class="text-sm w-full">
-              <button
-                type="button"
-                class="p-0"
-                alt="Change nickname"
-                @click="showNicknameEditor(true)"
-              >
-                {{ nickname }}
-                <Edit v-if="emailVerified" class="icon-inline" />
-              </button>
-            </div>
-            <Input
-              v-show="isNicknameEditing"
-              :id="nicknameUid"
-              ref="nicknameInput"
-              v-model="nicknameDraft"
-              type="text"
-              name="nickname"
-              classes="p-2 text-sm w-full"
-              passive-text="Choose a nickname to show on your profile."
-              minlength="1"
-              maxlength="24"
-              required
-              :disabled="isNicknameLoading"
-              :do-validation="true"
-              @keyup.esc.prevent="showNicknameEditor(false, false)"
-              @keyup.enter.prevent="showNicknameEditor(false)"
-              @blur.prevent="showNicknameEditor(false)"
-            />
-          </div>
-
-          <div class="grid grid-cols-1 gap-1">
-            <label :for="emailUid" class="text-lg font-semibold dark:text-white"
-              >Email address</label
-            >
-            <div v-if="!isEmailEditing" class="text-sm w-full">
-              <button
-                type="button"
-                class="p-0"
-                alt="Change email address"
-                @click="showEmailEditor(true)"
-              >
-                {{ email }}
-                <Edit class="icon-inline" />
-              </button>
-            </div>
-            <Input
-              v-show="isEmailEditing"
-              :id="emailUid"
-              ref="emailInput"
-              v-model="emailDraft"
-              type="email"
-              name="email"
-              classes="p-2 text-sm w-full"
-              passive-text="Your email is used to contact you about your account information, and only you can see it. If you change it, the new email address must be re-verified."
-              required
-              :disabled="isEmailLoading"
-              :do-validation="true"
-              @keyup.esc.prevent="showEmailEditor(false, false)"
-              @keyup.enter.prevent="showEmailEditor(false)"
-              @blur.prevent="showEmailEditor(false)"
-            />
-          </div>
-
-          <div class="grid grid-cols-1 gap-1">
-            <label class="text-lg font-semibold dark:text-white"
-              >Password</label
-            >
-            <div class="w-full">
-              <ComboButton
-                class="
-                  text-sm
-                  bg-black
-                  dark:bg-white
-                  text-white
-                  dark:text-black
-                  w-full
-                  sm:w-auto
-                "
-                alt="Reset password"
-                :loading="isSendingPasswordReset"
-                :disabled="isSendingPasswordReset || passwordResetMessage"
-                @click="requestPasswordReset"
-              >
-                Reset password
-              </ComboButton>
-              <span>{{ passwordResetMessage }}</span>
-            </div>
-            <div class="text-xs opacity-50">
-              A link to reset your password will be sent to your email address.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <h6 class="text-2xl dark:text-white">Privacy settings</h6>
-      <div
-        class="
-          grid grid-cols-1
-          gap-8
-          items-center
-          bg-gray-200
-          dark:bg-gray-700
-          p-8
-        "
-      >
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div class="flex-grow">
-            <label
-              class="font-semibold dark:text-white"
-              :for="friendRequestPrivacyUid"
-              >Who can send you a friend request?</label
-            >
-            <p class="text-sm">Choose who can add you as a friend.</p>
-          </div>
-          <p v-if="friendRequestPrivacyMessage" class="text-sm">
-            {{ friendRequestPrivacyMessage }}
-          </p>
-          <select
-            :id="friendRequestPrivacyUid"
-            ref="friendRequestPrivacySelect"
-            v-model="friendRequestPrivacySelection"
-            class="p-2 text-sm w-full sm:w-auto"
-            :disabled="!emailVerified || isFriendRequestPrivacyLoading"
-            @click="friendRequestPrivacyMessage = ''"
-          >
-            <option
-              v-for="(option, index) in friendRequestPrivacyOptions"
-              :key="index"
-              :value="option.value"
-            >
-              {{ option.text }}
-            </option>
-          </select>
-        </div>
-
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div class="flex-grow">
-            <label
-              class="font-semibold dark:text-white"
-              :for="defaultListVisibilityUid"
-              >Default list visibility</label
-            >
-            <p class="text-sm">
-              Choose the default visibility setting for newly-created lists.
-            </p>
-          </div>
-          <p v-if="defaultListVisibilityMessage" class="text-sm">
-            {{ defaultListVisibilityMessage }}
-          </p>
-          <select
-            :id="defaultListVisibilityUid"
-            ref="defaultListVisibilitySelect"
-            v-model="defaultListVisibilitySelection"
-            class="p-2 text-sm w-full sm:w-auto"
-            :disabled="!emailVerified || isDefaultListVisibilityLoading"
-            @click="defaultListVisibilityMessage = ''"
-          >
-            <option
-              v-for="(option, index) in defaultListVisibilityOptions"
-              :key="index"
-              :value="option.value"
-            >
-              {{ option.text }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <h6 class="text-2xl dark:text-white">Location settings</h6>
-      <div
-        class="
-          grid grid-cols-1
-          gap-8
-          items-center
-          bg-gray-200
-          dark:bg-gray-700
-          p-8
-        "
-      >
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div class="flex-grow">
-            <label
-              class="font-semibold dark:text-white"
-              :for="defaultLocationUid"
-              >Default location</label
-            >
-            <p class="text-sm">
-              Used when searching for restaurants. You can use an address, city
-              name, or ZIP code.
-            </p>
-          </div>
-          <p v-if="defaultLocationMessage" class="text-sm">
-            {{ defaultLocationMessage }}
-          </p>
-          <Input
-            :id="defaultLocationUid"
-            ref="defaultLocationInput"
-            v-model="defaultLocationDraft"
-            type="text"
-            name="defaultLocation"
-            classes="p-2 text-sm w-full"
-            min="0"
-            max="64"
-            passive-text="Your default location is not shared with anyone."
-            required
-            :disabled="isDefaultLocationLoading"
-            :do-validation="true"
-            @keyup.esc.prevent="processDefaultLocation(false)"
-            @keyup.enter.prevent="processDefaultLocation(true)"
-            @blur.prevent="processDefaultLocation(true)"
-          />
-        </div>
-      </div>
-
-      <h6 class="text-2xl dark:text-white">Account controls</h6>
-      <div
-        class="
-          grid grid-cols-1
-          gap-8
-          items-center
-          bg-gray-200
-          dark:bg-gray-700
-          p-8
-        "
-      >
-        <div class="flex flex-col sm:flex-row items-center gap-4">
-          <div class="flex-grow">
-            <label class="font-semibold dark:text-white"
-              >Delete my account</label
-            >
-            <p class="text-sm">
-              Delete your account permanently. Your lists will no longer be
-              accessible to anyone.
-            </p>
-            <p class="text-sm text-red-500">
-              Warning: This action cannot be undone!
-            </p>
-          </div>
-          <ComboButton
-            alt="Delete account"
-            class="text-sm bg-red-500 text-white w-full sm:w-auto"
-            :loading="showDeleteConfirmationModal"
-            :disabled="showDeleteConfirmationModal"
-            @click="onShowDeleteConfirmationModal"
-            >Delete account</ComboButton
-          >
-        </div>
-      </div>
-    </div>
-
-    <Modal
-      :visible="showDeleteConfirmationModal"
-      container-class="p-8 w-full max-w-prose grid grid-cols-1 place-items-center"
-      @hide="showDeleteConfirmationModal = false"
-    >
-      <div class="p-8 bg-gray-200 dark:bg-gray-700 grid grid-cols-1 gap-4">
-        <h6 class="text-lg font-semibold dark:text-white">
-          Confirm account deletion
-        </h6>
-        <p>
-          Are you sure you want to delete your account? This action cannot be
-          reversed.
-        </p>
-        <p>
-          Please type
-          <span class="font-mono font-bold dark:text-white">{{
-            username
-          }}</span>
-          to confirm.
-        </p>
-        <p v-if="emailVerified" class="text-sm opacity-50">
-          You will receive a final email at {{ email }} confirming your account
-          deletion.
-        </p>
-        <form @submit.prevent="requestAccountDelete">
-          <Input
-            ref="deleteConfirmationInput"
-            v-model="deleteConfirmationDraft"
-            type="text"
-            classes="p-2 text-sm w-full"
-          />
-          <div class="grid grid-cols-2 mt-4 gap-4">
+          <div class="flex flex-row items-center gap-4">
             <ComboButton
-              alt="Cancel"
-              class="text-sm border border-black dark:border-white"
-              @click="showDeleteConfirmationModal = false"
-              >Cancel</ComboButton
+              class="text-sm bg-black dark:bg-white text-white dark:text-black"
+              alt="Resend verification email"
+              :loading="isSendingVerificationEmail"
+              :disabled="isSendingVerificationEmail"
+              @click="resendVerificationEmail"
             >
+              Resend verification email
+            </ComboButton>
+            <p>
+              {{ verificationEmailMessage }}
+            </p>
+          </div>
+        </div>
+
+        <h6 class="text-2xl dark:text-white">Account information</h6>
+        <div
+          class="
+            grid grid-cols-1
+            sm:grid-cols-2
+            gap-8
+            items-center
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+          "
+        >
+          <div class="avatar-container text-center space-y-4">
+            <img
+              :src="avatar"
+              class="profile-avatar rounded-full mx-auto"
+              alt="Avatar"
+              width="150"
+              height="150"
+            />
+            <p class="text-gray-600 dark:text-gray-400">
+              (Sorry, profile picture isn't customizable at this time.)
+            </p>
+          </div>
+          <div class="grid grid-cols-1 gap-4 flex-grow w-full sm:w-auto">
+            <div class="grid grid-cols-1 gap-1">
+              <label class="text-lg font-semibold dark:text-white"
+                >User ID</label
+              >
+              <div class="text-sm w-full font-mono">
+                {{ id }}
+              </div>
+              <div class="text-xs opacity-50">
+                Your ID uniquely identifies you in our system and cannot be
+                changed. It is not visible to anyone except you.
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-1">
+              <label
+                :for="usernameUid"
+                class="text-lg font-semibold dark:text-white"
+                >Username</label
+              >
+              <div v-if="!isUsernameEditing" class="text-sm w-full">
+                <button
+                  type="button"
+                  class="p-0"
+                  alt="Change username"
+                  @click="showUsernameEditor(true)"
+                >
+                  {{ username }}
+                  <Edit v-if="emailVerified" class="icon-inline" />
+                </button>
+              </div>
+              <Input
+                v-show="isUsernameEditing"
+                :id="usernameUid"
+                ref="usernameInput"
+                v-model="usernameDraft"
+                type="text"
+                name="username"
+                classes="p-2 text-sm w-full"
+                passive-text="Your username allows other people to find you."
+                minlength="1"
+                maxlength="24"
+                required
+                :disabled="isUsernameLoading"
+                :do-validation="true"
+                :validator="usernameValidator"
+                @keyup.esc.prevent="showUsernameEditor(false, false)"
+                @keyup.enter.prevent="showUsernameEditor(false)"
+                @blur.prevent="showUsernameEditor(false)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-1">
+              <label
+                :for="nicknameUid"
+                class="text-lg font-semibold dark:text-white"
+                >Nickname</label
+              >
+              <div v-if="!isNicknameEditing" class="text-sm w-full">
+                <button
+                  type="button"
+                  class="p-0"
+                  alt="Change nickname"
+                  @click="showNicknameEditor(true)"
+                >
+                  {{ nickname }}
+                  <Edit v-if="emailVerified" class="icon-inline" />
+                </button>
+              </div>
+              <Input
+                v-show="isNicknameEditing"
+                :id="nicknameUid"
+                ref="nicknameInput"
+                v-model="nicknameDraft"
+                type="text"
+                name="nickname"
+                classes="p-2 text-sm w-full"
+                passive-text="Choose a nickname to show on your profile."
+                minlength="1"
+                maxlength="24"
+                required
+                :disabled="isNicknameLoading"
+                :do-validation="true"
+                @keyup.esc.prevent="showNicknameEditor(false, false)"
+                @keyup.enter.prevent="showNicknameEditor(false)"
+                @blur.prevent="showNicknameEditor(false)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-1">
+              <label
+                :for="emailUid"
+                class="text-lg font-semibold dark:text-white"
+                >Email address</label
+              >
+              <div v-if="!isEmailEditing" class="text-sm w-full">
+                <button
+                  type="button"
+                  class="p-0"
+                  alt="Change email address"
+                  @click="showEmailEditor(true)"
+                >
+                  {{ email }}
+                  <Edit class="icon-inline" />
+                </button>
+              </div>
+              <Input
+                v-show="isEmailEditing"
+                :id="emailUid"
+                ref="emailInput"
+                v-model="emailDraft"
+                type="email"
+                name="email"
+                classes="p-2 text-sm w-full"
+                passive-text="Your email is used to contact you about your account information, and only you can see it. If you change it, the new email address must be re-verified."
+                required
+                :disabled="isEmailLoading"
+                :do-validation="true"
+                @keyup.esc.prevent="showEmailEditor(false, false)"
+                @keyup.enter.prevent="showEmailEditor(false)"
+                @blur.prevent="showEmailEditor(false)"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-1">
+              <label class="text-lg font-semibold dark:text-white"
+                >Password</label
+              >
+              <div class="w-full">
+                <ComboButton
+                  class="
+                    text-sm
+                    bg-black
+                    dark:bg-white
+                    text-white
+                    dark:text-black
+                    w-full
+                    sm:w-auto
+                  "
+                  alt="Reset password"
+                  :loading="isSendingPasswordReset"
+                  :disabled="isSendingPasswordReset || passwordResetMessage"
+                  @click="requestPasswordReset"
+                >
+                  Reset password
+                </ComboButton>
+                <span>{{ passwordResetMessage }}</span>
+              </div>
+              <div class="text-xs opacity-50">
+                A link to reset your password will be sent to your email
+                address.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="text-2xl dark:text-white">Privacy settings</h6>
+        <div
+          class="
+            grid grid-cols-1
+            gap-8
+            items-center
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+          "
+        >
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-grow">
+              <label
+                class="font-semibold dark:text-white"
+                :for="friendRequestPrivacyUid"
+                >Who can send you a friend request?</label
+              >
+              <p class="text-sm">Choose who can add you as a friend.</p>
+            </div>
+            <p v-if="friendRequestPrivacyMessage" class="text-sm">
+              {{ friendRequestPrivacyMessage }}
+            </p>
+            <select
+              :id="friendRequestPrivacyUid"
+              ref="friendRequestPrivacySelect"
+              v-model="friendRequestPrivacySelection"
+              class="p-2 text-sm w-full sm:w-auto"
+              :disabled="!emailVerified || isFriendRequestPrivacyLoading"
+              @click="friendRequestPrivacyMessage = ''"
+            >
+              <option
+                v-for="(option, index) in friendRequestPrivacyOptions"
+                :key="index"
+                :value="option.value"
+              >
+                {{ option.text }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-grow">
+              <label
+                class="font-semibold dark:text-white"
+                :for="defaultListVisibilityUid"
+                >Default list visibility</label
+              >
+              <p class="text-sm">
+                Choose the default visibility setting for newly-created lists.
+              </p>
+            </div>
+            <p v-if="defaultListVisibilityMessage" class="text-sm">
+              {{ defaultListVisibilityMessage }}
+            </p>
+            <select
+              :id="defaultListVisibilityUid"
+              ref="defaultListVisibilitySelect"
+              v-model="defaultListVisibilitySelection"
+              class="p-2 text-sm w-full sm:w-auto"
+              :disabled="!emailVerified || isDefaultListVisibilityLoading"
+              @click="defaultListVisibilityMessage = ''"
+            >
+              <option
+                v-for="(option, index) in defaultListVisibilityOptions"
+                :key="index"
+                :value="option.value"
+              >
+                {{ option.text }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <h6 class="text-2xl dark:text-white">Location settings</h6>
+        <div
+          class="
+            grid grid-cols-1
+            gap-8
+            items-center
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+          "
+        >
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-grow">
+              <label
+                class="font-semibold dark:text-white"
+                :for="defaultLocationUid"
+                >Default location</label
+              >
+              <p class="text-sm">
+                Used when searching for restaurants. You can use an address,
+                city name, or ZIP code.
+              </p>
+            </div>
+            <p v-if="defaultLocationMessage" class="text-sm">
+              {{ defaultLocationMessage }}
+            </p>
+            <Input
+              :id="defaultLocationUid"
+              ref="defaultLocationInput"
+              v-model="defaultLocationDraft"
+              type="text"
+              name="defaultLocation"
+              classes="p-2 text-sm w-full"
+              min="0"
+              max="64"
+              passive-text="Your default location is not shared with anyone."
+              required
+              :disabled="isDefaultLocationLoading"
+              :do-validation="true"
+              @keyup.esc.prevent="processDefaultLocation(false)"
+              @keyup.enter.prevent="processDefaultLocation(true)"
+              @blur.prevent="processDefaultLocation(true)"
+            />
+          </div>
+        </div>
+
+        <h6 class="text-2xl dark:text-white">Account controls</h6>
+        <div
+          class="
+            grid grid-cols-1
+            gap-8
+            items-center
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+          "
+        >
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <div class="flex-grow">
+              <label class="font-semibold dark:text-white"
+                >Delete my account</label
+              >
+              <p class="text-sm">
+                Delete your account permanently. Your lists will no longer be
+                accessible to anyone.
+              </p>
+              <p class="text-sm text-red-500">
+                Warning: This action cannot be undone!
+              </p>
+            </div>
             <ComboButton
-              type="submit"
-              alt="Confirm account deletion"
-              class="text-sm bg-red-500 text-white"
-              :loading="isAccountDeleteLoading"
-              :disabled="
-                isAccountDeleteDisabled || deleteConfirmationDraft !== username
-              "
+              alt="Delete account"
+              class="text-sm bg-red-500 text-white w-full sm:w-auto"
+              :loading="showDeleteConfirmationModal"
+              :disabled="showDeleteConfirmationModal"
+              @click="onShowDeleteConfirmationModal"
               >Delete account</ComboButton
             >
           </div>
-        </form>
+        </div>
       </div>
-    </Modal>
+
+      <Modal
+        :visible="showDeleteConfirmationModal"
+        container-class="p-8 w-full max-w-prose grid grid-cols-1 place-items-center"
+        @hide="showDeleteConfirmationModal = false"
+      >
+        <div class="p-8 bg-gray-200 dark:bg-gray-700 grid grid-cols-1 gap-4">
+          <h6 class="text-lg font-semibold dark:text-white">
+            Confirm account deletion
+          </h6>
+          <p>
+            Are you sure you want to delete your account? This action cannot be
+            reversed.
+          </p>
+          <p>
+            Please type
+            <span class="font-mono font-bold dark:text-white">{{
+              username
+            }}</span>
+            to confirm.
+          </p>
+          <p v-if="emailVerified" class="text-sm opacity-50">
+            You will receive a final email at {{ email }} confirming your
+            account deletion.
+          </p>
+          <form @submit.prevent="requestAccountDelete">
+            <Input
+              ref="deleteConfirmationInput"
+              v-model="deleteConfirmationDraft"
+              type="text"
+              classes="p-2 text-sm w-full"
+            />
+            <div class="grid grid-cols-2 mt-4 gap-4">
+              <ComboButton
+                alt="Cancel"
+                class="text-sm border border-black dark:border-white"
+                @click="showDeleteConfirmationModal = false"
+                >Cancel</ComboButton
+              >
+              <ComboButton
+                type="submit"
+                alt="Confirm account deletion"
+                class="text-sm bg-red-500 text-white"
+                :loading="isAccountDeleteLoading"
+                :disabled="
+                  isAccountDeleteDisabled ||
+                  deleteConfirmationDraft !== username
+                "
+                >Delete account</ComboButton
+              >
+            </div>
+          </form>
+        </div>
+      </Modal>
+    </div>
   </div>
 </template>
 
@@ -457,6 +470,7 @@ export default defineComponent({
   components: {
     Edit,
   },
+
   meta: {
     guard: {
       roles: [Role._self_profile],

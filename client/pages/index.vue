@@ -15,7 +15,7 @@
             </div>
             <div class="text-xl">
               <p>Just tell us which restaurants you like,</p>
-              <p>and we'll do the rest.</p>
+              <p>and we'll pick for you.</p>
             </div>
           </div>
         </div>
@@ -24,9 +24,23 @@
           <div v-if="self">
             <p>Welcome back{{ nickname ? ", " + nickname : "" }}.</p>
             <nuxt-link
+              v-if="emailVerified"
               to="/dashboard"
               class="font-semibold hover:underline focus:underline"
               >Go to dashboard →</nuxt-link
+            >
+            <nuxt-link
+              v-else
+              to="/settings"
+              class="font-semibold hover:underline focus:underline"
+              ><Error
+                class="
+                  icon-inline
+                  text-red-500
+                  md:text-white md:dark:text-red-500
+                "
+              />
+              Please verify your email address →</nuxt-link
             >
           </div>
           <div v-else>
@@ -42,36 +56,34 @@
       </div>
 
       <div class="inset-0 absolute overflow-hidden">
-        <div class="tag-bg inset-0 w-full h-full">
+        <div class="w-full h-full">
           <ImageFader
             class="
               dark:hidden
-              inset-0
               w-full
               h-full
               object-cover
               filter
-              blur-xl
+              blur-2xl
               transform-gpu
               scale-110
             "
-            src="@/assets/images/t5.png"
+            src="@/assets/images/t3.png"
           />
           <ImageFader
             class="
               hidden
               dark:block
-              inset-0
               w-full
               h-full
               object-cover
               filter
-              blur-xl
+              blur-2xl
               brightness-50
               transform-gpu
               scale-110
             "
-            src="@/assets/images/t6.png"
+            src="@/assets/images/t4.png"
           />
         </div>
       </div>
@@ -87,19 +99,27 @@ import {
   useMeta,
 } from "@nuxtjs/composition-api";
 import useSelf from "client/composables/useSelf";
+import { Role } from "common/enums/hrbac";
+import hrbacCan from "common/utils/hrbacCan";
+import Error from "client/components/icons/Error.vue";
 
 export default defineComponent({
   name: "Index",
+  components: {
+    Error,
+  },
+
   setup() {
     const context = useContext();
     const self = useSelf();
     useMeta({ title: "Home | " + context.$config.appinfo.name });
 
-    const nickname = computed(
-      (): string | null => self.value?.nickname || null
+    const nickname = computed(() => self.value?.nickname || null);
+    const emailVerified = computed(() =>
+      hrbacCan({ roles: [Role._email_verified] }, self.value)
     );
 
-    return { self, nickname };
+    return { self, nickname, emailVerified };
   },
   head: {},
 });
@@ -107,14 +127,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .tag-bg {
-  // background-image: url("client/assets/images/t5.png");
-  // filter: blur(24px);
-
-  // @media (prefers-color-scheme: dark) {
-  //   background-image: url("client/assets/images/t6.png");
-  //   filter: brightness(50%) blur(24px);
-  // }
-
   z-index: 1;
 }
 
@@ -123,7 +135,7 @@ export default defineComponent({
 
   @media (min-width: theme("screens.md")) {
     margin-left: 33%;
-    background-color: rgb(255, 118, 0);
+    background-color: lighten(desaturate(#ff7600, 30%), 5%);
     color: white;
 
     @media (prefers-color-scheme: dark) {

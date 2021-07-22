@@ -6,11 +6,21 @@ import {
   ListDescriptionParamSchema,
   ListNameOptionalParamSchema,
   ListNameParamSchema,
+  ListSearchKeywordParamSchema,
   ListVisibilityOptionalParamSchema,
   ListVisibilityParamSchema,
   SelfUsernameParamSchema,
   UsernameParamSchema,
 } from "./lists.param.validation";
+
+export const SearchDestinationListsValidators = [
+  ...checkSchema({
+    keyword: {
+      in: ["query"],
+      ...ListSearchKeywordParamSchema,
+    },
+  }),
+];
 
 export const CreateDestinationListValidators = [
   ...checkSchema({

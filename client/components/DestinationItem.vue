@@ -10,7 +10,8 @@
               class="
                 p-0
                 inline
-                text-blue-srk
+                text-orange-srk
+                dark:text-blue-srk
                 opacity-80
                 hover:opacity-100
                 focus:opacity-100
@@ -38,7 +39,60 @@
       </div>
     </div>
 
-    <OpenStatusIndicator v-if="timezone" :time-until-close="timeUntilClose" />
+    <div class="dest-thumb flex-shrink-0 relative w-full overflow-hidden">
+      <ImageFader
+        v-if="image_url"
+        :src="image_url"
+        class="absolute h-full w-full object-cover"
+      />
+      <div
+        v-else
+        class="
+          grid grid-cols-1
+          place-items-center
+          absolute
+          h-full
+          w-full
+          object-cover
+          bg-black
+          dark:bg-white
+          bg-opacity-5
+        "
+      >
+        <p class="opacity-50 uppercase">No image</p>
+      </div>
+    </div>
+
+    <Drop
+      :visible="popupVisible"
+      container-class="w-max p-6 drop-bottom drop-right bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg"
+      @hide="popupVisible = false"
+    >
+      <template #default>
+        <ComboButton class="p-0" @click="popupVisible = true">
+          <OpenStatusIndicator
+            v-if="regularHours.length && timezone"
+            :time-until-close="timeUntilClose"
+          />
+          <OpenStatusIndicator
+            v-else-if="regularHours.length"
+            text-override="Unknown"
+            :class-adder-override="['bg-red-900']"
+          />
+          <OpenStatusIndicator
+            v-else
+            text-override="No data"
+            :class-adder-override="['bg-red-900']"
+          />
+        </ComboButton>
+      </template>
+      <template #tooltip>
+        <div class="text-sm">
+          <p class="font-semibold">Regular hours:</p>
+          <YelpHoursDisplay :hours="regularHours" />
+        </div>
+      </template>
+    </Drop>
 
     <div class="flex flex-col sm:flex-row sm:items-center gap-4">
       <div class="grid grid-cols-1 text-sm gap-2">
@@ -59,11 +113,6 @@
           }}
           review{{ review_count === 1 ? "" : "s" }})
         </div>
-
-        <div class="text-xs">
-          <p class="font-semibold">Regular hours:</p>
-          <YelpHoursDisplay :hours="regularHours" />
-        </div>
       </div>
     </div>
 
@@ -78,8 +127,6 @@
 import {
   computed,
   defineComponent,
-  onMounted,
-  onUnmounted,
   PropType,
   ref,
 } from "@nuxtjs/composition-api";
@@ -87,7 +134,6 @@ import Delete from "client/components/icons/Delete.vue";
 import OpenInNew from "client/components/icons/OpenInNew.vue";
 import timeAgo from "common/utils/timeAgo";
 import { format } from "date-fns";
-import getTimeUntilClose from "common/utils/getTimeUntilClose";
 
 export default defineComponent({
   name: "DestinationItem",
@@ -103,6 +149,10 @@ export default defineComponent({
     name: {
       type: String,
       required: true,
+    },
+    image_url: {
+      type: String,
+      default: null,
     },
     url: {
       type: String,
@@ -159,6 +209,14 @@ export default defineComponent({
       >,
       required: true,
     },
+    regularHours: {
+      type: Array,
+      default: () => [],
+    },
+    timeUntilClose: {
+      type: Number,
+      default: null,
+    },
     lastUpdated: {
       type: Number,
       required: true,
@@ -184,22 +242,7 @@ export default defineComponent({
         : "never"
     );
 
-    const regularHours = computed(
-      () => props.hours.find((e) => e.hours_type === "REGULAR")?.open || []
-    );
-
-    const now = ref<number>(Date.now());
-
-    const x = ref<any>(null);
-
-    onMounted(
-      () => (x.value = setInterval(() => (now.value = Date.now()), 60000))
-    );
-    onUnmounted(() => clearInterval(x.value));
-
-    const timeUntilClose = computed(() =>
-      getTimeUntilClose(now.value, regularHours.value, props.timezone)
-    );
+    const popupVisible = ref<boolean>(false);
 
     const removeItem = () => {
       emit("pick", props.id);
@@ -209,11 +252,14 @@ export default defineComponent({
       lastUpdatedTs,
       lastUpdatedString,
       removeItem,
-      regularHours,
-      timeUntilClose,
+      popupVisible,
     };
   },
 });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.dest-thumb {
+  aspect-ratio: 1 / 1;
+}
+</style>

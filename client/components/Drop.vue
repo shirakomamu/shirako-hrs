@@ -14,7 +14,9 @@
       ]"
       :style="{
         'transition-duration': animationMs + 'ms',
+        'max-height': maxHeightComputedCss,
         'max-width': maxWidthComputedCss,
+        'z-index': zIndex,
       }"
     >
       <slot name="tooltip" />
@@ -26,6 +28,7 @@
 import {
   defineComponent,
   onMounted,
+  onUnmounted,
   ref,
   watch,
 } from "@nuxtjs/composition-api";
@@ -55,6 +58,10 @@ export default defineComponent({
       type: Number,
       default: 200,
     },
+    maxWidth: {
+      type: String,
+      default: "480px",
+    },
   },
   setup(props, { emit }) {
     const parent = ref<null | HTMLDivElement>(null);
@@ -69,7 +76,9 @@ export default defineComponent({
       }
     };
 
-    const maxWidthComputedCss = ref<string>(`480px`);
+    const zIndex = ref<string>("1001");
+    const maxHeightComputedCss = ref<string>("unset");
+    const maxWidthComputedCss = ref<string>(props.maxWidth);
 
     watch(
       () => props.visible,
@@ -77,7 +86,12 @@ export default defineComponent({
         transition.value = true; // prevents onClickOutside
         shown.value = newValue; // immediately begin opacity transition
         if (newValue) {
+          computeBoundingRects();
           visibility.value = true; // make it visible immediately
+          zIndex.value = (
+            2001 +
+            document.querySelectorAll(".tooltip-container.visible").length
+          ).toString();
         }
         setTimeout(() => {
           if (!newValue) visibility.value = false; // remove visibility after it's done
@@ -86,22 +100,64 @@ export default defineComponent({
       }
     );
 
-    onMounted(() => {
-      if (!parent.value) return;
-      const windowWidth = window.innerWidth;
-      const boundingRect = parent.value.getBoundingClientRect();
+    const resizeObserver = ref<null | ResizeObserver>(null);
 
-      const rightSize = 1 * (windowWidth - boundingRect.right);
-      const leftSize = 1 * (windowWidth - boundingRect.left);
+    onMounted(() => {
+      resizeObserver.value = new ResizeObserver(() => {
+        computeHeightBound();
+      });
+      resizeObserver.value.observe(
+        document.querySelector("#__nuxt") as HTMLDivElement
+      );
+    });
+
+    onUnmounted(() => resizeObserver.value?.disconnect());
+
+    const computeHeightBound = () => {
+      if (!tooltipContents.value) return;
+      if (!parent.value) return;
+      const nuxtRootRect = (
+        document.querySelector("#__nuxt") as HTMLDivElement
+      ).getBoundingClientRect();
+      const parentRect = parent.value.getBoundingClientRect();
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+
+      if (props.containerClass.includes("drop-bottom")) {
+        maxHeightComputedCss.value = `${Math.ceil(
+          nuxtRootRect.height - (scrollTop + parentRect.bottom + 16)
+        )}px`;
+      } else if (props.containerClass.includes("drop-top")) {
+        maxHeightComputedCss.value = `${Math.ceil(parentRect.top - 16)}px`;
+      }
+    };
+
+    const computeWidthBound = () => {
+      if (!parent.value) return props.maxWidth;
+      // const windowWidth = window.innerWidth;
+      const boundingRect = parent.value.getBoundingClientRect();
 
       if (props.containerClass.includes("drop-left")) {
         // if it's aligned to go left, then subtract the right size
-        maxWidthComputedCss.value = `min(480px, calc(100vw - ${rightSize}px))`;
+        maxWidthComputedCss.value = `min(${props.maxWidth}, ${Math.ceil(
+          boundingRect.right
+        )}px)`;
+        return;
       } else if (props.containerClass.includes("drop-right")) {
         // if it's aligned to go right, then subtract the left size
-        maxWidthComputedCss.value = `min(480px, calc(100vw - ${leftSize}px))`;
+        maxWidthComputedCss.value = `min(${
+          props.maxWidth
+        }, calc(100vw - ${Math.ceil(boundingRect.left)}px))`;
+        return;
       }
-    });
+
+      maxWidthComputedCss.value = props.maxWidth;
+    };
+
+    const computeBoundingRects = () => {
+      computeHeightBound();
+      computeWidthBound();
+    };
 
     return {
       parent,
@@ -110,7 +166,9 @@ export default defineComponent({
       visibility,
       transition,
       onClickOutside,
+      maxHeightComputedCss,
       maxWidthComputedCss,
+      zIndex,
     };
   },
 });
@@ -127,7 +185,6 @@ export default defineComponent({
   opacity: 0;
   transition-property: opacity, top, bottom;
   transition-timing-function: ease;
-  width: max-content;
   overflow: auto;
 
   &.active {
@@ -147,13 +204,13 @@ export default defineComponent({
   &.drop-top {
     bottom: 50%;
     &.active {
-      bottom: calc(100% + 0.2rem); // make it appear on the top
+      bottom: calc(100% + 4px); // make it appear on the top
     }
   }
   &.drop-bottom {
     top: 50%;
     &.active {
-      top: calc(100% + 0.2rem); // make it appear on the bottom
+      top: calc(100% + 4px); // make it appear on the bottom
     }
   }
 }
