@@ -131,9 +131,13 @@ img.profile-avatar {
 
 .icon-inline {
   display: inline;
-  height: 1.2em;
-  width: 1.2em;
-  cursor: pointer;
   position: relative;
   top: -0.1rem;
+
+  &:not([class*="h-"]) {
+    height: 1.2em;
+  }
+  &:not([class*="w-"]) {
+    width: 1.2em;
+  }
 }

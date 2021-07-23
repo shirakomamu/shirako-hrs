@@ -31,7 +31,7 @@ export class Destination extends BaseEntity {
   display_address: string[];
   display_phone: string;
   timezone: string | null;
-  hours: Hour[];
+  hours: Hour[] | null;
   special_hours: SpecialHour[];
 
   constructor(
@@ -45,7 +45,7 @@ export class Destination extends BaseEntity {
     display_address: string[],
     display_phone: string,
     timezone: string | null,
-    hours: Hour[],
+    hours: Hour[] | null,
     special_hours: SpecialHour[]
   ) {
     super();

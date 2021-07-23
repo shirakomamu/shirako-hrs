@@ -13,9 +13,9 @@
       dark:hover:bg-opacity-10
     "
   >
-    <PlaylistAdd class="list-icon opacity-50" />
+    <PlaylistAdd class="list-icon opacity-50 h-6 w-6" />
     <div class="grid grid-cols-1 gap-2 place-items-center my-8 w-full">
-      <Add class="icon-inline" />
+      <Add class="icon-inline h-8 w-8" />
       <p>Create list</p>
     </div>
   </div>
@@ -43,11 +43,5 @@ export default defineComponent({
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  height: 1.5rem;
-  width: 1.5rem;
-}
-.icon-inline {
-  width: 2rem;
-  height: 2rem;
 }
 </style>

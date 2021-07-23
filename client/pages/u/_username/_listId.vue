@@ -288,7 +288,6 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      window.scrollTo(0, 0);
       await refreshModel();
     });
 

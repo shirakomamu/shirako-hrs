@@ -3,23 +3,6 @@
     <div class="flex flex-row gap-2 items-center">
       <div class="font-semibold">
         <p>
-          <a v-if="url" :href="url" rel="noopener noreferrer" target="_blank">
-            <button
-              type="button"
-              alt="Open in Yelp"
-              class="
-                p-0
-                inline
-                text-orange-srk
-                dark:text-blue-srk
-                opacity-80
-                hover:opacity-100
-                focus:opacity-100
-              "
-            >
-              <OpenInNew class="text-sm icon-inline" />
-            </button>
-          </a>
           {{ name }}
           <span class="text-sm opacity-60">{{ price }}</span>
         </p>
@@ -76,12 +59,12 @@
           />
           <OpenStatusIndicator
             v-else-if="regularHours.length"
-            text-override="Unknown"
-            :class-adder-override="['bg-red-900']"
+            text-override="Show hours"
+            :class-adder-override="['bg-blue-900']"
           />
           <OpenStatusIndicator
             v-else
-            text-override="No data"
+            text-override="Hours not available"
             :class-adder-override="['bg-red-900']"
           />
         </ComboButton>
@@ -107,18 +90,31 @@
           </p>
         </div>
 
-        <div class="text-orange-srk text-xs">
-          <StarRating :rating="rating" :max-rating="5" /> ({{
-            review_count
-          }}
-          review{{ review_count === 1 ? "" : "s" }})
+        <div class="text-xs">
+          <a :href="url" target="_blank" rel="noopener noreferrer">
+            <StarRating :rating="rating" :max-rating="5" /><span
+              class="opacity-50"
+            >
+              ({{ review_count }} review{{
+                review_count === 1 ? "" : "s"
+              }})</span
+            >
+          </a>
         </div>
       </div>
     </div>
 
     <div class="flex-grow" />
-    <div class="opacity-50 text-xs">
-      <p :title="lastUpdatedTs">{{ lastUpdatedString }}</p>
+    <div class="flex flex-row items-end">
+      <div class="opacity-50 text-xs">
+        <p :title="lastUpdatedTs">{{ lastUpdatedString }}</p>
+      </div>
+      <div class="flex-grow" />
+      <div>
+        <a :href="url" target="_blank" rel="noopener noreferrer">
+          <img class="yelp-icon" alt="Yelp logo" width="36" />
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -131,7 +127,6 @@ import {
   ref,
 } from "@nuxtjs/composition-api";
 import Delete from "client/components/icons/Delete.vue";
-import OpenInNew from "client/components/icons/OpenInNew.vue";
 import timeAgo from "common/utils/timeAgo";
 import { format } from "date-fns";
 
@@ -139,7 +134,6 @@ export default defineComponent({
   name: "DestinationItem",
   components: {
     Delete,
-    OpenInNew,
   },
   props: {
     id: {
@@ -261,5 +255,12 @@ export default defineComponent({
 <style lang="less" scoped>
 .dest-thumb {
   aspect-ratio: 1 / 1;
+}
+.yelp-icon {
+  content: url("client/assets/vendor/yelp/logo_light.png");
+
+  @media (prefers-color-scheme: dark) {
+    content: url("client/assets/vendor/yelp/logo_dark.png");
+  }
 }
 </style>

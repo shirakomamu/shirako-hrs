@@ -53,7 +53,7 @@
           rel="noopener noreferrer"
         >
           <p class="text-xs">data provided by</p>
-          <img class="yelp-icon" alt="Yelp logo" width="64" />
+          <img class="yelp-icon" alt="Yelp logo" width="48" />
         </a>
       </div>
     </form>
@@ -211,10 +211,10 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .yelp-icon {
-  content: url("client/assets/vendor/yelp/Logo_RGB.png");
+  content: url("client/assets/vendor/yelp/logo_light.png");
 
   @media (prefers-color-scheme: dark) {
-    content: url("client/assets/vendor/yelp/Logo_RGB_dark.png");
+    content: url("client/assets/vendor/yelp/logo_dark.png");
   }
 }
 </style>

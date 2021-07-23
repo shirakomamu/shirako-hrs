@@ -20,7 +20,7 @@
     }"
     v-on="$listeners"
   >
-    <Loader v-if="loading" class="loader" />
+    <Loader v-if="loading" class="loader h-6" />
     <div :class="{ hide: loading }" class="w-full h-full">
       <slot />
     </div>
@@ -63,7 +63,6 @@ export default defineComponent({
 }
 
 .loader {
-  height: 1.5em;
   position: absolute;
   left: calc(50% - 0.75em);
   top: calc(50% - 0.75em);

@@ -79,7 +79,7 @@ export default defineComponent({
     // if it's an empty string or true, then it will be valid
     // if it's false, then it will be invalid without a validation error
     validator: {
-      type: Function as PropType<(...args: any) => Promise<string>>,
+      type: Function as PropType<(value: string) => Promise<string>>,
       default: () => "",
     },
     passiveText: {

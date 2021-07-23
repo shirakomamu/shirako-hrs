@@ -1,10 +1,6 @@
 import SrkResponse from "server/classes/SrkResponse";
 import { SrkExpressRequest, SrkExpressResponse } from "server/services/jwt";
 import {
-  createDestinationList,
-  getDestinationList,
-} from "server/methods/lists";
-import {
   AddItemToListDto,
   CreateListDto,
   EditListDto,
@@ -17,6 +13,8 @@ import removeItemFromList from "server/methods/lists/removeItemFromList";
 import editDestinationList from "server/methods/lists/editDestinationList";
 import deleteDestinationList from "server/methods/lists/deleteDestinationList";
 import searchDestinationLists from "server/methods/lists/searchDestinationLists";
+import createDestinationList from "server/methods/lists/createDestinationList";
+import getDestinationList from "server/methods/lists/getDestinationList";
 
 export default class {
   public searchDestinationLists = async (

@@ -1,14 +1,12 @@
 import SrkResponse from "server/classes/SrkResponse";
 import { SrkExpressRequest, SrkExpressResponse } from "server/services/jwt";
-import {
-  identifyMyself,
-  resendVerificationEmail,
-  sendPasswordResetEmail,
-  updateUser,
-  updateUserPreferences,
-  deleteUser,
-} from "server/methods/auth";
 import { Auth0UserMetadataDto, UpdateUserDto } from "common/dto/auth";
+import identifyMyself from "server/methods/auth/identifyMyself";
+import resendVerificationEmail from "server/methods/auth/resendVerificationEmail";
+import sendPasswordResetEmail from "server/methods/auth/sendPasswordResetEmail";
+import updateUser from "server/methods/auth/updateUser";
+import updateUserPreferences from "server/methods/auth/updateUserPreferences";
+import deleteUser from "server/methods/auth/deleteUser";
 
 export default class {
   public identifyMyself = async (
