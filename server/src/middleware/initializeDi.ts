@@ -5,10 +5,12 @@ import ormService, { storage } from "server/services/mikro-orm";
 import { Member } from "server/entities/Member";
 import { DestinationList } from "server/entities/DestinationList";
 import { Destination } from "server/entities/Destination";
+import { ApiKey } from "server/entities/ApiKey";
 
 export const DI = {} as {
   orm: Promise<MikroORM>;
   em: EntityManager;
+  apiKeyRepo: EntityRepository<ApiKey>;
   memberRepo: EntityRepository<Member>;
   destinationListRepo: EntityRepository<DestinationList>;
   destinationItemRepo: EntityRepository<Destination>;
@@ -28,6 +30,7 @@ export default async (_req: Request, _res: Response, next: NextFunction) => {
     await migrator.up();
 
     DI.em = (await DI.orm).em as EntityManager;
+    DI.apiKeyRepo = DI.em.getRepository(ApiKey);
     DI.memberRepo = DI.em.getRepository(Member);
     DI.destinationListRepo = DI.em.getRepository(DestinationList);
     DI.destinationItemRepo = DI.em.getRepository(Destination);

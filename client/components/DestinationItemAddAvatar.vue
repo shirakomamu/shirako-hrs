@@ -17,6 +17,7 @@
     <div class="grid grid-cols-1 gap-2 place-items-center">
       <Add class="icon-inline h-12 w-12" />
       <p>Add to list</p>
+      <slot />
     </div>
   </div>
 </template>

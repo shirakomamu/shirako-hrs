@@ -1,6 +1,6 @@
 import { BusinessSearchDto } from "common/dto/items";
 import { GEN_BUSINESS_SEARCH_PREFIX } from "server/config/redis";
-import redisGu from "server/services/redis-gu";
+import redisGu from "server/services/redis-global";
 import businessSearch, { BusinessSearchResponse } from "./businessSearch";
 
 export default async ({ term, location }: BusinessSearchDto) => {

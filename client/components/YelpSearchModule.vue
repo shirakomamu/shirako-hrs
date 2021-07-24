@@ -74,6 +74,7 @@
           :show-add-button="!!managedList"
           :is-adding="loadingIds.includes(item.id)"
           :is-added="!addedIds.includes(item.id)"
+          :disabled="disableAdd"
           @pick="onSelect"
         />
         <hr class="mt-2" />
@@ -105,7 +106,6 @@ import uniqueId from "common/utils/uniqueId";
 import { DestinationListModel } from "client/models";
 import { Item } from "@vuex-orm/core";
 import { IDestinationSearchPayload } from "common/types/api/items";
-import { ISrkResponse } from "common/types/api";
 
 export default defineComponent({
   name: "YelpSearchModule",
@@ -116,6 +116,10 @@ export default defineComponent({
     managedList: {
       type: Object as PropType<Item<DestinationListModel> | null>,
       default: null,
+    },
+    disableAdd: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, { emit }) {
@@ -159,7 +163,7 @@ export default defineComponent({
       total: -1,
       items: [],
     });
-    const term = ref<null | string>(null);
+    const term = ref<null | string>("restaurants");
     const location = ref<null | string>(
       self.value?.meta.locationSettings?.defaultLocation || null
     );
@@ -168,7 +172,7 @@ export default defineComponent({
       if (!term.value || !location.value) return;
 
       isSearching.value = true;
-      const response: ISrkResponse<IDestinationSearchPayload> = await api({
+      const response = await api<IDestinationSearchPayload>({
         method: "post",
         url: "/api/items/search",
         data: {

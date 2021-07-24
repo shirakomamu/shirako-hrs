@@ -5,7 +5,7 @@ import {
   RateLimiterRedis,
 } from "rate-limiter-flexible";
 import SrkError from "server/classes/SrkError";
-import redisRl from "server/services/redis-rl";
+import redisRl from "server/services/redis-rate-limit";
 import {
   BASE_POINTS,
   BASE_DURATION,

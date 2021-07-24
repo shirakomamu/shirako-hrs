@@ -46,9 +46,31 @@
             key="add"
             class="p-0 h-full w-full"
             alt="Add to list"
+            :disabled="maxItemsReached"
             @click="showSearchModal = true"
           >
-            <DestinationItemAddAvatar />
+            <DestinationItemAddAvatar>
+              <p
+                class="opacity-50"
+                :class="{ 'text-orange-srk': maxItemsReached }"
+              >
+                ({{
+                  Math.max(
+                    maxItems - ((list.items && list.items.length) || 0),
+                    0
+                  )
+                }}
+                slot{{
+                  Math.max(
+                    maxItems - ((list.items && list.items.length) || 0),
+                    0
+                  ) === 1
+                    ? ""
+                    : "s"
+                }}
+                available)
+              </p>
+            </DestinationItemAddAvatar>
           </ComboButton>
           <nuxt-link
             v-else-if="isMe && !canModifyList"
@@ -90,6 +112,7 @@
       <YelpSearchModal
         :visible="showSearchModal"
         :managed-list="list"
+        :disable-add="maxItemsReached"
         @hide="showSearchModal = false"
       />
 
@@ -252,6 +275,7 @@ import uniqueId from "common/utils/uniqueId";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import { ListVisibility } from "common/enums";
 import Input from "client/components/Input.vue";
+import { MAX_ITEMS_PER_LIST } from "server/config/dataLimits";
 
 export default defineComponent({
   components: {
@@ -267,6 +291,11 @@ export default defineComponent({
     const router = useRouter();
     const model = store.$db().model(DestinationListModel);
     const self = useSelf();
+
+    const maxItems = MAX_ITEMS_PER_LIST;
+    const maxItemsReached = computed(
+      () => (list.value?.items || []).length >= maxItems
+    );
 
     // useList({
     //   username: route.value.params.username,
@@ -413,6 +442,9 @@ export default defineComponent({
       isMe,
       canModifyList,
       title,
+
+      maxItems,
+      maxItemsReached,
 
       // form
       listNameInput,

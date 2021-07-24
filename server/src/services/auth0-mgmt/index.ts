@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import { GEN_ACCESS_TOKEN_KEY } from "server/config/redis";
 import axios from "server/services/axios";
-import redisGu from "server/services/redis-gu";
+import redisGu from "server/services/redis-global";
 
 interface TokenResponse {
   access_token: string;

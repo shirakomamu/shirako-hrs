@@ -86,10 +86,6 @@ export default defineComponent({
       type: Number,
       required: true,
     },
-    maxRating: {
-      type: Number,
-      default: 0,
-    },
   },
   setup() {
     // const numFullStars = Math.floor(props.rating);

@@ -8,10 +8,10 @@ import _identifyDestinations from "server/methods/items/_identifyDestinations";
 import getTimeUntilClose from "common/utils/getTimeUntilClose";
 import getWeightedRandom from "common/utils/getWeightedRandom";
 import { IDestinationItemPayload } from "common/types/api/items";
+import { MAX_NEURONS } from "server/config/dataLimits";
 
 const MERGE_EXPONENT = 2;
 const OWNER_EXPONENT = 3;
-const NEURON_COUNT = 10;
 
 export default async (
   authResult: SrkCookie,
@@ -168,7 +168,7 @@ export default async (
     });
   }
 
-  const selectedNeuronCount = Math.min(NEURON_COUNT, neuronScore.length);
+  const selectedNeuronCount = Math.min(MAX_NEURONS, neuronScore.length);
   const selectedNeurons: { nid: string; score: number }[] = [];
   const selectedIds: string[] = [];
 
@@ -194,5 +194,6 @@ export default async (
           (f) => f.id === e.nid
         ) as IDestinationItemPayload;
       }),
+    totalNeurons: ids.length,
   };
 };

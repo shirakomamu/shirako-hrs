@@ -4,7 +4,7 @@ import {
   GEN_USER_INFO_ID_PREFIX,
   GEN_USER_INFO_USERNAME_PREFIX,
 } from "server/config/redis";
-import redisGu from "server/services/redis-gu";
+import redisGu from "server/services/redis-global";
 import getUser, { GetUserResponse } from "./getUser";
 import getUserByUsername from "./getUserByUsername";
 
@@ -80,21 +80,20 @@ export const setCache = async (
   if (!id && !username) {
     throw new SrkError("resourceInvalid");
   }
-  if (id) {
-    await Promise.all([
-      id
-        ? redisGu.set(getCacheKeyById(id), JSON.stringify(data), "ex", 600)
-        : null,
-      username
-        ? redisGu.set(
-            getCacheKeyByUsername(username),
-            JSON.stringify(data),
-            "ex",
-            600
-          )
-        : null,
-    ]);
-  }
+
+  await Promise.all([
+    id
+      ? redisGu.set(getCacheKeyById(id), JSON.stringify(data), "ex", 600)
+      : null,
+    username
+      ? redisGu.set(
+          getCacheKeyByUsername(username),
+          JSON.stringify(data),
+          "ex",
+          600
+        )
+      : null,
+  ]);
 
   return null;
 };

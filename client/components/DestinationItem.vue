@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col gap-2 p-4 bg-white bg-opacity-50 dark:bg-opacity-5">
-    <div class="flex flex-row gap-2 items-center">
+  <div class="flex flex-col gap-4 p-4 bg-white bg-opacity-50 dark:bg-opacity-5">
+    <div class="flex flex-row gap-2 items-start">
       <div class="font-semibold">
         <p>
-          {{ name }}
+          <span class="text-xl">{{ name }}</span>
           <span class="text-sm opacity-60">{{ price }}</span>
         </p>
       </div>
@@ -52,7 +52,11 @@
       @hide="popupVisible = false"
     >
       <template #default>
-        <ComboButton class="p-0" @click="popupVisible = true">
+        <ComboButton
+          class="p-0"
+          :disabled="!regularHours.length"
+          @click="regularHours.length ? (popupVisible = true) : () => {}"
+        >
           <OpenStatusIndicator
             v-if="regularHours.length && timezone"
             :time-until-close="timeUntilClose"
@@ -92,9 +96,7 @@
 
         <div class="text-xs">
           <a :href="url" target="_blank" rel="noopener noreferrer">
-            <StarRating :rating="rating" :max-rating="5" /><span
-              class="opacity-50"
-            >
+            <StarRating :rating="rating" /><span class="opacity-50">
               ({{ review_count }} review{{
                 review_count === 1 ? "" : "s"
               }})</span

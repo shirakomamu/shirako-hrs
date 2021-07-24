@@ -62,6 +62,10 @@ export default defineComponent({
       type: String,
       default: "480px",
     },
+    closeAfter: {
+      type: Number,
+      default: -1,
+    },
   },
   setup(props, { emit }) {
     const parent = ref<null | HTMLDivElement>(null);
@@ -96,6 +100,14 @@ export default defineComponent({
         setTimeout(() => {
           if (!newValue) visibility.value = false; // remove visibility after it's done
           transition.value = false; // re-enables onClickOutside
+
+          if (props.closeAfter > 0) {
+            setTimeout(() => {
+              if (!transition.value && visibility.value) {
+                emit("hide");
+              }
+            }, props.closeAfter);
+          }
         }, props.animationMs);
       }
     );

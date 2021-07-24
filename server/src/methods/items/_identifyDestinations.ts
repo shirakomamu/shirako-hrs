@@ -116,7 +116,7 @@ export default async (
 
       const timezone = zipToTz(result.location.zip_code);
 
-      destination.name = result?.name;
+      destination.name = result.name;
       destination.image_url = result.image_url;
       destination.url = result.url;
       destination.price = result.price || "n/a";

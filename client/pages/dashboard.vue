@@ -27,156 +27,224 @@
           </li>
           <li>
             We'll show you the destinations that appear most often in the chosen
-            lists. If business hours data is available, we'll make sure it's
-            open, too.
+            lists. If business hours data is available, we'll only choose
+            restaurants open for at least the next hour.
           </li>
         </ol>
       </template></Drop
     >
-    <div
-      class="
-        grid grid-cols-1
-        md:grid-cols-2
-        bg-gray-200
-        dark:bg-gray-700
-        p-8
-        gap-4
-      "
-    >
-      <div class="flex flex-col gap-4 col-container-grid">
-        <Drop
-          :visible="hasSearched && showSearchTooltip"
-          container-class="w-full p-2 drop-bottom drop-right bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg"
-          max-width="100%"
-          @hide="showSearchTooltip = false"
-        >
-          <template #default>
-            <div>
-              <label :for="termUid">Search...</label>
-              <Input
-                :id="termUid"
-                ref="termInput"
-                v-model="term"
-                type="text"
-                name="searchTerm"
-                classes="p-2 text-sm w-full"
-                passive-text="Search by list name, description, or username."
-                min="1"
-                max="64"
-                :do-validation="true"
-                :validator="onSearch"
-                @click="showSearchTooltip = true"
-              />
-            </div>
-          </template>
-          <template #tooltip>
-            <div
-              class="
-                flex-grow
-                space-y-2
-                px-2
-                border-l-4 border-opacity-20 border-black
-                dark:border-white
-              "
-            >
-              <p v-if="!availableListSearchResults.length" class="m-2">
-                No results found.
-              </p>
-              <DashboardListChooser
-                v-for="(list, index) in availableListSearchResults"
-                :key="index"
-                :list="list"
-                :disabled="maxNeuronsReached"
-                @pick="onPick"
-              />
-            </div>
-            <!-- <div v-else-if="isSearching">
+    <div v-if="!isActivated" class="space-y-8">
+      <div
+        class="
+          grid grid-cols-1
+          md:grid-cols-2
+          bg-gray-200
+          dark:bg-gray-700
+          p-8
+          gap-4
+        "
+      >
+        <div class="flex flex-col gap-4 col-container-grid">
+          <Drop
+            :visible="hasSearched && showSearchTooltip"
+            container-class="w-full p-2 drop-bottom drop-right bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg"
+            max-width="100%"
+            @hide="showSearchTooltip = false"
+          >
+            <template #default>
+              <div>
+                <label :for="termUid">Search...</label>
+                <Input
+                  :id="termUid"
+                  ref="termInput"
+                  v-model="term"
+                  type="text"
+                  name="searchTerm"
+                  classes="p-2 text-sm w-full"
+                  passive-text="Search by list name, description, or username."
+                  min="1"
+                  max="64"
+                  :do-validation="true"
+                  :validator="onSearch"
+                  @click="showSearchTooltip = true"
+                />
+              </div>
+            </template>
+            <template #tooltip>
+              <div
+                class="
+                  flex-grow
+                  space-y-2
+                  px-2
+                  border-l-4 border-opacity-20 border-black
+                  dark:border-white
+                "
+              >
+                <p v-if="!availableListSearchResults.length" class="m-2">
+                  No results found.
+                </p>
+                <DashboardListChooser
+                  v-for="(list, index) in availableListSearchResults"
+                  :key="index"
+                  :list="list"
+                  :disabled="maxNeuronsReached"
+                  @pick="onPick"
+                />
+              </div>
+              <!-- <div v-else-if="isSearching">
               <Loader class="search-loader icon-inline text-blue-srk" />
             </div> -->
-          </template>
-        </Drop>
-        <p class="text-xl dark:text-white font-semibold">My lists</p>
-        <div
-          class="
-            flex-grow
-            space-y-2
-            px-2
-            overflow-y-scroll
-            border-l-4 border-opacity-20 border-black
-            dark:border-white
-          "
-        >
-          <Loader
-            v-if="isLoading"
-            class="text-orange-srk dark:text-blue-srk h-8 w-8"
-          />
-          <p v-else-if="!unselectedLists.length && !isLoading" class="m-2">
-            No lists available.
+            </template>
+          </Drop>
+          <p class="text-xl dark:text-white font-semibold">My lists</p>
+          <div
+            class="
+              flex-grow
+              space-y-2
+              px-2
+              overflow-y-scroll
+              border-l-4 border-opacity-20 border-black
+              dark:border-white
+            "
+          >
+            <DashboardListChooserAddList />
+            <Loader
+              v-if="isLoading"
+              class="text-orange-srk dark:text-blue-srk h-8 w-8"
+            />
+            <p v-else-if="!unselectedLists.length && !isLoading" class="m-2">
+              No lists available.
+            </p>
+            <DashboardListChooser
+              v-for="(list, index) in unselectedLists"
+              :key="index"
+              :list="list"
+              :disabled="maxNeuronsReached"
+              @pick="onPick"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-4 col-container-grid">
+          <p class="text-xl dark:text-white font-semibold">
+            Selected
+            <span
+              class="transition opacity-50"
+              :class="{
+                'text-orange-srk': maxNeuronsReached,
+                'opacity-100': maxNeuronsReached,
+              }"
+              >({{ selectedLists.length }} / {{ maxNeurons }})</span
+            >
           </p>
-          <DashboardListChooser
-            v-for="(list, index) in unselectedLists"
-            :key="index"
-            :list="list"
-            :disabled="maxNeuronsReached"
-            @pick="onPick"
-          />
+          <div
+            class="
+              flex-grow
+              space-y-2
+              px-2
+              overflow-y-scroll
+              border-l-4 border-opacity-20 border-black
+              dark:border-white
+            "
+          >
+            <p v-if="!selectedLists.length" class="m-2">
+              Select lists to get started.
+            </p>
+            <DashboardListChooser
+              v-for="(list, index) in selectedLists"
+              :key="index"
+              :list="list"
+              :picked="true"
+              @pick="onUnpick"
+            />
+          </div>
         </div>
       </div>
 
-      <div class="flex flex-col gap-4 col-container-grid">
-        <p class="text-xl dark:text-white font-semibold">
-          Selected
-          <span
-            class="transition opacity-50"
-            :class="{
-              'text-orange-srk': maxNeuronsReached,
-              'opacity-100': maxNeuronsReached,
-            }"
-            >({{ selectedLists.length }} / {{ maxNeurons }})</span
-          >
-        </p>
-        <div
-          class="
-            flex-grow
-            space-y-2
-            px-2
-            overflow-y-scroll
-            border-l-4 border-opacity-20 border-black
-            dark:border-white
+      <div class="w-full text-right">
+        <ComboButton
+          class="w-full sm:w-auto text-white bg-orange-srk dark:bg-blue-srk"
+          :class="{
+            'font-bold': selectedLists.length,
+          }"
+          :alt="
+            selectedLists.length ? 'Activate neurons' : 'Neurons not available'
           "
+          :disabled="!selectedLists.length || isActivating"
+          :loading="isActivating"
+          @click="activateNeurons"
         >
-          <p v-if="!selectedLists.length" class="m-2">
-            Select lists to get started.
-          </p>
-          <DashboardListChooser
-            v-for="(list, index) in selectedLists"
-            :key="index"
-            :list="list"
-            :picked="true"
-            @pick="onUnpick"
-          />
-        </div>
+          <PlayArrow v-if="selectedLists.length" class="h-6 w-6 icon-inline" />
+          {{
+            selectedLists.length ? "Activate neurons" : "Neurons not available"
+          }}
+        </ComboButton>
       </div>
     </div>
-
-    <div class="w-full text-right">
+    <div v-else class="space-y-8">
       <ComboButton
-        class="w-full sm:w-auto text-white bg-orange-srk dark:bg-blue-srk"
-        :class="{
-          'font-bold': selectedLists.length,
-        }"
-        :alt="
-          selectedLists.length ? 'Activate neurons' : 'Neurons not available'
+        class="
+          text-lg text-orange-srk
+          dark:text-blue-srk
+          hover:underline
+          focus:underline
         "
-        :disabled="!selectedLists.length || isActivating"
-        :loading="isActivating"
-        @click="activateNeurons"
+        @click="deactivateNeurons"
+        ><ArrowBack class="icon-inline" /> Back to start</ComboButton
       >
-        <PlayArrow v-if="selectedLists.length" class="h-6 w-6 icon-inline" />
-        {{
-          selectedLists.length ? "Activate neurons" : "Neurons not available"
-        }}
-      </ComboButton>
+      <div class="grid grid-cols-1 justify-items-center w-full">
+        <div
+          class="
+            grid grid-cols-1
+            w-full
+            max-w-md
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+            gap-8
+          "
+        >
+          <p class="text-center">
+            From
+            <span class="font-semibold">{{ possibleNeurons }}</span
+            >; to
+            <span class="font-semibold text-orange-srk dark:text-blue-srk">{{
+              neuronResults.length
+            }}</span
+            >.
+          </p>
+          <div v-if="!neuronResults.length">
+            <p>No neurons available.</p>
+          </div>
+          <div
+            v-for="(item, index) in neuronResults"
+            :key="item.id"
+            class="space-y-2"
+          >
+            <p class="text-center font-semibold text-3xl neuron-title">
+              {{ index + 1 }}
+            </p>
+            <DestinationItem
+              :id="item.id"
+              class="w-full"
+              :name="item.name"
+              :image_url="item.image_url"
+              :url="item.url"
+              :price="item.price"
+              :rating="item.rating"
+              :review_count="item.review_count"
+              :display_address="item.display_address"
+              :display_phone="item.display_phone"
+              :timezone="item.timezone"
+              :hours="item.hours"
+              :special_hours="item.special_hours"
+              :regular-hours="item.regularHours"
+              :time-until-close="item.timeUntilClose"
+              :last-updated="item.lastUpdated"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -191,10 +259,17 @@ import {
   ref,
   useContext,
   useMeta,
+  useRoute,
+  useRouter,
   useStore,
+  watch,
 } from "@nuxtjs/composition-api";
 import useSelf from "client/composables/useSelf";
-import { DestinationListModel, MemberModel } from "client/models";
+import {
+  DestinationItemModel,
+  DestinationListModel,
+  MemberModel,
+} from "client/models";
 import { Item } from "@vuex-orm/core";
 import uniqueId from "common/utils/uniqueId";
 import Input from "client/components/Input.vue";
@@ -202,6 +277,10 @@ import HelpOutline from "client/components/icons/HelpOutline.vue";
 import Loader from "client/components/icons/Loader.vue";
 import PlayArrow from "client/components/icons/PlayArrow.vue";
 import useInternalApi from "client/composables/useInternalApi";
+import { MAX_NEURONS } from "server/config/dataLimits";
+import { IActivatedNeuronsPayload, NeuronData } from "common/types/api";
+import { ActivateNeuronsDto } from "common/dto/neurons";
+import ArrowBack from "client/components/icons/ArrowBack.vue";
 
 export default defineComponent({
   meta: {
@@ -210,6 +289,7 @@ export default defineComponent({
     } as Guard,
   },
   components: {
+    ArrowBack,
     HelpOutline,
     Loader,
     PlayArrow,
@@ -218,10 +298,12 @@ export default defineComponent({
     const context = useContext();
     const self = useSelf();
     const store = useStore();
+    const route = useRoute();
+    const router = useRouter();
     const api = useInternalApi();
     useMeta({ title: "Dashboard | " + context.$config.appinfo.name });
-    const maxNeurons = 10;
 
+    const maxNeurons = MAX_NEURONS;
     const maxNeuronsReached = computed(
       () => selectedLists.value.length >= maxNeurons
     );
@@ -233,7 +315,7 @@ export default defineComponent({
       selectedLists.value.map((e) => e?.id || "0")
     );
     const listSearchResults = ref<Item<DestinationListModel>[]>([]);
-    const isLoading = ref<boolean>(false);
+    const isLoading = ref<boolean>(true);
 
     const memberModel = store.$db().model(MemberModel);
     const member = computed(() =>
@@ -300,25 +382,66 @@ export default defineComponent({
       selectedLists.value = selectedLists.value.filter((e) => e && e.id !== id);
     };
 
+    const model = store.$db().model(DestinationItemModel);
     const isActivating = ref<boolean>(false);
+    const possibleNeurons = ref<number>(0);
+    const hasActivated = ref<boolean>(false);
     const activateNeurons = async () => {
       if (!selectedLists.value.length) return;
 
       isActivating.value = true;
-      const r = await api({
+      const r = await api<IActivatedNeuronsPayload>({
         method: "post",
         url: "/api/neurons/activate",
         data: {
           neurons: selectedLists.value.map((e) => e?.id),
-        },
+        } as ActivateNeuronsDto,
       });
-
-      console.log(r);
-
       isActivating.value = false;
 
-      // console.log(selectedLists.value.map((e) => e?.id));
+      if (r.ok) {
+        await model.insertOrUpdate({
+          data: r.payload.neurons,
+        });
+        neuronResults.value = model
+          .query()
+          .whereIdIn(r.payload.neurons.map((e) => e.id))
+          .get();
+        possibleNeurons.value = r.payload.totalNeurons;
+        isActivated.value = true;
+        hasActivated.value = true;
+        router.push("/dashboard?neurons=activated");
+      }
     };
+
+    if (route.value.query.neurons) {
+      router.replace("/dashboard");
+    }
+
+    watch(
+      () => route.value.query.neurons,
+      (newNeuronState) => {
+        if (newNeuronState !== "activated") {
+          isActivated.value = false;
+        } else if (newNeuronState === "activated" && hasActivated.value) {
+          isActivated.value = true;
+        }
+      }
+    );
+
+    const deactivateNeurons = () => {
+      router.push("/dashboard");
+    };
+
+    // onMounted(() => {
+    //   context.$emitter.on("go-to-dashboard", deactivateNeurons);
+    // });
+    // onUnmounted(() => {
+    //   context.$emitter.off("go-to-dashboard", deactivateNeurons);
+    // });
+
+    const isActivated = ref<boolean>(false);
+    const neuronResults = ref<NeuronData[]>([]);
 
     return {
       maxNeurons,
@@ -346,6 +469,11 @@ export default defineComponent({
 
       isActivating,
       activateNeurons,
+      isActivated,
+      hasActivated,
+      neuronResults,
+      possibleNeurons,
+      deactivateNeurons,
     };
   },
   // required for useMeta to work
@@ -356,5 +484,28 @@ export default defineComponent({
 <style lang="less" scoped>
 .col-container-grid {
   max-height: max(70vh, 600px);
+}
+.neuron-title {
+  overflow: hidden;
+}
+.neuron-title:before,
+.neuron-title:after {
+  background-color: currentColor;
+  content: "";
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+}
+
+.neuron-title:before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+
+.neuron-title:after {
+  left: 0.5em;
+  margin-right: -50%;
 }
 </style>

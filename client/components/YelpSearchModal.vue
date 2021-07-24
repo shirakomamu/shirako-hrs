@@ -8,6 +8,7 @@
       <YelpSearchModule
         ref="module"
         :managed-list="managedList"
+        :disable-add="disableAdd"
         @pick="emit('pick', ...arguments)"
       />
     </div>
@@ -36,6 +37,10 @@ export default defineComponent({
     managedList: {
       type: Object as PropType<Item<DestinationListModel> | null>,
       default: null,
+    },
+    disableAdd: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, { emit }) {

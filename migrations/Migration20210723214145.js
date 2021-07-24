@@ -2,14 +2,17 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const Migration = require('@mikro-orm/migrations').Migration;
 
-class Migration20210720000746 extends Migration {
+class Migration20210723214145 extends Migration {
 
   async up() {
-    this.addSql('create table "destination" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "yelp_id" varchar(255) not null, "name" varchar(255) not null, "url" varchar(512) not null, "price" varchar(255) not null, "rating" int4 not null, "review_count" int4 not null, "display_address" jsonb not null, "display_phone" varchar(255) not null, "timezone" varchar(255) not null, "hours" jsonb not null, "special_hours" jsonb not null);');
+    this.addSql('create table "api_key" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "key" varchar(255) not null);');
+
+    this.addSql('create table "destination" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "yelp_id" varchar(255) not null, "name" varchar(255) not null, "image_url" varchar(255) null, "url" varchar(512) not null, "price" varchar(255) not null, "rating" int4 not null, "review_count" int4 not null, "display_address" jsonb not null, "display_phone" varchar(255) not null, "timezone" varchar(255) null, "hours" jsonb not null, "special_hours" jsonb not null);');
     this.addSql('alter table "destination" add constraint "destination_yelp_id_unique" unique ("yelp_id");');
 
-    this.addSql('create table "member" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "sub" varchar(255) not null);');
+    this.addSql('create table "member" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "sub" varchar(255) not null, "api_key_id" bigint null);');
     this.addSql('alter table "member" add constraint "member_sub_unique" unique ("sub");');
+    this.addSql('alter table "member" add constraint "member_api_key_id_unique" unique ("api_key_id");');
 
     this.addSql('create table "friend" ("id" bigserial primary key, "created_at" timestamptz(0) null, "updated_at" timestamptz(0) null, "user_id" bigint not null, "friend_id" bigint not null);');
 
@@ -20,6 +23,8 @@ class Migration20210720000746 extends Migration {
 
     this.addSql('create table "destination_list_shared_with" ("destination_list_id" bigint not null, "member_id" bigint not null);');
     this.addSql('alter table "destination_list_shared_with" add constraint "destination_list_shared_with_pkey" primary key ("destination_list_id", "member_id");');
+
+    this.addSql('alter table "member" add constraint "member_api_key_id_foreign" foreign key ("api_key_id") references "api_key" ("id") on update cascade on delete set null;');
 
     this.addSql('alter table "friend" add constraint "friend_user_id_foreign" foreign key ("user_id") references "member" ("id") on update cascade;');
     this.addSql('alter table "friend" add constraint "friend_friend_id_foreign" foreign key ("friend_id") references "member" ("id") on update cascade;');
@@ -36,4 +41,4 @@ class Migration20210720000746 extends Migration {
   }
 
 }
-exports.Migration20210720000746 = Migration20210720000746;
+exports.Migration20210723214145 = Migration20210723214145;

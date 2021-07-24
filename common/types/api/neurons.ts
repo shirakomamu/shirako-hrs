@@ -4,4 +4,5 @@ export interface NeuronData extends IDestinationItemPayload {}
 
 export interface IActivatedNeuronsPayload {
   neurons: NeuronData[];
+  totalNeurons: number;
 }

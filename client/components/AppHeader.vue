@@ -1,13 +1,12 @@
 <template>
   <div class="nav flex items-center px-8">
     <div class="justify-start items-center">
-      <nuxt-link
-        v-slot="{ navigate }"
-        to="/"
-        class="space-x-4 flex items-center"
-        custom
-      >
-        <div class="pointer" @click="navigate" @keypress.enter="navigate">
+      <nuxt-link v-slot="{ navigate }" :to="!self ? '/' : '/dashboard'" custom>
+        <div
+          class="pointer space-x-4 flex flex-row items-center"
+          @click="navigate"
+          @keypress.enter="navigate"
+        >
           <img class="app-icon" alt="App logo" width="32" height="32" />
           <span class="font-semibold show-when-wide dark:text-white">{{
             appName
@@ -42,13 +41,12 @@
       >
         <template #default>
           <div class="flex flex-row gap-8 items-center">
-            <nuxt-link
-              v-if="emailVerified"
-              to="/dashboard"
-              class="text-orange-srk dark:text-blue-srk"
-              ><Dashboard class="icon-inline" />
-              <span class="hover:underline focus:underline"
-                >Dashboard</span
+            <nuxt-link v-if="emailVerified" to="/dashboard" custom
+              ><ComboButton class="p-0 text-orange-srk dark:text-blue-srk"
+                ><Dashboard class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >Dashboard</span
+                ></ComboButton
               ></nuxt-link
             >
             <button class="p-0" @click="showPopup">
@@ -157,6 +155,10 @@ export default defineComponent({
       window.location.href = "/api/auth/logout";
     };
 
+    // const onDashboardClick = () => {
+    //   context.$emitter.emit("go-to-dashboard");
+    // };
+
     return {
       appName,
       self,
@@ -166,6 +168,7 @@ export default defineComponent({
       popupVisible,
       showPopup,
       signOut,
+      // onDashboardClick,
     };
   },
 });

@@ -1,6 +1,6 @@
 import { BusinessIdentifyDto } from "common/dto/items";
 import { GEN_BUSINESS_IDENTIFY_PREFIX } from "server/config/redis";
-import redisGu from "server/services/redis-gu";
+import redisGu from "server/services/redis-global";
 import businessIdentify, { BusinessIdentifyResponse } from "./businessIdentify";
 
 export default async ({ id }: BusinessIdentifyDto) => {

@@ -213,87 +213,10 @@
         </div>
       </div>
 
-      <Modal
-        :visible="showCreateListModal"
-        container-class="p-8 w-full max-w-prose"
-        @hide="showCreateListModal = false"
-      >
-        <form
-          class="p-8 bg-gray-200 dark:bg-gray-700 grid grid-cols-1 gap-4"
-          @submit.prevent="onCreate"
-        >
-          <h6 class="text-2xl dark:text-white">Create new list</h6>
-          <div
-            class="
-              grid grid-cols-1
-              gap-4
-              items-center
-              bg-gray-200
-              dark:bg-gray-700
-            "
-          >
-            <Input
-              ref="listNameInput"
-              v-model="formListName"
-              type="text"
-              passive-text="Choose a descriptive name. It must be 1 to 24 characters long."
-              label="Name"
-              class="w-full"
-              classes="p-2 text-sm w-full"
-              minlength="1"
-              maxlength="24"
-              :do-validation="true"
-              required
-            />
-
-            <div class="grid grid-cols-1 gap-1">
-              <label :for="listVisibilityUid">Visibility</label>
-              <select
-                :id="listVisibilityUid"
-                v-model="formListVisibility"
-                class="p-2 text-sm"
-              >
-                <option
-                  v-for="(option, index) in listVisibilityOptions"
-                  :key="index"
-                  :value="option.value"
-                >
-                  {{ option.text }}
-                </option>
-              </select>
-              <p class="text-xs opacity-50">Determine who can see this list.</p>
-            </div>
-
-            <div class="grid grid-cols-1 gap-1">
-              <label :for="listDescriptionUid"
-                >Description
-                <span class="italic opacity-50">(optional)</span></label
-              >
-              <textarea
-                v-model="formListDescription"
-                class="list-description-form p-2 text-sm"
-                rows="5"
-                :maxlength="maxDescriptionLength"
-              />
-              <div class="flex flex-row gap-2">
-                <p class="text-xs opacity-50">Give your list a description.</p>
-                <div class="flex-grow"></div>
-                <p class="text-xs opacity-50">
-                  {{ descriptionLengthHelper }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <ComboButton
-            type="submit"
-            class="text-sm border border-blue-srk text-blue-srk"
-            :disabled="isCreatingList"
-            :loading="isCreatingList"
-            >Create list</ComboButton
-          >
-        </form>
-      </Modal>
+      <CreateListModal
+        :visible="isCreateListModalVisible"
+        @hide="isCreateListModalVisible = false"
+      />
     </template>
     <template v-else>
       <div class="grid grid-cols-1 place-items-center">
@@ -309,13 +232,11 @@ import { Guard } from "common/types/hrbac";
 import {
   computed,
   defineComponent,
-  nextTick,
   onMounted,
   ref,
   useContext,
   useMeta,
   useRoute,
-  useRouter,
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
@@ -326,11 +247,7 @@ import Block from "client/components/icons/Block.vue";
 import PersonAdd from "client/components/icons/PersonAdd.vue";
 import PersonRemove from "client/components/icons/PersonRemove.vue";
 import useSelf from "client/composables/useSelf";
-import { DestinationListModel, MemberModel } from "client/models";
-import uniqueId from "common/utils/uniqueId";
-import { ListVisibility } from "common/enums";
-import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
-import Input from "client/components/Input.vue";
+import { MemberModel } from "client/models";
 
 export default defineComponent({
   meta: {
@@ -369,8 +286,6 @@ export default defineComponent({
       }
     );
 
-    const listNameInput = ref<null | InstanceType<typeof Input>>(null);
-
     const isFriend = computed(() => member.value?.isFriend);
     const isAcceptingRequests = computed(
       () => member.value?.isAcceptingFriends
@@ -398,52 +313,6 @@ export default defineComponent({
           : "Loading... | ") + context.$config.appinfo.name,
     }));
 
-    // form items
-    const onShowCreateListModal = async () => {
-      showCreateListModal.value = true;
-      await nextTick();
-      listNameInput.value?.focus();
-    };
-    const router = useRouter();
-    const listModel = store.$db().model(DestinationListModel);
-    const showCreateListModal = ref<boolean>(false);
-    const maxDescriptionLength = 200;
-
-    const uid = uniqueId();
-    const listDescriptionUid = "list-description-" + uid;
-    const listVisibilityUid = "list-visibility-" + uid;
-
-    const formListName = ref<null | string>(null);
-    const formListDescription = ref<null | string>(null);
-    const formListVisibility = ref<null | ListVisibility>(
-      self.value?.meta.privacySettings?.defaultListVisibility || null
-    );
-    const descriptionLengthHelper = computed(() => {
-      return `${
-        (formListDescription.value || "").length
-      } / ${maxDescriptionLength}`;
-    });
-    const listVisibilityOptions = useListVisibilityOptions();
-    const isCreatingList = ref<boolean>(false);
-    const onCreate = async () => {
-      isCreatingList.value = true;
-      const response = await listModel.apiCreateList(
-        route.value.params.username,
-        {
-          name: formListName.value || "",
-          description: formListDescription.value,
-          visibility: formListVisibility.value as ListVisibility,
-        }
-      );
-      isCreatingList.value = false;
-
-      if (response.ok) {
-        router.push(
-          "/u/" + route.value.params.username + "/" + response.payload.id
-        );
-      }
-    };
-
     // used for randomly selecting the background
     const pIndex = ref<number | null>(null);
     const p = computed(() => {
@@ -453,6 +322,11 @@ export default defineComponent({
     onMounted(() => {
       pIndex.value = Math.floor(Math.random() * p.value.length);
     });
+
+    const isCreateListModalVisible = ref<boolean>(false);
+    const onShowCreateListModal = () => {
+      isCreateListModalVisible.value = true;
+    };
 
     return {
       route,
@@ -471,20 +345,8 @@ export default defineComponent({
 
       destinationLists,
 
-      // form
+      isCreateListModalVisible,
       onShowCreateListModal,
-      listNameInput,
-      showCreateListModal,
-      onCreate,
-      formListName,
-      formListDescription,
-      formListVisibility,
-      maxDescriptionLength,
-      listVisibilityUid,
-      listVisibilityOptions,
-      listDescriptionUid,
-      descriptionLengthHelper,
-      isCreatingList,
     };
   },
   // required for useMeta to work

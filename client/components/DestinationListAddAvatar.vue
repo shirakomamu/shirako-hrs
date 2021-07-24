@@ -7,15 +7,13 @@
       text-center
       p-2
       transition
-      bg-white bg-opacity-50
-      dark:bg-opacity-5
-      hover:bg-opacity-70
-      dark:hover:bg-opacity-10
+      bg-blue-srk
+      text-white
+      font-semibold
     "
   >
-    <PlaylistAdd class="list-icon opacity-50 h-6 w-6" />
     <div class="grid grid-cols-1 gap-2 place-items-center my-8 w-full">
-      <Add class="icon-inline h-8 w-8" />
+      <PlaylistAdd class="icon-inline h-8 w-8" />
       <p>Create list</p>
     </div>
   </div>
@@ -23,13 +21,11 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-import Add from "client/components/icons/Add.vue";
 import PlaylistAdd from "client/components/icons/PlaylistAdd.vue";
 
 export default defineComponent({
   name: "DestinationListAddAvatar",
   components: {
-    Add,
     PlaylistAdd,
   },
 });

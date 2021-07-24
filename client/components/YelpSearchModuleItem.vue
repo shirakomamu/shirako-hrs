@@ -51,7 +51,7 @@
           <ComboButton
             :alt="isAdded ? 'Add to list' : 'Added'"
             class="w-full sm:w-max text-sm bg-blue-srk text-white"
-            :disabled="!isAdded || isAdding"
+            :disabled="disabled || !isAdded || isAdding"
             :loading="isAdding"
             @click="addItem"
             ><Add class="icon-inline" />
@@ -60,13 +60,12 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 text-xs">
-        <div class="text-orange-srk">
-          <StarRating :rating="rating" :max-rating="5" /> ({{
-            review_count
-          }}
-          review{{ review_count === 1 ? "" : "s" }})
-        </div>
+      <div class="text-xs">
+        <a :href="url" target="_blank" rel="noopener noreferrer">
+          <StarRating :rating="rating" /><span class="opacity-50">
+            ({{ review_count }} review{{ review_count === 1 ? "" : "s" }})</span
+          >
+        </a>
       </div>
 
       <div class="grid grid-cols-1 opacity-50 text-xs">
@@ -139,6 +138,10 @@ export default defineComponent({
       default: false,
     },
     isAdding: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
       type: Boolean,
       default: false,
     },

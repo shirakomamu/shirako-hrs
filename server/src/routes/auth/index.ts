@@ -22,7 +22,11 @@ router.get("/logout", (_req, res) =>
   res.oidc.logout({ returnTo: process.env.SERVER_BASE_URI })
 );
 
-router.get("/me", route(controller.identifyMyself));
+router.get(
+  "/me",
+  [useSimpleGuard([Role._self_profile])],
+  route(controller.identifyMyself)
+);
 router.patch(
   "/me",
   [useSimpleGuard([Role._self_profile]), ...UpdateUserValidators],
@@ -33,6 +37,7 @@ router.delete(
   [useSimpleGuard([Role._self_profile])],
   route(controller.deleteUser)
 );
+
 router.patch(
   "/me/preferences",
   [useSimpleGuard([Role._email_verified]), ...UpdateUserPreferencesValidators],
@@ -59,64 +64,27 @@ router.post(
   ],
   route(controller.resendVerificationEmail)
 );
+
 router.post(
   "/me/reset_password",
   [useSimpleGuard([Role._self_profile])],
   route(controller.sendPasswordResetEmail)
 );
 
-// router.post(
-//   "/register",
-//   ...RegisterNewMemberValidators,
-//   route(
-//     controller.registerNewMember,
-//     subRateLimiterFactory([
-//       {
-//         rateLimiter: authSlow,
-//         ckGen: ({ req }) => req.ip,
-//       },
-//       {
-//         rateLimiter: authFail,
-//         ckGen: ({ req }) => req.ip + "_un_" + req.body.username,
-//       },
-//       {
-//         rateLimiter: authFail,
-//         ckGen: ({ req }) => req.ip + "_dn_" + req.body.displayName,
-//       },
-//     ])
-//   )
-// );
-
-// router.post(
-//   "/register/token",
-//   ...OtpTokenValidators,
-//   route(
-//     controller.checkOtpToken,
-//     subRateLimiterFactory([
-//       {
-//         rateLimiter: authSlow,
-//         ckGen: ({ req }) => req.ip,
-//       },
-//     ])
-//   )
-// );
-
-// router.post(
-//   "/ncheck",
-//   ...NameCheckValidators,
-//   route(
-//     controller.isNameAvailable,
-//     subRateLimiterFactory([
-//       {
-//         rateLimiter: authSlow,
-//         ckGen: ({ req }) => req.ip,
-//       },
-//       {
-//         rateLimiter: authFail,
-//         ckGen: ({ req }) => req.ip + "_" + req.body.type + "_" + req.body.name,
-//       },
-//     ])
-//   )
-// );
+router.get(
+  "/me/apikey",
+  [useSimpleGuard([Role._self_profile])],
+  route(controller.checkApiKey)
+);
+router.post(
+  "/me/apikey",
+  [useSimpleGuard([Role._email_verified])],
+  route(controller.createApiKey)
+);
+router.delete(
+  "/me/apikey",
+  [useSimpleGuard([Role._email_verified])],
+  route(controller.deleteApiKey)
+);
 
 export default router;
