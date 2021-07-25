@@ -74,6 +74,7 @@
           </ComboButton>
           <nuxt-link
             v-else-if="isMe && !canModifyList"
+            v-slot="{ navigate }"
             key="verifRequired"
             to="/settings"
             custom
@@ -81,6 +82,7 @@
             <ComboButton
               class="p-0 h-full w-full"
               alt="Email verification required"
+              @click="navigate"
             >
               <DestinationItemAddAvatarDisabled />
             </ComboButton>
@@ -101,7 +103,7 @@
             :hours="item.hours"
             :special_hours="item.special_hours"
             :regular-hours="item.regularHours"
-            :time-until-close="item.timeUntilClose"
+            :time-until-close="item.getTimeUntilClose(time)"
             :last-updated="item.lastUpdated"
             :show-remove-button="canModifyList"
             :is-removing="loadingIds.includes(item.id)"
@@ -256,6 +258,7 @@ import {
   defineComponent,
   nextTick,
   onMounted,
+  onUnmounted,
   ref,
   useContext,
   useMeta,
@@ -428,7 +431,21 @@ export default defineComponent({
       }
     };
 
+    const time = ref<number>(Date.now());
+    const timeUpdater = ref<any>(null);
+
+    onMounted(() => {
+      timeUpdater.value = setInterval(() => {
+        time.value = Date.now();
+      }, 600);
+    });
+
+    onUnmounted(() => {
+      clearInterval(timeUpdater.value);
+    });
+
     return {
+      time,
       console,
       route,
       listLoading,

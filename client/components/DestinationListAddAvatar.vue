@@ -1,17 +1,5 @@
 <template>
-  <div
-    class="
-      container
-      flex flex-col
-      items-center
-      text-center
-      p-2
-      transition
-      bg-blue-srk
-      text-white
-      font-semibold
-    "
-  >
+  <div class="container flex flex-col items-center text-center p-2 transition">
     <div class="grid grid-cols-1 gap-2 place-items-center my-8 w-full">
       <PlaylistAdd class="icon-inline h-8 w-8" />
       <p>Create list</p>

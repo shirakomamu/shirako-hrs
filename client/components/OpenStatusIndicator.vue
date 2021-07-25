@@ -12,6 +12,7 @@
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import timeAgo from "common/utils/timeAgo";
 import Schedule from "client/components/icons/Schedule.vue";
+import { FormatStyle } from "javascript-time-ago/style";
 
 export default defineComponent({
   name: "OpenStatusIndicator",
@@ -33,6 +34,13 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const shortOptions = {
+      labels: "short",
+      steps: [
+        { formatAs: "minute" },
+        { minTime: 2 * 60 * 60, formatAs: "hour" },
+      ],
+    } as FormatStyle; // types definitions are behind...
     const displayText = computed(() => {
       if (props.textOverride) {
         return props.textOverride;
@@ -42,10 +50,21 @@ export default defineComponent({
         return "Closed";
       }
 
+      if (props.timeUntilClose < -120) {
+        return "Closed";
+        // return (
+        //   "Opening " +
+        //   timeAgo.format(Date.now() - props.timeUntilClose * 60 * 1000, "mini")
+        // );
+      }
+
       if (props.timeUntilClose < 0) {
         return (
           "Opening " +
-          timeAgo.format(Date.now() - props.timeUntilClose * 60 * 1000, "mini")
+          timeAgo.format(
+            Date.now() - props.timeUntilClose * 60 * 1000,
+            shortOptions
+          )
         );
       }
 
@@ -56,7 +75,10 @@ export default defineComponent({
       if (props.timeUntilClose > 0) {
         return (
           "Closing " +
-          timeAgo.format(Date.now() + props.timeUntilClose * 60 * 1000, "mini")
+          timeAgo.format(
+            Date.now() + props.timeUntilClose * 60 * 1000,
+            shortOptions
+          )
         );
       }
 
@@ -73,11 +95,11 @@ export default defineComponent({
       if (props.timeUntilClose < 0) {
         return ["bg-red-500"];
       }
-      if (props.timeUntilClose < 120) {
-        return ["bg-orange-srk"];
+      if (props.timeUntilClose > 120) {
+        return ["bg-green-600"];
       }
       if (props.timeUntilClose > 0) {
-        return ["bg-green-600"];
+        return ["bg-orange-srk"];
       }
       return ["bg-red-500"];
     });

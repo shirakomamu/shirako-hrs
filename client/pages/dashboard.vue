@@ -224,6 +224,60 @@
             <p class="text-center font-semibold text-3xl neuron-title">
               {{ index + 1 }}
             </p>
+            <p class="text-xs text-right">
+              <span class="opacity-50">in</span>
+              <Drop
+                :visible="listViewerVisibility[index]"
+                class="inline"
+                container-class="p-4 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg text-xs"
+                :close-after="2000"
+                @hide="listViewerVisibility[index] = false"
+              >
+                <template #default>
+                  <ComboButton
+                    class="inline p-0"
+                    @click="listViewerVisibility[index] = true"
+                  >
+                    {{ rPayloadStore[index].lists.length }} list{{
+                      rPayloadStore[index].lists.length === 1 ? "" : "s"
+                    }}</ComboButton
+                  ></template
+                ><template #tooltip>
+                  <p
+                    v-for="(list, listIndex) in rPayloadStore[index].lists"
+                    :key="item.id + '_' + listIndex"
+                  >
+                    {{ list }}
+                  </p>
+                </template>
+              </Drop>
+
+              <span class="opacity-50">by</span>
+              <Drop
+                :visible="userViewerVisibility[index]"
+                class="inline"
+                container-class="p-4 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg text-xs"
+                :close-after="2000"
+                @hide="userViewerVisibility[index] = false"
+              >
+                <template #default>
+                  <ComboButton
+                    class="inline p-0"
+                    @click="userViewerVisibility[index] = true"
+                    >{{ rPayloadStore[index].users.length }} user{{
+                      rPayloadStore[index].users.length === 1 ? "" : "s"
+                    }}</ComboButton
+                  ></template
+                ><template #tooltip>
+                  <p
+                    v-for="(user, userIndex) in rPayloadStore[index].users"
+                    :key="item.id + '_' + userIndex"
+                  >
+                    {{ (user === "n/a" ? "" : "@") + user }}
+                  </p>
+                </template>
+              </Drop>
+            </p>
             <DestinationItem
               :id="item.id"
               class="w-full"
@@ -239,7 +293,7 @@
               :hours="item.hours"
               :special_hours="item.special_hours"
               :regular-hours="item.regularHours"
-              :time-until-close="item.timeUntilClose"
+              :time-until-close="item.getTimeUntilClose(time)"
               :last-updated="item.lastUpdated"
             />
           </div>
@@ -256,6 +310,7 @@ import {
   computed,
   defineComponent,
   onMounted,
+  onUnmounted,
   ref,
   useContext,
   useMeta,
@@ -270,7 +325,7 @@ import {
   DestinationListModel,
   MemberModel,
 } from "client/models";
-import { Item } from "@vuex-orm/core";
+import { Collection, Item } from "@vuex-orm/core";
 import uniqueId from "common/utils/uniqueId";
 import Input from "client/components/Input.vue";
 import HelpOutline from "client/components/icons/HelpOutline.vue";
@@ -310,9 +365,11 @@ export default defineComponent({
 
     const helpVisible = ref<boolean>(false);
 
-    const selectedLists = ref<Item<DestinationListModel>[]>([]);
-    const selectedListsIds = computed(() =>
-      selectedLists.value.map((e) => e?.id || "0")
+    const selectedLists = computed(() => {
+      return listModel.query().where("id", selectedListsIds.value).get();
+    });
+    const selectedListsIds = computed<string[]>(
+      () => store.getters.selectedNeurons || []
     );
     const listSearchResults = ref<Item<DestinationListModel>[]>([]);
     const isLoading = ref<boolean>(true);
@@ -370,22 +427,27 @@ export default defineComponent({
 
     const onPick = (id: string) => {
       const list = listModel.query().where("id", id).first();
-
       if (!list) return;
 
-      if (selectedLists.value.includes(list)) return;
+      // if (selectedLists.value.includes(list)) return;
+      if (store.getters.selectedNeurons.includes(id)) return;
       if (maxNeuronsReached.value) return;
-      selectedLists.value.push(list);
+      // selectedLists.value.push(id);
+      store.commit("addNeuron", id);
     };
 
     const onUnpick = (id: string) => {
-      selectedLists.value = selectedLists.value.filter((e) => e && e.id !== id);
+      // selectedLists.value = selectedLists.value.filter((e) => e && e.id !== id);
+      store.commit("removeNeuron", id);
     };
 
     const model = store.$db().model(DestinationItemModel);
     const isActivating = ref<boolean>(false);
     const possibleNeurons = ref<number>(0);
     const hasActivated = ref<boolean>(false);
+    const rPayloadStore = ref<NeuronData[]>([]);
+    const userViewerVisibility = ref<boolean[]>([]);
+    const listViewerVisibility = ref<boolean[]>([]);
     const activateNeurons = async () => {
       if (!selectedLists.value.length) return;
 
@@ -400,13 +462,27 @@ export default defineComponent({
       isActivating.value = false;
 
       if (r.ok) {
+        const modelSafeNeurons = r.payload.neurons.map((e) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { lists, users, ...rest } = e;
+
+          // lists and users are discarded because they cause relation conflict in ORM
+          return rest;
+        });
+        userViewerVisibility.value = Array(r.payload.neurons.length).fill(
+          false
+        );
+        listViewerVisibility.value = Array(r.payload.neurons.length).fill(
+          false
+        );
         await model.insertOrUpdate({
-          data: r.payload.neurons,
+          data: modelSafeNeurons,
         });
         neuronResults.value = model
           .query()
           .whereIdIn(r.payload.neurons.map((e) => e.id))
           .get();
+        rPayloadStore.value = r.payload.neurons;
         possibleNeurons.value = r.payload.totalNeurons;
         isActivated.value = true;
         hasActivated.value = true;
@@ -433,6 +509,19 @@ export default defineComponent({
       router.push("/dashboard");
     };
 
+    const time = ref<number>(Date.now());
+    const timeUpdater = ref<any>(null);
+
+    onMounted(() => {
+      timeUpdater.value = setInterval(() => {
+        time.value = Date.now();
+      }, 600);
+    });
+
+    onUnmounted(() => {
+      clearInterval(timeUpdater.value);
+    });
+
     // onMounted(() => {
     //   context.$emitter.on("go-to-dashboard", deactivateNeurons);
     // });
@@ -441,9 +530,10 @@ export default defineComponent({
     // });
 
     const isActivated = ref<boolean>(false);
-    const neuronResults = ref<NeuronData[]>([]);
+    const neuronResults = ref<Collection<DestinationItemModel>>([]);
 
     return {
+      time,
       maxNeurons,
       maxNeuronsReached,
 
@@ -451,6 +541,7 @@ export default defineComponent({
       helpVisible,
       destinationLists,
       selectedLists,
+      selectedListsIds,
       unselectedLists,
       listSearchResults,
       availableListSearchResults,
@@ -474,6 +565,9 @@ export default defineComponent({
       neuronResults,
       possibleNeurons,
       deactivateNeurons,
+      rPayloadStore,
+      listViewerVisibility,
+      userViewerVisibility,
     };
   },
   // required for useMeta to work

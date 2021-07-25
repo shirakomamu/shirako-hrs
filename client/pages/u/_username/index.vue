@@ -131,7 +131,9 @@
 
       <div class="grid grid-cols-1 gap-4">
         <div class="flex flex-row gap-4 items-center">
-          <h6 class="text-2xl dark:text-white">Lists</h6>
+          <h6 class="text-2xl dark:text-white">
+            <List class="icon-inline" /> Lists
+          </h6>
         </div>
 
         <div
@@ -157,7 +159,7 @@
             <ComboButton
               v-if="isMe && canCreateList"
               key="new"
-              class="p-0 h-full w-full"
+              class="p-0 h-full w-full bg-blue-srk text-white font-semibold"
               alt="Create list"
               @click="onShowCreateListModal"
             >
@@ -165,6 +167,7 @@
             </ComboButton>
             <nuxt-link
               v-else-if="isMe && !canCreateList"
+              v-slot="{ navigate }"
               key="verifRequired"
               to="/settings"
               custom
@@ -172,6 +175,7 @@
               <ComboButton
                 class="p-0 h-full w-full"
                 alt="Email verification required"
+                @click="navigate"
               >
                 <DestinationListAddAvatarDisabled />
               </ComboButton>
@@ -179,11 +183,16 @@
             <template v-if="destinationLists && destinationLists.length">
               <nuxt-link
                 v-for="(list, index) in destinationLists"
+                v-slot="{ navigate }"
                 :key="index"
                 :to="`/u/${route.params.username}/${list.id}`"
                 custom
               >
-                <ComboButton class="p-0 h-full w-full" :alt="list.name">
+                <ComboButton
+                  class="p-0 h-full w-full"
+                  :alt="list.name"
+                  @click="navigate"
+                >
                   <DestinationListAvatar>
                     <div
                       class="
@@ -211,6 +220,19 @@
             <p>No lists available.</p>
           </div>
         </div>
+      </div>
+
+      <div v-if="isMe" class="grid grid-cols-1 gap-4">
+        <div class="flex flex-row gap-4 items-center">
+          <h6 class="text-2xl dark:text-white">
+            <People class="icon-inline" /> Friends
+          </h6>
+        </div>
+
+        Under construction!
+
+        <!-- Friends list Show confirmed in one tab (with remove button) Show pending
+        (outgoing / incoming) to accept / cancel -->
       </div>
 
       <CreateListModal
@@ -241,9 +263,11 @@ import {
   watch,
 } from "@nuxtjs/composition-api";
 import hrbacCan from "common/utils/hrbacCan";
-import Loader from "client/components/icons/Loader.vue";
 import useMember from "client/composables/useMember";
 import Block from "client/components/icons/Block.vue";
+import List from "client/components/icons/List.vue";
+import Loader from "client/components/icons/Loader.vue";
+import People from "client/components/icons/People.vue";
 import PersonAdd from "client/components/icons/PersonAdd.vue";
 import PersonRemove from "client/components/icons/PersonRemove.vue";
 import useSelf from "client/composables/useSelf";
@@ -257,7 +281,9 @@ export default defineComponent({
   },
   components: {
     Block,
+    List,
     Loader,
+    People,
     PersonAdd,
     PersonRemove,
   },

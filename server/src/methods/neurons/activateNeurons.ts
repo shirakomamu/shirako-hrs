@@ -9,6 +9,7 @@ import getTimeUntilClose from "common/utils/getTimeUntilClose";
 import getWeightedRandom from "common/utils/getWeightedRandom";
 import { IDestinationItemPayload } from "common/types/api/items";
 import { MAX_NEURONS } from "server/config/dataLimits";
+import getUserCached from "server/services/auth0-mgmt/getUserCached";
 
 const MERGE_EXPONENT = 2;
 const OWNER_EXPONENT = 3;
@@ -74,6 +75,7 @@ export default async (
   const neuronStore: {
     [key: string]: {
       list: string;
+      listName: string;
       owner: string;
     }[];
   } = {};
@@ -85,6 +87,7 @@ export default async (
         neuronStore[item.yelpId] = [
           {
             list: list.id,
+            listName: list.name,
             owner: list.owner.sub,
           },
         ];
@@ -92,6 +95,7 @@ export default async (
         // if the destination is in the store
         neuronStore[item.yelpId].push({
           list: list.id,
+          listName: list.name,
           owner: list.owner.sub,
         });
       }
@@ -147,7 +151,12 @@ export default async (
   // neuronData stores all metadata
   // neuronTime stores timing data
 
-  const neuronScore: { nid: string; score: number }[] = [];
+  const neuronScore: {
+    nid: string;
+    score: number;
+    users: string[];
+    lists: string[];
+  }[] = [];
   for (const nid of ids) {
     if (!validNeuronTimeIds.includes(nid)) {
       continue;
@@ -158,18 +167,26 @@ export default async (
     }
 
     const mergeCount = storeData.length;
-    const ownerCount = storeData
+    const owners = storeData
       .map((e) => e.owner)
-      .filter((e, i, a) => a.indexOf(e) === i).length;
+      .filter((e, i, a) => a.indexOf(e) === i);
+    const ownerCount = owners.length;
 
     neuronScore.push({
       nid,
       score: mergeCount ** MERGE_EXPONENT + ownerCount ** OWNER_EXPONENT,
+      users: owners,
+      lists: storeData.map((e) => e.listName),
     });
   }
 
   const selectedNeuronCount = Math.min(MAX_NEURONS, neuronScore.length);
-  const selectedNeurons: { nid: string; score: number }[] = [];
+  const selectedNeurons: {
+    nid: string;
+    score: number;
+    users: string[];
+    lists: string[];
+  }[] = [];
   const selectedIds: string[] = [];
 
   if (neuronScore.length === selectedNeuronCount) {
@@ -186,13 +203,33 @@ export default async (
     }
   }
 
+  const uniqueUserIds = selectedNeurons
+    .flatMap((e) => e.users)
+    .filter((e, i, a) => a.indexOf(e) === i);
+  const uniqueUsers = await Promise.allSettled(
+    uniqueUserIds.map((e) => getUserCached({ id: e }))
+  );
+  const usermap: { [key: string]: string } = {};
+  for (const result of uniqueUsers) {
+    if (result.status === "fulfilled") {
+      const userId = result.value.user_id;
+      if (!userId) continue;
+
+      usermap[userId] = result.value.username || "n/a";
+    }
+  }
+
   return {
     neurons: selectedNeurons
-      .sort((a, b) => a.score - b.score)
+      .sort((a, b) => b.score - a.score)
       .map((e) => {
-        return neuronData.find(
-          (f) => f.id === e.nid
-        ) as IDestinationItemPayload;
+        return {
+          ...(neuronData.find(
+            (f) => f.id === e.nid
+          ) as IDestinationItemPayload),
+          lists: e.lists,
+          users: e.users.map((f) => usermap[f] || "n/a"),
+        };
       }),
     totalNeurons: ids.length,
   };

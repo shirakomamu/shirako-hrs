@@ -41,8 +41,14 @@
       >
         <template #default>
           <div class="flex flex-row gap-8 items-center">
-            <nuxt-link v-if="emailVerified" to="/dashboard" custom
-              ><ComboButton class="p-0 text-orange-srk dark:text-blue-srk"
+            <nuxt-link
+              v-if="emailVerified"
+              v-slot="{ navigate }"
+              to="/dashboard"
+              custom
+              ><ComboButton
+                class="p-0 text-orange-srk dark:text-blue-srk"
+                @click="navigate"
                 ><Dashboard class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Dashboard</span
@@ -76,15 +82,6 @@
                 ><Person class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Profile</span
-                ></nuxt-link
-              >
-              <nuxt-link
-                v-if="emailVerified"
-                to="/friends"
-                class="text-orange-srk dark:text-blue-srk"
-                ><People class="icon-inline" />
-                <span class="hover:underline focus:underline"
-                  >Friends</span
                 ></nuxt-link
               >
               <nuxt-link
@@ -122,7 +119,6 @@ import {
 import useSelf from "client/composables/useSelf";
 import Dashboard from "client/components/icons/Dashboard.vue";
 import Logout from "client/components/icons/Logout.vue";
-import People from "client/components/icons/People.vue";
 import Person from "client/components/icons/Person.vue";
 import Settings from "client/components/icons/Settings.vue";
 import hrbacCan from "common/utils/hrbacCan";
@@ -133,7 +129,6 @@ export default defineComponent({
   components: {
     Dashboard,
     Logout,
-    People,
     Person,
     Settings,
   },
