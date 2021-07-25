@@ -50,6 +50,7 @@ export default {
   plugins: [
     { src: "./plugins/axios" },
     { src: "./plugins/vuex-orm" },
+    { src: "./plugins/mitt" },
     // { src: "./plugins/vuex-persist", ssr: false },
   ],
 

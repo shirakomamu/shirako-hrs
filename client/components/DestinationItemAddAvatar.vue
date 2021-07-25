@@ -15,8 +15,9 @@
     "
   >
     <div class="grid grid-cols-1 gap-2 place-items-center">
-      <Add class="icon-inline" />
+      <Add class="icon-inline h-12 w-12" />
       <p>Add to list</p>
+      <slot />
     </div>
   </div>
 </template>
@@ -36,9 +37,5 @@ export default defineComponent({
 <style lang="less" scoped>
 .container {
   position: relative;
-}
-.icon-inline {
-  width: 3rem;
-  height: 3rem;
 }
 </style>

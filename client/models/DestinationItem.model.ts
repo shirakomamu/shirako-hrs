@@ -52,12 +52,12 @@ export default class extends Model {
     return this.hours.find((e) => e.hours_type === "REGULAR")?.open;
   }
 
-  public get timeUntilClose() {
+  public getTimeUntilClose(now: number = Date.now()) {
     if (!this.regularHours || !this.timezone) {
       return null;
     }
 
-    return getTimeUntilClose(Date.now(), this.regularHours, this.timezone);
+    return getTimeUntilClose(now, this.regularHours, this.timezone);
   }
 
   private detailsLoaded!: boolean;

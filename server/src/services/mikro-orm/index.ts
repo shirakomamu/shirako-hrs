@@ -18,6 +18,7 @@ import {
   DestinationListEntitySchema,
   FriendEntitySchema,
   MemberEntitySchema,
+  ApiKeyEntitySchema,
 } from "server/entities";
 
 const storage = new AsyncLocalStorage<EntityManager>();
@@ -30,6 +31,7 @@ const orm = MikroORM.init({
     FriendEntitySchema,
     DestinationEntitySchema,
     DestinationListEntitySchema,
+    ApiKeyEntitySchema,
   ],
   type: "postgresql", // or 'sqlite' or 'postgresql' or 'mariadb'
   clientUrl: process.env.DATABASE_URL,

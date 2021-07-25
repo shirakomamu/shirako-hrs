@@ -28,7 +28,7 @@ export type ActorConstructorDto = {
   email: string;
   avatar: string | null;
   cohort: string | null;
-  key: string | null;
+  key: boolean;
   rgs: RoleGroup[];
   meta: Auth0UserMetadataDto;
 };

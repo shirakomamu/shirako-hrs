@@ -46,12 +46,35 @@
             key="add"
             class="p-0 h-full w-full"
             alt="Add to list"
+            :disabled="maxItemsReached"
             @click="showSearchModal = true"
           >
-            <DestinationItemAddAvatar />
+            <DestinationItemAddAvatar>
+              <p
+                class="opacity-50"
+                :class="{ 'text-orange-srk': maxItemsReached }"
+              >
+                ({{
+                  Math.max(
+                    maxItems - ((list.items && list.items.length) || 0),
+                    0
+                  )
+                }}
+                slot{{
+                  Math.max(
+                    maxItems - ((list.items && list.items.length) || 0),
+                    0
+                  ) === 1
+                    ? ""
+                    : "s"
+                }}
+                available)
+              </p>
+            </DestinationItemAddAvatar>
           </ComboButton>
           <nuxt-link
             v-else-if="isMe && !canModifyList"
+            v-slot="{ navigate }"
             key="verifRequired"
             to="/settings"
             custom
@@ -59,6 +82,7 @@
             <ComboButton
               class="p-0 h-full w-full"
               alt="Email verification required"
+              @click="navigate"
             >
               <DestinationItemAddAvatarDisabled />
             </ComboButton>
@@ -79,7 +103,7 @@
             :hours="item.hours"
             :special_hours="item.special_hours"
             :regular-hours="item.regularHours"
-            :time-until-close="item.timeUntilClose"
+            :time-until-close="item.getTimeUntilClose(time)"
             :last-updated="item.lastUpdated"
             :show-remove-button="canModifyList"
             :is-removing="loadingIds.includes(item.id)"
@@ -90,6 +114,7 @@
       <YelpSearchModal
         :visible="showSearchModal"
         :managed-list="list"
+        :disable-add="maxItemsReached"
         @hide="showSearchModal = false"
       />
 
@@ -233,6 +258,7 @@ import {
   defineComponent,
   nextTick,
   onMounted,
+  onUnmounted,
   ref,
   useContext,
   useMeta,
@@ -252,6 +278,7 @@ import uniqueId from "common/utils/uniqueId";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import { ListVisibility } from "common/enums";
 import Input from "client/components/Input.vue";
+import { MAX_ITEMS_PER_LIST } from "server/config/dataLimits";
 
 export default defineComponent({
   components: {
@@ -267,6 +294,11 @@ export default defineComponent({
     const router = useRouter();
     const model = store.$db().model(DestinationListModel);
     const self = useSelf();
+
+    const maxItems = MAX_ITEMS_PER_LIST;
+    const maxItemsReached = computed(
+      () => (list.value?.items || []).length >= maxItems
+    );
 
     // useList({
     //   username: route.value.params.username,
@@ -288,7 +320,6 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      window.scrollTo(0, 0);
       await refreshModel();
     });
 
@@ -400,7 +431,21 @@ export default defineComponent({
       }
     };
 
+    const time = ref<number>(Date.now());
+    const timeUpdater = ref<any>(null);
+
+    onMounted(() => {
+      timeUpdater.value = setInterval(() => {
+        time.value = Date.now();
+      }, 600);
+    });
+
+    onUnmounted(() => {
+      clearInterval(timeUpdater.value);
+    });
+
     return {
+      time,
       console,
       route,
       listLoading,
@@ -414,6 +459,9 @@ export default defineComponent({
       isMe,
       canModifyList,
       title,
+
+      maxItems,
+      maxItemsReached,
 
       // form
       listNameInput,

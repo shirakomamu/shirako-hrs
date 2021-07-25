@@ -13,7 +13,7 @@ export default class Actor implements ActorDto {
   public email: string;
   public avatar: string | null; // profile pic
   public cohort: string | null; // sub-managed member
-  public key: string | null; // api key, non-null if used
+  public key: boolean; // api key used
   public rgs: RoleGroup[];
   public roles: Role[];
   public meta: Auth0UserMetadataDto;

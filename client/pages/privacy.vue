@@ -30,9 +30,9 @@
     </p>
     <p>
       Please note that other users of this app may see information that you make
-      visible to them. Such information will be clearly labeled in their
-      respective management areas. We do not take responsibility for misuse of
-      information which you voluntarily make available to other users.
+      public. Such information are labeled in their respective management areas.
+      We do not take responsibility for abuse or misuse of information which you
+      make available to other users.
     </p>
 
     <h6 class="text-2xl font-semibold dark:text-white">Account management</h6>
@@ -60,14 +60,14 @@
       use it to contact you regarding your account. You may also manage or erase
       your account through the
       <nuxt-link
-        to="/me"
+        to="/settings"
         class="
           text-orange-srk
           dark:text-blue-srk
           hover:underline
           focus:underline
         "
-        >My account</nuxt-link
+        >Settings</nuxt-link
       >
       page at any time. These are some of the basic scenarios regarding which we
       may email you:
@@ -138,6 +138,13 @@
         >https://www.salesforce.com/company/privacy</a
       >
       for more information.
+    </p>
+
+    <h6 class="text-2xl font-semibold dark:text-white">Use of Yelp data</h6>
+    <p>
+      Restaurant metadata is made available to this app by Yelp in accordance to
+      their guidelines and agreements. We provide a link to the Yelp page for
+      each destination, which identifies the traffic as coming from us.
     </p>
   </div>
 </template>

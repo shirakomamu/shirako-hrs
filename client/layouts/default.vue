@@ -104,7 +104,12 @@ export default defineComponent({
       });
     });
 
-    return { refreshing, registration, updateExists, refreshApp };
+    return {
+      refreshing,
+      registration,
+      updateExists,
+      refreshApp,
+    };
   },
 });
 </script>

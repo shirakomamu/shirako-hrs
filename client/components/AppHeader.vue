@@ -1,13 +1,12 @@
 <template>
   <div class="nav flex items-center px-8">
     <div class="justify-start items-center">
-      <nuxt-link
-        v-slot="{ navigate }"
-        to="/"
-        class="space-x-4 flex items-center"
-        custom
-      >
-        <div class="pointer" @click="navigate" @keypress.enter="navigate">
+      <nuxt-link v-slot="{ navigate }" :to="!self ? '/' : '/dashboard'" custom>
+        <div
+          class="pointer space-x-4 flex flex-row items-center"
+          @click="navigate"
+          @keypress.enter="navigate"
+        >
           <img class="app-icon" alt="App logo" width="32" height="32" />
           <span class="font-semibold show-when-wide dark:text-white">{{
             appName
@@ -44,11 +43,16 @@
           <div class="flex flex-row gap-8 items-center">
             <nuxt-link
               v-if="emailVerified"
+              v-slot="{ navigate }"
               to="/dashboard"
-              class="text-orange-srk dark:text-blue-srk"
-              ><Dashboard class="icon-inline" />
-              <span class="hover:underline focus:underline"
-                >Dashboard</span
+              custom
+              ><ComboButton
+                class="p-0 text-orange-srk dark:text-blue-srk"
+                @click="navigate"
+                ><Dashboard class="icon-inline" />
+                <span class="hover:underline focus:underline"
+                  >Dashboard</span
+                ></ComboButton
               ></nuxt-link
             >
             <button class="p-0" @click="showPopup">
@@ -78,15 +82,6 @@
                 ><Person class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Profile</span
-                ></nuxt-link
-              >
-              <nuxt-link
-                v-if="emailVerified"
-                to="/friends"
-                class="text-orange-srk dark:text-blue-srk"
-                ><People class="icon-inline" />
-                <span class="hover:underline focus:underline"
-                  >Friends</span
                 ></nuxt-link
               >
               <nuxt-link
@@ -124,7 +119,6 @@ import {
 import useSelf from "client/composables/useSelf";
 import Dashboard from "client/components/icons/Dashboard.vue";
 import Logout from "client/components/icons/Logout.vue";
-import People from "client/components/icons/People.vue";
 import Person from "client/components/icons/Person.vue";
 import Settings from "client/components/icons/Settings.vue";
 import hrbacCan from "common/utils/hrbacCan";
@@ -135,7 +129,6 @@ export default defineComponent({
   components: {
     Dashboard,
     Logout,
-    People,
     Person,
     Settings,
   },
@@ -157,6 +150,10 @@ export default defineComponent({
       window.location.href = "/api/auth/logout";
     };
 
+    // const onDashboardClick = () => {
+    //   context.$emitter.emit("go-to-dashboard");
+    // };
+
     return {
       appName,
       self,
@@ -166,6 +163,7 @@ export default defineComponent({
       popupVisible,
       showPopup,
       signOut,
+      // onDashboardClick,
     };
   },
 });

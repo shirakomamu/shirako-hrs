@@ -13,7 +13,7 @@
     "
   >
     <div class="grid grid-cols-1 gap-2 place-items-center">
-      <Error class="icon-inline text-red-500" />
+      <Error class="icon-inline text-red-500 h-12 w-12" />
       <p class="text-sm">Verify email to add to list</p>
     </div>
   </div>
@@ -34,9 +34,5 @@ export default defineComponent({
 <style lang="less" scoped>
 .container {
   position: relative;
-}
-.icon-inline {
-  width: 3rem;
-  height: 3rem;
 }
 </style>

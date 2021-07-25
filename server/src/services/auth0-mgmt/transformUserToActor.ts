@@ -15,7 +15,7 @@ export default (userinfo: GetUserResponse) => {
       userinfo.picture ||
       "",
     cohort: null,
-    key: null,
+    key: false,
     rgs: userinfo.email_verified
       ? [RoleGroup.member_verified, ...appRgs]
       : [RoleGroup.member, ...appRgs],

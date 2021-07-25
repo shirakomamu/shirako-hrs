@@ -60,6 +60,7 @@ export default async ({
       term,
       location,
       categories: "restaurants",
+      limit: 50,
     },
   });
 

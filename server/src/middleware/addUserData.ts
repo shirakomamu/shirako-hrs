@@ -5,6 +5,7 @@ import { SrkCookie, AuthType } from "server/services/jwt";
 import Actor from "server/classes/Actor";
 import getUserCached from "server/services/auth0-mgmt/getUserCached";
 import transformUserToActor from "server/services/auth0-mgmt/transformUserToActor";
+import { splitKey, validateKey } from "server/services/api-key";
 
 // .getUserInfo()
 // {
@@ -45,6 +46,41 @@ import transformUserToActor from "server/services/auth0-mgmt/transformUserToActo
 export default async (req: Request, _res: Response, next: NextFunction) => {
   if (!req.locals) {
     req.locals = {};
+  }
+
+  // attempt to authenticate api key first if it's provided
+  const apiKey = req.header("authorization");
+  if (apiKey && apiKey.startsWith("Bearer ")) {
+    try {
+      const token = apiKey.replace("Bearer ", "");
+      const isKeyValid = await validateKey(token);
+
+      if (!isKeyValid) {
+        req.locals.authResult = {
+          authType: AuthType.none,
+        } as SrkCookie;
+        return next();
+      }
+
+      const { sub } = splitKey(token) as { sub: string };
+      const userinfo = await getUserCached({ id: sub });
+
+      req.locals.authResult = {
+        authType: AuthType.auth0,
+        actor: new Actor({
+          ...transformUserToActor(userinfo),
+          key: true,
+        }),
+      } as SrkCookie;
+    } catch (e) {
+      req.locals.authResult = {
+        authType: AuthType.none,
+      } as SrkCookie;
+    } finally {
+      next();
+    }
+
+    return;
   }
 
   if (

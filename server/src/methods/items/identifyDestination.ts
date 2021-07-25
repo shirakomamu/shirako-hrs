@@ -14,11 +14,7 @@ export default async (
   const repo = DI.destinationItemRepo;
   let item = await repo.findOne({ yelpId: id });
 
-  if (
-    !item ||
-    item.updatedAt.getTime() <
-      Date.now() - YELP_BUSINESS_MAX_AGE * 24 * 60 * 60 * 1000
-  ) {
+  if (!item) {
     const r = await businessIdentifyCached({ id });
 
     const timezone = zipToTz(r.location.zip_code);
@@ -37,6 +33,27 @@ export default async (
       hours: r.hours,
       special_hours: r.special_hours,
     });
+
+    await repo.persistAndFlush(item);
+  } else if (
+    item.updatedAt.getTime() <
+    Date.now() - YELP_BUSINESS_MAX_AGE * 24 * 60 * 60 * 1000
+  ) {
+    const r = await businessIdentifyCached({ id });
+
+    const timezone = zipToTz(r.location.zip_code);
+
+    item.name = r.name;
+    item.image_url = r.image_url;
+    item.url = r.url;
+    item.price = r.price || "n/a";
+    item.rating = r.rating;
+    item.review_count = r.review_count;
+    item.display_address = r.location.display_address;
+    item.display_phone = r.display_phone;
+    item.timezone = timezone;
+    item.hours = r.hours;
+    item.special_hours = r.special_hours;
 
     await repo.persistAndFlush(item);
   }

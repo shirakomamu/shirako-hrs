@@ -1,21 +1,7 @@
 <template>
-  <div
-    class="
-      container
-      flex flex-col
-      items-center
-      text-center
-      p-2
-      transition
-      bg-white bg-opacity-50
-      dark:bg-opacity-5
-      hover:bg-opacity-70
-      dark:hover:bg-opacity-10
-    "
-  >
-    <PlaylistAdd class="list-icon opacity-50" />
+  <div class="container flex flex-col items-center text-center p-2 transition">
     <div class="grid grid-cols-1 gap-2 place-items-center my-8 w-full">
-      <Add class="icon-inline" />
+      <PlaylistAdd class="icon-inline h-8 w-8" />
       <p>Create list</p>
     </div>
   </div>
@@ -23,13 +9,11 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-import Add from "client/components/icons/Add.vue";
 import PlaylistAdd from "client/components/icons/PlaylistAdd.vue";
 
 export default defineComponent({
   name: "DestinationListAddAvatar",
   components: {
-    Add,
     PlaylistAdd,
   },
 });
@@ -43,11 +27,5 @@ export default defineComponent({
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  height: 1.5rem;
-  width: 1.5rem;
-}
-.icon-inline {
-  width: 2rem;
-  height: 2rem;
 }
 </style>

@@ -14,16 +14,18 @@ export interface DestinationItemMetadata {
 
 export interface IDestinationItemPayload extends DestinationItemMetadata {
   timezone: string | null;
-  hours: {
-    is_open_now: boolean;
-    hours_type: string;
-    open: {
-      is_overnight: boolean;
-      start: string; // 0000
-      end: string; // 0000
-      day: number; // 0-6 (Mon - Sun)
-    }[];
-  }[];
+  hours:
+    | {
+        is_open_now: boolean;
+        hours_type: string;
+        open: {
+          is_overnight: boolean;
+          start: string; // 0000
+          end: string; // 0000
+          day: number; // 0-6 (Mon - Sun)
+        }[];
+      }[]
+    | null;
   special_hours: {
     date: string; // yyyy-MM-dd
     is_closed: boolean;

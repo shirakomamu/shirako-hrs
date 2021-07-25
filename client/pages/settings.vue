@@ -351,7 +351,50 @@
             p-8
           "
         >
-          <div class="flex flex-col sm:flex-row items-center gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-grow">
+              <label class="font-semibold dark:text-white">API access</label>
+              <p class="text-sm">
+                Use a bearer token to access your account programatically.
+              </p>
+            </div>
+            <Loader v-if="isApiStateLoading" class="icon-inline" />
+            <template v-else>
+              <ComboButton
+                v-if="!tokenCreatedOn"
+                alt="Create token"
+                class="text-sm bg-blue-srk text-white w-full sm:w-auto"
+                :loading="isCreatingApiToken"
+                :disabled="!emailVerified || isCreatingApiToken"
+                @click="createApiToken"
+                >Create token</ComboButton
+              >
+              <template v-else>
+                <ComboButton
+                  alt="Rotate token"
+                  class="text-sm bg-orange-srk text-white w-full sm:w-auto"
+                  :loading="isCreatingApiToken"
+                  :disabled="
+                    !emailVerified || isCreatingApiToken || isDeletingApiToken
+                  "
+                  @click="createApiToken"
+                  >Rotate token</ComboButton
+                >
+                <ComboButton
+                  alt="Delete token"
+                  class="text-sm bg-red-500 text-white w-full sm:w-auto"
+                  :loading="isDeletingApiToken"
+                  :disabled="
+                    !emailVerified || isCreatingApiToken || isDeletingApiToken
+                  "
+                  @click="deleteApiToken"
+                  >Delete token</ComboButton
+                >
+              </template>
+            </template>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <div class="flex-grow">
               <label class="font-semibold dark:text-white"
                 >Delete my account</label
@@ -375,6 +418,60 @@
           </div>
         </div>
       </div>
+
+      <Modal
+        :visible="showApiKeyModal"
+        container-class="p-8 grid grid-cols-1 place-items-center"
+        @hide="onCloseApiKeyModal"
+      >
+        <div class="p-8 bg-gray-200 dark:bg-gray-700 grid grid-cols-1 gap-4">
+          <h6 class="text-lg font-semibold dark:text-white">API key created</h6>
+          <p>Your API key has been created.</p>
+          <Drop
+            :visible="copyKeyPopupVisible"
+            container-class="p-4 drop-bottom drop-right bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg"
+            :close-after="2000"
+            @hide="copyKeyPopupVisible = false"
+          >
+            <template #default>
+              <pre
+                class="
+                  text-xs
+                  bg-black
+                  text-white
+                  bg-opacity-50
+                  p-2
+                  overflow-x-auto overflow-y-hidden
+                "
+              ><button type="button" alt="Copy to clipboard" class="p-0 mr-2" @click="copyApiKeyToClipboard"><ContentCopy class="icon-inline" /></button>{{ apiKeyValue }}</pre>
+            </template>
+            <template #tooltip>
+              <p class="text-xs">Token copied to clipboard.</p>
+            </template>
+          </Drop>
+          <p>
+            Include it as an
+            <span class="font-semibold font-mono">Authorization</span> header in
+            your HTTP requests:
+          </p>
+          <pre
+            class="
+              text-xs
+              bg-black
+              text-white
+              bg-opacity-50
+              p-2
+              overflow-x-auto overflow-y-hidden
+            "
+          >
+Authorization: Bearer {{ apiKeyValue }}</pre
+          >
+          <p>Please store this key securely. It will not be shown again.</p>
+          <p class="text-orange-srk">
+            This API key grants access to your entire account!
+          </p>
+        </div>
+      </Modal>
 
       <Modal
         :visible="showDeleteConfirmationModal"
@@ -443,8 +540,11 @@ import {
   nextTick,
   useStore,
   watch,
+  onMounted,
 } from "@nuxtjs/composition-api";
+import ContentCopy from "client/components/icons/ContentCopy.vue";
 import Edit from "client/components/icons/Edit.vue";
+import Loader from "client/components/icons/Loader.vue";
 import Input from "client/components/Input.vue";
 import uniqueId from "common/utils/uniqueId";
 import {
@@ -452,6 +552,8 @@ import {
   IResetPasswordPayload,
   IUpdateUserPayload,
   IVerifyEmailPayload,
+  ICheckApiKeyPayload,
+  ICreateApiKeyPayload,
 } from "common/types/api";
 import { ListVisibility, FriendRequestPrivacy } from "common/enums";
 import { Role } from "common/enums/hrbac";
@@ -468,7 +570,9 @@ import {
 
 export default defineComponent({
   components: {
+    ContentCopy,
     Edit,
+    Loader,
   },
 
   meta: {
@@ -878,7 +982,6 @@ export default defineComponent({
       }
     };
 
-    // todo: add confirmation
     const requestAccountDelete = async () => {
       isAccountDeleteLoading.value = true;
 
@@ -908,6 +1011,63 @@ export default defineComponent({
     const signOut = () => {
       window.location.href = "/api/auth/logout";
     };
+
+    onMounted(() => identifyApiToken());
+
+    const isApiStateLoading = ref<boolean>(true);
+    const tokenCreatedOn = ref<number | null>(null);
+    const isCreatingApiToken = ref<boolean>(false);
+    const isDeletingApiToken = ref<boolean>(false);
+    const apiKeyValue = ref<string | null>(null);
+    const identifyApiToken = async () => {
+      isApiStateLoading.value = true;
+      const r = await api<ICheckApiKeyPayload>({
+        method: "get",
+        url: "/api/auth/me/apikey",
+      });
+      isApiStateLoading.value = false;
+
+      if (r.ok) {
+        tokenCreatedOn.value = r.payload.createdAt;
+      }
+    };
+    const createApiToken = async () => {
+      isCreatingApiToken.value = true;
+      const r = await api<ICreateApiKeyPayload>({
+        method: "post",
+        url: "/api/auth/me/apikey",
+      });
+      isCreatingApiToken.value = false;
+
+      if (r.ok) {
+        tokenCreatedOn.value = r.payload.createdAt;
+
+        apiKeyValue.value = r.payload.key;
+        showApiKeyModal.value = true;
+      }
+    };
+    const deleteApiToken = async () => {
+      isDeletingApiToken.value = true;
+      const r = await api<void>({
+        method: "delete",
+        url: "/api/auth/me/apikey",
+      });
+      isDeletingApiToken.value = false;
+
+      if (r.ok) {
+        tokenCreatedOn.value = null;
+      }
+    };
+    const showApiKeyModal = ref<boolean>(false);
+    const onCloseApiKeyModal = () => {
+      showApiKeyModal.value = false;
+      apiKeyValue.value = null;
+    };
+    const copyApiKeyToClipboard = async () => {
+      await navigator.clipboard.writeText(apiKeyValue.value || "");
+      copyKeyPopupVisible.value = true;
+    };
+    const copyKeyPopupVisible = ref<boolean>(false);
 
     return {
       usernameInput,
@@ -976,6 +1136,20 @@ export default defineComponent({
       signOut,
       onShowDeleteConfirmationModal,
       usernameValidator,
+
+      // api
+      isApiStateLoading,
+      tokenCreatedOn,
+      isCreatingApiToken,
+      isDeletingApiToken,
+      identifyApiToken,
+      createApiToken,
+      deleteApiToken,
+      showApiKeyModal,
+      apiKeyValue,
+      onCloseApiKeyModal,
+      copyApiKeyToClipboard,
+      copyKeyPopupVisible,
     };
   },
   // required for useMeta to work

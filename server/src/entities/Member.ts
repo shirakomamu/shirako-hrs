@@ -1,10 +1,12 @@
 import { Collection, EntitySchema } from "@mikro-orm/core";
+import { ApiKey } from "./ApiKey";
 import { BaseEntity } from "./BaseEntity";
 import { DestinationList } from "./DestinationList";
 import { Friend } from "./Friend";
 
 export class Member extends BaseEntity {
   sub: string; // id from idp
+  apiKey!: ApiKey;
   destinationLists = new Collection<DestinationList>(this);
   outgoingFriends = new Collection<Friend>(this);
   incomingFriends = new Collection<Friend>(this);
@@ -52,6 +54,13 @@ export default new EntitySchema<Member, BaseEntity>({
   class: Member,
   properties: {
     sub: { type: String, unique: true },
+    apiKey: {
+      entity: () => ApiKey,
+      reference: "1:1",
+      nullable: true,
+      inversedBy: "owner",
+      orphanRemoval: true,
+    },
     destinationLists: {
       entity: () => DestinationList,
       reference: "1:m",
