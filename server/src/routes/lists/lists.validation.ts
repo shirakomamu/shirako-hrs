@@ -1,5 +1,5 @@
 import { checkSchema } from "express-validator";
-import { YelpIdParamSchema } from "../items/items.param.validation";
+import { YelpIdParamSchema } from "server/routes/items/items.param.validation";
 import {
   DestinationListIdParamSchema,
   ListDescriptionOptionalParamSchema,

@@ -25,16 +25,14 @@
     <div
       class="flex flex-col flex-grow justify-center"
       :class="{
-        'pt-8': $route.path !== '/',
-        'pb-8': $route.path !== '/',
+        'py-8': $route.path !== '/',
       }"
     >
       <transition name="fade" mode="out-in">
         <Nuxt
           class="flex-1 w-full mx-auto"
           :class="{
-            'px-8': $route.path !== '/',
-            'max-w-screen-2xl': $route.path !== '/',
+            'px-8 max-w-screen-2xl': $route.path !== '/',
           }"
         />
       </transition>

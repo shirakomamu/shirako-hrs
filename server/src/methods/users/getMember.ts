@@ -2,9 +2,8 @@ import { ListVisibility } from "common/enums";
 import { IMemberPayload } from "common/types/api";
 import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
-import getUserCached from "server/services/auth0-mgmt/getUserCached";
-import transformUserToSafeActor from "server/services/auth0-mgmt/transformUserToSafeActor";
 import { SrkCookie } from "server/services/jwt";
+import _getIdentityMapFromUsername from "server/methods/auth/_getIdentityMapFromUsername";
 
 export default async (
   authResult: SrkCookie,
@@ -14,9 +13,12 @@ export default async (
     throw new SrkError("badRequest");
   }
 
-  const targetUser = transformUserToSafeActor(
-    await getUserCached({ username })
-  );
+  const targetUserMap = await _getIdentityMapFromUsername([username]);
+  const targetUser = targetUserMap[username];
+
+  if (!targetUser) {
+    throw new SrkError("resourceInvalid");
+  }
 
   const [self, target] = await Promise.all([
     authResult.actor
@@ -61,12 +63,8 @@ export default async (
 
   return {
     username,
-    nickname: targetUser.nickname || username,
+    nickname: targetUser.nickname,
     avatar: targetUser.avatar,
-    hasFriendRequest: self
-      ? target.pendingIncomingFriends.includes(self)
-      : false,
-    isFriend: self ? target.confirmedFriends.includes(self) : false,
     isAcceptingFriends: targetUser.isAcceptingFriends,
     lists,
   };

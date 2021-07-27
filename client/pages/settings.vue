@@ -355,7 +355,8 @@
             <div class="flex-grow">
               <label class="font-semibold dark:text-white">API access</label>
               <p class="text-sm">
-                Use a bearer token to access your account programatically.
+                Use a bearer token to access your account programatically. Note:
+                Undocumented APIs may change without notice at any time.
               </p>
             </div>
             <Loader v-if="isApiStateLoading" class="icon-inline" />
@@ -371,14 +372,14 @@
               >
               <template v-else>
                 <ComboButton
-                  alt="Rotate token"
+                  alt="Refresh token"
                   class="text-sm bg-orange-srk text-white w-full sm:w-auto"
                   :loading="isCreatingApiToken"
                   :disabled="
                     !emailVerified || isCreatingApiToken || isDeletingApiToken
                   "
                   @click="createApiToken"
-                  >Rotate token</ComboButton
+                  >Refresh token</ComboButton
                 >
                 <ComboButton
                   alt="Delete token"

@@ -2,6 +2,7 @@ import { Model } from "@vuex-orm/core";
 import { AxiosRequestConfig } from "axios";
 import { IMemberPayload, ISrkResponse } from "common/types/api";
 import DestinationListModel from "./DestinationList.model";
+import FriendModel from "./Friend.model";
 import VgtParamModel from "./VgtParam.model";
 
 interface Meta {
@@ -15,8 +16,10 @@ export default class extends Model {
   public username!: string;
   public nickname!: string;
   public avatar!: string;
-  public hasFriendRequest!: boolean;
-  public isFriend!: boolean;
+  // public pendingFriendRequestFrom!: boolean;
+  // public pendingFriendRequestTo!: boolean;
+  // public isFriend!: boolean;
+  public friendStatus!: FriendModel;
   public isAcceptingFriends!: boolean;
   public lists!: DestinationListModel[];
 
@@ -25,8 +28,10 @@ export default class extends Model {
       username: this.string(null),
       nickname: this.string(null),
       avatar: this.string(null),
-      hasFriendRequest: this.boolean(false),
-      isFriend: this.boolean(false),
+      // pendingFriendRequestFrom: this.boolean(false),
+      // pendingFriendRequestTo: this.boolean(false),
+      // isFriend: this.boolean(false),
+      friendStatus: this.hasOne(FriendModel, "username"),
       isAcceptingFriends: this.boolean(false),
       lists: this.hasMany(DestinationListModel, "owner"),
     };
@@ -50,20 +55,11 @@ export default class extends Model {
     return this.getMeta().fetching || false;
   }
 
-  public static async apiSendFriendRequest(_username: string) {
-    return await null;
-  }
-
-  public static async apiConfirmFriendRequest(_username: string) {
-    return await null;
-  }
-
-  public static async apiDeclineFriendRequest(_username: string) {
-    return await null;
-  }
-
   public static async apiFetch(username: string) {
-    const storedData = this.query().with("lists").find(username);
+    const storedData = this.query()
+      .with("lists")
+      .with("friendStatus")
+      .find(username.toLowerCase());
 
     if (!storedData) {
       this.fetching = true;
@@ -79,12 +75,15 @@ export default class extends Model {
           data: response.payload,
         });
 
-        return response.payload;
+        return this.query()
+          .with("lists")
+          .with("friendStatus")
+          .find(username.toLowerCase());
       }
 
       return null;
     } else {
-      return storedData.$toJson() as IMemberPayload;
+      return storedData;
     }
   }
 

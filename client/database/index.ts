@@ -3,6 +3,7 @@ import {
   DestinationItemModel,
   DestinationListItemModel,
   DestinationListModel,
+  FriendModel,
   MemberModel,
   VgtParamModel,
 } from "client/models";
@@ -13,5 +14,6 @@ database.register(MemberModel);
 database.register(DestinationListModel);
 database.register(DestinationItemModel);
 database.register(DestinationListItemModel);
+database.register(FriendModel);
 
 export default database;

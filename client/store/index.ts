@@ -1,3 +1,5 @@
+import FriendModel from "client/models/Friend.model";
+import { ISelfIdentifyPayload, ISrkResponse } from "common/types/api";
 import { Request, Response } from "express";
 import { GetterTree, ActionTree, MutationTree } from "vuex";
 
@@ -58,6 +60,9 @@ export const actions: ActionTree<RootState, RootState> = {
 
     // console.log("Final");
     // commit("auth/setActor", savedStore.auth.actor);
-    return await dispatch("auth/fetch");
+    const r: ISrkResponse<ISelfIdentifyPayload> = await dispatch("auth/fetch");
+    if (r.ok && r.payload.actor?.id) {
+      await this.$db().model(FriendModel).apiLoad();
+    }
   },
 };

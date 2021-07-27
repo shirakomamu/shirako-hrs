@@ -37,7 +37,7 @@
     "hashids": "^2.2.8",
     "ioredis": "^4.27.5",
     "javascript-time-ago": "^2.3.8",
-    "js-cookie": "^2.2.1",
+    "js-cookie": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.3",
     "lucene-escape-query": "^1.0.1",

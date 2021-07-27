@@ -1,8 +1,7 @@
 import { Router } from "express";
 
-// Error catcher
+// Send responses if it's available
 import responseSender from "server/middleware/responseSender";
-import finalHandler from "server/middleware/finalHandler";
 
 // API routes
 import auth from "server/routes/auth";
@@ -21,6 +20,5 @@ router.use("/items", items);
 router.use("/neurons", neurons);
 router.use(responseSender);
 router.use(catchall);
-router.use(finalHandler);
 
 export default router;

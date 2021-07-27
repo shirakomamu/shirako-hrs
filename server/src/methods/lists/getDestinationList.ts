@@ -1,7 +1,6 @@
 import { GetListDto } from "common/dto/lists";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
-import transformUserToSafeActor from "server/services/auth0-mgmt/transformUserToSafeActor";
 import getUserCached from "server/services/auth0-mgmt/getUserCached";
 import { ListVisibility } from "common/enums";
 import { IDestinationListPayload } from "common/types/api";
@@ -14,7 +13,7 @@ export default async (
   const repo = DI.destinationListRepo;
   const memberRepo = DI.memberRepo;
 
-  const [targetUserCached, user] = await Promise.all([
+  const [targetUser, user] = await Promise.all([
     getUserCached({ username }),
     authResult.actor
       ? memberRepo.findOne({ sub: authResult.actor.id }, [
@@ -26,7 +25,7 @@ export default async (
 
   const confirmedFriends = user?.confirmedFriends.map((e) => e.id) || [];
 
-  const targetUser = transformUserToSafeActor(targetUserCached);
+  // const targetUser = transformUserToSafeActor(targetUserCached);
 
   const orArray: object[] = [
     // condition: visible to anyone
@@ -60,7 +59,7 @@ export default async (
     {
       id,
       owner: {
-        sub: targetUser.id,
+        sub: targetUser.user_id || "",
       },
       $or: orArray,
     },

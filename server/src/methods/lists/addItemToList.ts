@@ -4,7 +4,7 @@ import { SrkCookie } from "server/services/jwt";
 import { IDestinationListPayload } from "common/types/api";
 import { AddItemToListDto } from "common/dto/lists";
 import { MAX_ITEMS_PER_LIST } from "server/config/dataLimits";
-import identifyDestination from "../items/identifyDestination";
+import identifyDestination from "server/methods/items/identifyDestination";
 import mapItems from "./_mapItems";
 
 export default async (

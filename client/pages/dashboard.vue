@@ -131,8 +131,7 @@
             <span
               class="transition opacity-50"
               :class="{
-                'text-orange-srk': maxNeuronsReached,
-                'opacity-100': maxNeuronsReached,
+                'text-orange-srk opacity-100': maxNeuronsReached,
               }"
               >({{ selectedLists.length }} / {{ maxNeurons }})</span
             >

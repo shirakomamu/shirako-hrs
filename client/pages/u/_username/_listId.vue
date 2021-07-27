@@ -239,7 +239,7 @@
             class="text-sm border border-blue-srk text-blue-srk"
             :disabled="isEditingList"
             :loading="isEditingList"
-            >Edit list</ComboButton
+            ><Edit class="icon-inline" /> Edit list</ComboButton
           >
         </form>
       </Modal>
