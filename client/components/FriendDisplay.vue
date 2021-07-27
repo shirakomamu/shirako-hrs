@@ -1,5 +1,15 @@
 <template>
-  <div class="gap-2 bg-white bg-opacity-50 dark:bg-opacity-5 p-2 max-w-2xl">
+  <div
+    class="
+      gap-2
+      bg-white bg-opacity-50
+      dark:bg-opacity-5
+      p-4
+      sm:(py-2
+      px-4)
+      max-w-2xl
+    "
+  >
     <div class="flex flex-col sm:flex-row items-center gap-2">
       <div>
         <img
@@ -26,8 +36,8 @@
         v-if="mode === FriendStatus.confirmed"
         class="bg-red-500 text-white text-sm w-full sm:w-auto flex-shrink-0"
         alt="Remove friend"
-        :loading="isLoading"
-        :disabled="isLoading"
+        :loading="isRemoving"
+        :disabled="isAdding || isRemoving"
         @click="onRemove"
         ><PersonRemove class="icon-inline" /> Remove</ComboButton
       >
@@ -35,8 +45,8 @@
         v-if="mode === FriendStatus.pendingIncoming"
         class="bg-green-600 text-white text-sm w-full sm:w-auto flex-shrink-0"
         alt="Accept friend request"
-        :loading="isLoading"
-        :disabled="isLoading"
+        :loading="isAdding"
+        :disabled="isAdding || isRemoving"
         @click="onAdd"
         ><Check class="icon-inline" /> Accept</ComboButton
       >
@@ -44,8 +54,8 @@
         v-if="mode === FriendStatus.pendingIncoming"
         class="bg-red-500 text-white text-sm w-full sm:w-auto flex-shrink-0"
         alt="Reject friend request"
-        :loading="isLoading"
-        :disabled="isLoading"
+        :loading="isRemoving"
+        :disabled="isAdding || isRemoving"
         @click="onRemove"
         ><NotInterested class="icon-inline" /> Reject</ComboButton
       >
@@ -53,8 +63,8 @@
         v-if="mode === FriendStatus.pendingOutgoing"
         class="bg-orange-srk text-white text-sm w-full sm:w-auto flex-shrink-0"
         alt="Cancel friend request"
-        :loading="isLoading"
-        :disabled="isLoading"
+        :loading="isRemoving"
+        :disabled="isAdding || isRemoving"
         @click="onRemove"
         ><Close class="icon-inline" /> Cancel</ComboButton
       >
@@ -102,19 +112,20 @@ export default defineComponent({
     const model = store.$db().model(FriendModel);
 
     const onAdd = async () => {
-      isLoading.value = true;
+      isAdding.value = true;
       await model.apiCreateFriend(props.username);
-      isLoading.value = false;
+      isAdding.value = false;
     };
     const onRemove = async () => {
-      isLoading.value = true;
+      isRemoving.value = true;
       await model.apiDeleteFriend(props.username);
-      isLoading.value = false;
+      isRemoving.value = false;
     };
 
-    const isLoading = ref<boolean>(false);
+    const isAdding = ref<boolean>(false);
+    const isRemoving = ref<boolean>(false); // to separate the accept/reject
 
-    return { FriendStatus, onAdd, onRemove, isLoading };
+    return { FriendStatus, onAdd, onRemove, isAdding, isRemoving };
   },
 });
 </script>

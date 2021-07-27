@@ -23,9 +23,8 @@
         class="
           rounded-full
           bg-black
-          dark:bg-white
-          text-white
-          dark:text-black
+          dark:(bg-white
+          text-black) text-white
           font-semibold
           py-1
           px-4

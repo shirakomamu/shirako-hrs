@@ -37,7 +37,8 @@
                 class="
                   icon-inline
                   text-red-500
-                  md:text-white md:dark:text-red-500
+                  md:(text-white
+                  dark:text-red-500)
                 "
               />
               Please verify your email address →</nuxt-link
@@ -132,8 +133,27 @@ export default defineComponent({
 
 .tag-contents {
   background-color: transparent;
+  z-index: 2;
+}
 
-  @media (min-width: theme("screens.md")) {
+.srk-icon {
+  content: url("client/assets/images/icons/icon-512xt.png");
+
+  @media (prefers-color-scheme: dark) {
+    content: url("client/assets/images/icons/icon-512ft.png");
+  }
+}
+
+@screen md {
+  .srk-icon {
+    content: url("client/assets/images/icons/icon-512tt.png");
+
+    @media (prefers-color-scheme: dark) {
+      content: url("client/assets/images/icons/icon-512ft.png");
+    }
+  }
+
+  .tag-contents {
     margin-left: 33%;
     background-color: lighten(desaturate(#ff7600, 30%), 5%);
     color: white;
@@ -142,20 +162,6 @@ export default defineComponent({
       background-color: rgba(25, 25, 25, 1);
       color: unset;
     }
-  }
-
-  z-index: 2;
-}
-
-.srk-icon {
-  content: url("client/assets/images/icons/icon-512xt.png");
-
-  @media (min-width: theme("screens.md")) {
-    content: url("client/assets/images/icons/icon-512tt.png");
-  }
-
-  @media (prefers-color-scheme: dark) {
-    content: url("client/assets/images/icons/icon-512ft.png");
   }
 }
 </style>

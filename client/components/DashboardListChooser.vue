@@ -3,11 +3,11 @@
     <div
       class="
         flex flex-col
-        sm:flex-row
+        sm:(flex-row
+        items-center)
         bg-white bg-opacity-50
         dark:bg-opacity-5
         p-4
-        sm:items-center
         gap-4
       "
     >

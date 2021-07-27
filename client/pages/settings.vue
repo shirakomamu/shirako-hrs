@@ -26,7 +26,7 @@
 
           <div class="flex flex-row items-center gap-4">
             <ComboButton
-              class="text-sm bg-black dark:bg-white text-white dark:text-black"
+              class="text-sm bg-black dark:(bg-white text-black) text-white"
               alt="Resend verification email"
               :loading="isSendingVerificationEmail"
               :disabled="isSendingVerificationEmail"
@@ -197,9 +197,8 @@
                   class="
                     text-sm
                     bg-black
-                    dark:bg-white
-                    text-white
-                    dark:text-black
+                    dark:(bg-white
+                    text-black) text-white
                     w-full
                     sm:w-auto
                   "
@@ -231,7 +230,7 @@
             p-8
           "
         >
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label
                 class="font-semibold dark:text-white"
@@ -261,7 +260,7 @@
             </select>
           </div>
 
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label
                 class="font-semibold dark:text-white"
@@ -305,7 +304,7 @@
             p-8
           "
         >
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label
                 class="font-semibold dark:text-white"
@@ -351,7 +350,7 @@
             p-8
           "
         >
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label class="font-semibold dark:text-white">API access</label>
               <p class="text-sm">
@@ -395,7 +394,7 @@
             </template>
           </div>
 
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label class="font-semibold dark:text-white"
                 >Delete my account</label

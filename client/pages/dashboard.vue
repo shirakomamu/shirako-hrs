@@ -108,10 +108,9 @@
             "
           >
             <DashboardListChooserAddList />
-            <Loader
-              v-if="isLoading"
-              class="text-orange-srk dark:text-blue-srk h-8 w-8"
-            />
+            <div v-if="isLoading">
+              <Loader class="text-orange-srk dark:text-blue-srk h-8 w-8" />
+            </div>
             <p v-else-if="!unselectedLists.length && !isLoading" class="m-2">
               No lists available.
             </p>

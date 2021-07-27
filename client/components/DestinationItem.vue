@@ -81,7 +81,7 @@
       </template>
     </Drop>
 
-    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+    <div class="flex flex-col sm:(flex-row items-center) gap-4">
       <div class="grid grid-cols-1 text-sm gap-2">
         <div>
           <template v-if="display_address">

@@ -9,9 +9,8 @@
       h-full
       transition
       bg-white bg-opacity-50
-      dark:bg-opacity-5
-      hover:bg-opacity-70
-      dark:hover:bg-opacity-10
+      dark:(bg-opacity-5
+      hover:bg-opacity-10) hover:bg-opacity-70
     "
   >
     <div class="grid grid-cols-1 gap-2 place-items-center">

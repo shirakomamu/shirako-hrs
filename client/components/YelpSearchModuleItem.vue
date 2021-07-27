@@ -35,7 +35,7 @@
         </a>
       </div>
 
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <div class="flex flex-col sm:(flex-row items-center) gap-2">
         <div class="grid grid-cols-1 text-sm">
           <template v-if="display_address">
             <p v-for="(line, index) in display_address" :key="index">

@@ -228,6 +228,7 @@
               :key="'friend-confirmed-' + index"
               :username="friend.member.username"
               :nickname="friend.member.nickname"
+              :avatar="friend.member.avatar"
               :mode="FriendStatus.confirmed"
             />
           </div>
@@ -245,6 +246,7 @@
                 :key="'friend-pending-in-' + index"
                 :username="friend.member.username"
                 :nickname="friend.member.nickname"
+                :avatar="friend.member.avatar"
                 :mode="FriendStatus.pendingIncoming"
               />
             </div>
@@ -258,6 +260,7 @@
                 :key="'friend-pending-out-' + index"
                 :username="friend.member.username"
                 :nickname="friend.member.nickname"
+                :avatar="friend.member.avatar"
                 :mode="FriendStatus.pendingOutgoing"
               />
             </div>
@@ -375,7 +378,9 @@ export default defineComponent({
     const friendStatus = computed(
       () => friendModel.find(member.value?.username || "")?.status
     );
-    const allFriends = computed(() => friendModel.query().with("member").all());
+    const allFriends = computed(() =>
+      friendModel.query().with("member").orderBy("username").all()
+    );
     const confirmedFriends = computed(() =>
       allFriends.value.filter((e) => e.status === FriendStatus.confirmed)
     );
@@ -388,6 +393,7 @@ export default defineComponent({
 
     onMounted(() => {
       pIndex.value = Math.floor(Math.random() * p.value.length);
+      store.$db().model(FriendModel).apiLoad();
     });
 
     const isCreateListModalVisible = ref<boolean>(false);

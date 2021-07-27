@@ -42,9 +42,8 @@
       class="
         bg-flat
         border-t border-gray-300
-        dark:border-gray-600
-        bg-white
-        dark:bg-gray-800
+        dark:(border-gray-600
+        bg-gray-800) bg-white
         h-12
       "
     />

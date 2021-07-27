@@ -8,9 +8,9 @@
       p-2
       transition
       bg-white bg-opacity-50
-      dark:bg-opacity-5
       hover:bg-opacity-70
-      dark:hover:bg-opacity-10
+      dark:(bg-opacity-5
+      hover:bg-opacity-10)
       h-full
     "
   >

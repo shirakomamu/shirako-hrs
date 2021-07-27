@@ -4,7 +4,7 @@
     :alt="tabDisplayText"
     class="relative transition"
     :class="{
-      'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 focus:bg-gray-400 dark:hover:bg-gray-500 dark:focus:bg-gray-500':
+      'bg-gray-300 dark:(bg-gray-600 hover:bg-gray-500 focus:bg-gray-500) hover:bg-gray-400 focus:bg-gray-400':
         !selected,
       'bg-gray-400 dark:bg-gray-500': selected,
     }"
