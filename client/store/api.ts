@@ -12,16 +12,12 @@ export const actions: ActionTree<ModuleState, ModuleState> = {
     { ...requestArgs }: AxiosRequestConfig
   ): Promise<ISrkResponse> {
     try {
-      console.log("Sending axios request", requestArgs);
       const response: AxiosResponse<ISrkResponse> = await this.$axios({
         ...requestArgs,
       });
 
       return response.data;
     } catch (error: any) {
-      console.log("Axios error", error);
-      console.log(error.response?.status);
-      console.log(error.response?.data);
       const axiosError = error as AxiosError<ISrkResponse>;
       if (axiosError.response?.status === 401) {
         // commit("auth/setJwtValid", false, { root: true });

@@ -119,8 +119,10 @@ export default {
   privateRuntimeConfig: {
     axios: {
       baseURL:
-        process.env.BASE_URL ||
-        "http://" + serverConfig.host + ":" + serverConfig.port,
+        `http${process.env.NODE_ENV === "production" ? "s" : ""}://` +
+        serverConfig.host +
+        ":" +
+        serverConfig.port,
     },
   },
 
@@ -207,7 +209,11 @@ export default {
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    baseURL: "http://" + serverConfig.host + ":" + serverConfig.port,
+    baseURL:
+      `http${process.env.NODE_ENV === "production" ? "s" : ""}://` +
+      serverConfig.host +
+      ":" +
+      serverConfig.port,
   },
 
   // https://windicss.org/integrations/nuxt.html
