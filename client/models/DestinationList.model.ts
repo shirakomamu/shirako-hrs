@@ -2,10 +2,12 @@ import { Model } from "@vuex-orm/core";
 import { AxiosRequestConfig } from "axios";
 import {
   AddItemToListDto,
+  AddUserToListDto,
   CreateListDto,
   EditListDto,
   GetListDto,
   RemoveItemFromListDto,
+  RemoveUserFromListDto,
   SearchListsDto,
 } from "common/dto/lists";
 import { ListVisibility } from "common/enums";
@@ -16,6 +18,8 @@ import {
 } from "common/types/api";
 import DestinationItemModel from "./DestinationItem.model";
 import DestinationListItemModel from "./DestinationListItem.model";
+import DestinationListMemberModel from "./DestinationListMember.model";
+import MemberModel from "./Member.model";
 import VgtParamModel from "./VgtParam.model";
 
 interface Meta {
@@ -32,6 +36,7 @@ export default class extends Model {
   public description!: string | null;
   public visibility!: ListVisibility;
   public items!: DestinationItemModel[];
+  public users!: MemberModel[];
   private itemsLoaded!: boolean;
 
   public static fields() {
@@ -46,6 +51,12 @@ export default class extends Model {
         DestinationListItemModel,
         "listId",
         "itemId"
+      ),
+      users: this.belongsToMany(
+        MemberModel,
+        DestinationListMemberModel,
+        "listId",
+        "username"
       ),
       itemsLoaded: this.boolean(false),
     };
@@ -78,11 +89,9 @@ export default class extends Model {
       });
 
     if (response.ok) {
-      const { items, ...rest } = response.payload;
       this.insertOrUpdate({
         data: {
-          ...rest,
-          items,
+          ...response.payload,
           itemsLoaded: true,
         },
       });
@@ -99,9 +108,12 @@ export default class extends Model {
       });
 
     if (response.ok) {
-      await DestinationListItemModel.delete(
-        (pivot) => pivot.listId === params.id
-      );
+      await Promise.all([
+        DestinationListItemModel.delete((pivot) => pivot.listId === params.id),
+        DestinationListMemberModel.delete(
+          (pivot) => pivot.listId === params.id
+        ),
+      ]);
       await this.delete([params.username, params.id]);
     }
 
@@ -183,19 +195,69 @@ export default class extends Model {
     return response;
   }
 
-  public static async apiAddUserToList(_username: string) {
-    return await null;
-    // POST to /api/lists/:username/:id/members/:shareToUsername
+  public static async apiAddUserToList(params: AddUserToListDto) {
+    const response: ISrkResponse<IDestinationListPayload> =
+      await this.store().dispatch("api/send", {
+        method: "post",
+        url:
+          "/api/lists/" +
+          params.username +
+          "/" +
+          params.id +
+          "/users/" +
+          params.targetUsername,
+      });
+
+    if (response.ok) {
+      this.insertOrUpdate({
+        data: {
+          ...response.payload,
+          itemsLoaded: true,
+        },
+      });
+    }
+
+    return response;
   }
 
-  public static async apiRemoveUserFromList(_username: string) {
-    return await null;
-    // DELETE to /api/lists/:username/:id/members/:shareToUsername
+  public static async apiRemoveUserFromList(params: RemoveUserFromListDto) {
+    const response: ISrkResponse<IDestinationListPayload> =
+      await this.store().dispatch("api/send", {
+        method: "delete",
+        url:
+          "/api/lists/" +
+          params.username +
+          "/" +
+          params.id +
+          "/users/" +
+          params.targetUsername,
+      });
+
+    if (response.ok) {
+      // https://github.com/vuex-orm/vuex-orm/issues/122
+      // relations aren't automatically deleted
+      await DestinationListMemberModel.delete(
+        (pivot) =>
+          pivot.listId === params.id && pivot.username === params.targetUsername
+      );
+      this.update({
+        where: (list) =>
+          list.owner === params.username && list.id === params.id,
+        data: {
+          ...response.payload,
+          itemsLoaded: true,
+        },
+      });
+    }
+
+    return response;
   }
 
   public static async apiFetch(params: GetListDto) {
     const storedData = this.query()
       .with("items")
+      .with("users")
+      .with("users.friendStatus")
       .find([params.username, params.id]);
 
     if (!storedData || !storedData.itemsLoaded) {

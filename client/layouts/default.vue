@@ -25,16 +25,14 @@
     <div
       class="flex flex-col flex-grow justify-center"
       :class="{
-        'pt-8': $route.path !== '/',
-        'pb-8': $route.path !== '/',
+        'py-8': $route.path !== '/',
       }"
     >
       <transition name="fade" mode="out-in">
         <Nuxt
           class="flex-1 w-full mx-auto"
           :class="{
-            'px-8': $route.path !== '/',
-            'max-w-screen-2xl': $route.path !== '/',
+            'px-8 max-w-screen-2xl': $route.path !== '/',
           }"
         />
       </transition>
@@ -44,9 +42,8 @@
       class="
         bg-flat
         border-t border-gray-300
-        dark:border-gray-600
-        bg-white
-        dark:bg-gray-800
+        dark:(border-gray-600
+        bg-gray-800) bg-white
         h-12
       "
     />

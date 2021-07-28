@@ -1,5 +1,5 @@
 import { checkSchema } from "express-validator";
-import { YelpIdParamSchema } from "../items/items.param.validation";
+import { YelpIdParamSchema } from "server/routes/items/items.param.validation";
 import {
   DestinationListIdParamSchema,
   ListDescriptionOptionalParamSchema,
@@ -111,7 +111,10 @@ export const AddItemToDestinationListValidators = [
   }),
 ];
 
-export const RemoveItemFromDestinationListValidators = [
+export const RemoveItemFromDestinationListValidators =
+  AddItemToDestinationListValidators;
+
+export const AddUserToDestinationListValidators = [
   ...checkSchema({
     username: {
       in: ["params"],
@@ -121,9 +124,21 @@ export const RemoveItemFromDestinationListValidators = [
       in: ["params"],
       ...DestinationListIdParamSchema,
     },
-    destinationId: {
+    targetUsername: {
       in: ["params"],
-      ...YelpIdParamSchema,
+      ...UsernameParamSchema,
+      custom: {
+        errorMessage: "Unauthorized user",
+        options: (value: string, { req }) => {
+          if (!req.params?.username) return false;
+          const { username } = req.params;
+
+          return value !== username;
+        },
+      },
     },
   }),
 ];
+
+export const RemoveUserFromDestinationListValidators =
+  AddUserToDestinationListValidators;

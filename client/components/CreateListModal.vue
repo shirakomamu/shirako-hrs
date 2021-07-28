@@ -70,7 +70,7 @@
         class="text-sm border border-blue-srk text-blue-srk"
         :disabled="isCreatingList"
         :loading="isCreatingList"
-        >Create list</ComboButton
+        ><IconsPlaylistAdd class="icon-inline" /> Create list</ComboButton
       >
     </form>
   </Modal>

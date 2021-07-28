@@ -1,7 +1,7 @@
 <template>
   <div
     class="
-      container
+      relative
       grid grid-cols-1
       items-center
       text-center
@@ -13,7 +13,7 @@
     "
   >
     <div class="grid grid-cols-1 gap-2 place-items-center">
-      <Error class="icon-inline text-red-500 h-12 w-12" />
+      <IconsError class="icon-inline text-red-500 h-12 w-12" />
       <p class="text-sm">Verify email to add to list</p>
     </div>
   </div>
@@ -21,18 +21,10 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-import Error from "client/components/icons/Error.vue";
 
 export default defineComponent({
   name: "DestinationItemAddAvatarDisabled",
-  components: {
-    Error,
-  },
 });
 </script>
 
-<style lang="less" scoped>
-.container {
-  position: relative;
-}
-</style>
+<style lang="less" scoped></style>

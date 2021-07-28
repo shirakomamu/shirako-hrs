@@ -29,3 +29,11 @@ export type AddItemToListDto = {
 };
 
 export type RemoveItemFromListDto = AddItemToListDto;
+
+export type AddUserToListDto = {
+  username: string;
+  id: string;
+  targetUsername: string;
+};
+
+export type RemoveUserFromListDto = AddUserToListDto;

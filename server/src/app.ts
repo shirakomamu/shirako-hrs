@@ -3,15 +3,16 @@ import express from "express";
 import cookieParser from "cookie-parser";
 
 // Require middlewares
+import baseRateLimiter from "server/middleware/baseRateLimiter";
 import initializeDi, { DI } from "server/middleware/initializeDi";
 import initializeDb from "server/middleware/initializeDb";
 import auth0 from "server/middleware/auth0";
 import addUserData from "server/middleware/addUserData";
 import preErrorHandler from "server/middleware/preErrorHandler";
+import finalHandler from "server/middleware/finalHandler";
 
 // Routes
 import routes from "server/routes";
-import baseRateLimiter from "./middleware/baseRateLimiter";
 
 // Re-export DI
 export { DI };
@@ -36,6 +37,8 @@ app.use(preErrorHandler);
 
 // Import API Routes
 app.use(routes);
+
+app.use(finalHandler);
 
 // Export express app
 export default {

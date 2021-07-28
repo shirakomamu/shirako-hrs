@@ -85,54 +85,17 @@
         v-if="!isMe"
         class="flex flex-row justify-end gap-4 text-sm items-center"
       >
-        {{
-          `${member.nickname} is currently${
-            isFriend ? "" : " not"
-          } your friend.`
-        }}
-        <ComboButton
-          v-if="isFriend"
-          alt="Remove friend"
-          class="text-sm border border-red-500 text-red-500"
-          :loading="isFriendLoading"
-          :disabled="isFriendLoading"
-        >
-          <PersonRemove class="icon-inline" />
-          Remove as friend</ComboButton
-        >
-        <ComboButton
-          v-else-if="isAcceptingRequests && canAddFriends"
-          alt="Send friend request"
-          class="text-sm border border-blue-srk text-blue-srk"
-          :loading="isFriendLoading"
-          :disabled="isFriendLoading"
-        >
-          <PersonAdd class="icon-inline" />
-          Send friend request</ComboButton
-        >
-        <ComboButton
-          v-else-if="!canAddFriends"
-          class="text-sm border border-blue-srk text-blue-srk"
-          :disabled="true"
-        >
-          <PersonAdd class="icon-inline" />
-          Email verification required</ComboButton
-        >
-        <ComboButton
-          v-else
-          alt="Not accepting friend requests"
-          class="text-sm border border-gray-500 text-gray-500"
-          :disabled="true"
-        >
-          <Block class="icon-inline" />
-          Not accepting friend requests</ComboButton
-        >
+        <FriendStatusButton
+          :username="member.username"
+          :friend-status="friendStatus"
+          :is-accepting-friends="member.isAcceptingFriends"
+        />
       </div>
 
       <div class="grid grid-cols-1 gap-4">
         <div class="flex flex-row gap-4 items-center">
           <h6 class="text-2xl dark:text-white">
-            <List class="icon-inline" /> Lists
+            <IconsList class="icon-inline" /> Lists
           </h6>
         </div>
 
@@ -149,7 +112,8 @@
           <div
             v-if="(destinationLists && destinationLists.length) || isMe"
             class="
-              grid grid-cols-2
+              grid grid-cols-1
+              sm:grid-cols-2
               md:grid-cols-4
               lg:grid-cols-6
               xl:grid-cols-8
@@ -225,14 +189,83 @@
       <div v-if="isMe" class="grid grid-cols-1 gap-4">
         <div class="flex flex-row gap-4 items-center">
           <h6 class="text-2xl dark:text-white">
-            <People class="icon-inline" /> Friends
+            <IconsPeople class="icon-inline" /> Friends
           </h6>
         </div>
 
-        Under construction!
-
-        <!-- Friends list Show confirmed in one tab (with remove button) Show pending
-        (outgoing / incoming) to accept / cancel -->
+        <div
+          class="
+            grid grid-cols-1
+            gap-4
+            items-center
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+          "
+        >
+          <div class="flex flex-row w-full sm:w-auto gap-2">
+            <TabSelector
+              tab-id="friends"
+              tab-name="Friends"
+              :selected="selectedTab === 'friends'"
+              @pick="onPickTab"
+            />
+            <TabSelector
+              :badge-number="pendingIncomingFriends.length"
+              tab-id="pending"
+              tab-name="Pending"
+              :selected="selectedTab === 'pending'"
+              @pick="onPickTab"
+            />
+          </div>
+          <hr />
+          <div v-if="selectedTab === 'friends'" class="grid grid-cols-1 gap-2">
+            <p v-if="!confirmedFriends.length" class="italic">
+              No friends right now.
+            </p>
+            <FriendDisplay
+              v-for="(friend, index) of confirmedFriends"
+              :key="'friend-confirmed-' + index"
+              :username="friend.member.username"
+              :nickname="friend.member.nickname"
+              :avatar="friend.member.avatar"
+              :mode="FriendStatus.confirmed"
+            />
+          </div>
+          <div
+            v-if="selectedTab === 'pending'"
+            class="grid grid-cols-1 lg:grid-cols-2 gap-4"
+          >
+            <div class="space-y-2 text-center sm:text-left">
+              <p class="font-semibold">Incoming requests</p>
+              <p v-if="!pendingIncomingFriends.length" class="italic">
+                No incoming requests.
+              </p>
+              <FriendDisplay
+                v-for="(friend, index) of pendingIncomingFriends"
+                :key="'friend-pending-in-' + index"
+                :username="friend.member.username"
+                :nickname="friend.member.nickname"
+                :avatar="friend.member.avatar"
+                :mode="FriendStatus.pendingIncoming"
+              />
+            </div>
+            <div class="space-y-2 text-center sm:text-left">
+              <p class="font-semibold">Outgoing requests</p>
+              <p v-if="!pendingOutgoingFriends.length" class="italic">
+                No outgoing requests.
+              </p>
+              <FriendDisplay
+                v-for="(friend, index) of pendingOutgoingFriends"
+                :key="'friend-pending-out-' + index"
+                :username="friend.member.username"
+                :nickname="friend.member.nickname"
+                :avatar="friend.member.avatar"
+                :mode="FriendStatus.pendingOutgoing"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <CreateListModal
@@ -242,7 +275,7 @@
     </template>
     <template v-else>
       <div class="grid grid-cols-1 place-items-center">
-        <Loader class="loading text-blue-srk" />
+        <IconsLoader class="loading text-blue-srk" />
       </div>
     </template>
   </div>
@@ -263,29 +296,15 @@ import {
   watch,
 } from "@nuxtjs/composition-api";
 import hrbacCan from "common/utils/hrbacCan";
-import useMember from "client/composables/useMember";
-import Block from "client/components/icons/Block.vue";
-import List from "client/components/icons/List.vue";
-import Loader from "client/components/icons/Loader.vue";
-import People from "client/components/icons/People.vue";
-import PersonAdd from "client/components/icons/PersonAdd.vue";
-import PersonRemove from "client/components/icons/PersonRemove.vue";
 import useSelf from "client/composables/useSelf";
-import { MemberModel } from "client/models";
+import { FriendModel, MemberModel } from "client/models";
+import { FriendStatus } from "common/enums";
 
 export default defineComponent({
   meta: {
     guard: {
       roles: [Role._self_profile],
     } as Guard,
-  },
-  components: {
-    Block,
-    List,
-    Loader,
-    People,
-    PersonAdd,
-    PersonRemove,
   },
   setup() {
     const context = useContext();
@@ -294,33 +313,32 @@ export default defineComponent({
     const store = useStore();
     const model = store.$db().model(MemberModel);
 
-    const member = useMember({
-      username: route.value.params.username,
-    });
+    const member = computed(() =>
+      model
+        .query()
+        .with("lists", (query) => query.orderBy("name"))
+        .with("friendStatus")
+        .find(route.value.params.username)
+    );
 
     watch(
       () => route.value.params.username,
-      async (value: string) => {
-        member.value = null;
+      async (value: string, oldValue: string) => {
+        if (value.toLowerCase() === oldValue.toLowerCase()) return;
         const r = await model.apiFetch(value);
 
         if (!r) {
           return context.error({ statusCode: 404 });
         }
-
-        member.value = r;
       }
     );
 
-    const isFriend = computed(() => member.value?.isFriend);
-    const isAcceptingRequests = computed(
-      () => member.value?.isAcceptingFriends
-    );
+    const isAcceptingFriends = computed(() => member.value?.isAcceptingFriends);
     const destinationLists = computed(() => member.value?.lists);
 
     // self functions
     const isMe = computed(
-      () => member.value?.username === self.value?.username
+      () => route.value.params.username === self.value?.username
     );
     const canAddFriends = computed(() =>
       hrbacCan({ roles: [Role._self_friends] }, self.value)
@@ -345,14 +363,40 @@ export default defineComponent({
       return [false, false, false].map((_e, i) => pIndex.value === i);
     });
 
-    onMounted(() => {
+    const friendModel = store.$db().model(FriendModel);
+    const friendStatus = computed(
+      () => friendModel.find(member.value?.username || "")?.status
+    );
+    const allFriends = computed(() =>
+      friendModel.query().with("member").orderBy("username").all()
+    );
+    const confirmedFriends = computed(() =>
+      allFriends.value.filter((e) => e.status === FriendStatus.confirmed)
+    );
+    const pendingOutgoingFriends = computed(() =>
+      allFriends.value.filter((e) => e.status === FriendStatus.pendingOutgoing)
+    );
+    const pendingIncomingFriends = computed(() =>
+      allFriends.value.filter((e) => e.status === FriendStatus.pendingIncoming)
+    );
+
+    onMounted(async () => {
       pIndex.value = Math.floor(Math.random() * p.value.length);
+      store.$db().model(FriendModel).apiLoad();
+      const r = await model.apiFetch(route.value.params.username);
+
+      if (!r) {
+        return context.error({ statusCode: 404 });
+      }
     });
 
     const isCreateListModalVisible = ref<boolean>(false);
     const onShowCreateListModal = () => {
       isCreateListModalVisible.value = true;
     };
+
+    const selectedTab = ref<string>("friends");
+    const onPickTab = (tabId: string) => (selectedTab.value = tabId);
 
     return {
       route,
@@ -362,8 +406,8 @@ export default defineComponent({
 
       member,
       isMe,
-      isFriend,
-      isAcceptingRequests,
+      friendStatus,
+      isAcceptingFriends,
       isFriendLoading,
 
       canAddFriends,
@@ -373,6 +417,15 @@ export default defineComponent({
 
       isCreateListModalVisible,
       onShowCreateListModal,
+
+      confirmedFriends,
+      pendingOutgoingFriends,
+      pendingIncomingFriends,
+
+      selectedTab,
+      onPickTab,
+
+      FriendStatus,
     };
   },
   // required for useMeta to work

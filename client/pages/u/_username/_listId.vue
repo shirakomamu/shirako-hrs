@@ -9,8 +9,8 @@
           focus:underline
         "
         :to="`/u/${route.params.username}`"
-        ><ArrowBack class="icon-inline" /> Back to {{ route.params.username }}'s
-        profile</nuxt-link
+        ><IconsArrowBack class="icon-inline" /> Back to
+        {{ route.params.username }}'s profile</nuxt-link
       >
       <div class="space-x-2">
         <h6 class="text-2xl dark:text-white inline">{{ title }}</h6>
@@ -18,15 +18,65 @@
           v-if="canModifyList && isMe"
           class="p-0 text-orange-srk dark:text-blue-srk text-sm"
           @click="onShowEditListModal"
-          ><Edit class="icon-inline" /> Edit</ComboButton
+          ><IconsEdit class="icon-inline" /> Edit</ComboButton
         >
       </div>
       <ListVisibilityIndicator :visibility="list.visibility" class="inline" />
+
+      <div v-if="list.visibility === ListVisibility.list && isMe">
+        <div
+          class="
+            bg-gray-200
+            dark:bg-gray-700
+            p-4
+            grid grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-3
+            xl:grid-cols-4
+            2xl:grid-cols-5
+            gap-4
+          "
+        >
+          <ComboButton
+            v-if="canModifyList"
+            class="p-0"
+            @click="showMemberSearchModal = true"
+            ><DestinationUserAddAvatar
+          /></ComboButton>
+          <nuxt-link
+            v-else
+            v-slot="{ navigate }"
+            key="verifRequiredShare"
+            to="/settings"
+            custom
+          >
+            <ComboButton
+              class="p-0 h-full w-full"
+              alt="Email verification required"
+              @click="navigate"
+            >
+              <DestinationUserAddAvatarDisabled />
+            </ComboButton>
+          </nuxt-link>
+          <DestinationUser
+            v-for="(user, index) in list.users.sort()"
+            :key="'list-users-' + index"
+            :username="user.username"
+            :nickname="user.nickname"
+            :avatar="user.avatar"
+            :is-friend="user.friendStatus.status === FriendStatus.confirmed"
+            :is-removing="loadingUserIds.includes(user.username)"
+            :show-delete-button="canModifyList"
+            @pick="onRemoveUser"
+          />
+        </div>
+      </div>
+
       <p :class="{ italic: !list.description }">
         {{ list.description || "No description provided." }}
       </p>
-      <div class="items-center bg-gray-200 dark:bg-gray-700 p-8">
-        <Loader
+      <div class="items-center bg-gray-200 dark:bg-gray-700 p-4">
+        <IconsLoader
           v-if="listLoading"
           class="loading text-orange-srk dark:text-blue-srk"
         />
@@ -47,7 +97,7 @@
             class="p-0 h-full w-full"
             alt="Add to list"
             :disabled="maxItemsReached"
-            @click="showSearchModal = true"
+            @click="showYelpSearchModal = true"
           >
             <DestinationItemAddAvatar>
               <p
@@ -105,17 +155,24 @@
             :regular-hours="item.regularHours"
             :time-until-close="item.getTimeUntilClose(time)"
             :last-updated="item.lastUpdated"
-            :show-remove-button="canModifyList"
+            :show-remove-button="canModifyList && isMe"
             :is-removing="loadingIds.includes(item.id)"
-            @pick="onSelect(item.id)"
+            @pick="onRemoveItem"
           />
         </div>
       </div>
       <YelpSearchModal
-        :visible="showSearchModal"
+        v-if="isMe"
+        :visible="showYelpSearchModal"
         :managed-list="list"
         :disable-add="maxItemsReached"
-        @hide="showSearchModal = false"
+        @hide="showYelpSearchModal = false"
+      />
+      <MemberSearchModal
+        v-if="isMe && list.visibility === ListVisibility.list"
+        :visible="showMemberSearchModal"
+        :managed-list="list"
+        @hide="showMemberSearchModal = false"
       />
 
       <Modal
@@ -168,7 +225,7 @@
               alt="Delete"
               class="text-sm bg-red-500 text-white"
               @click="onShowDeleteConfirmationModal"
-              ><Delete class="icon-inline" /> Delete</ComboButton
+              ><IconsDelete class="icon-inline" /> Delete</ComboButton
             >
           </div>
 
@@ -239,14 +296,14 @@
             class="text-sm border border-blue-srk text-blue-srk"
             :disabled="isEditingList"
             :loading="isEditingList"
-            >Edit list</ComboButton
+            ><IconsEdit class="icon-inline" /> Edit list</ComboButton
           >
         </form>
       </Modal>
     </div>
     <div v-else>
       <div class="grid grid-cols-1 place-items-center">
-        <Loader class="loading text-orange-srk dark:text-blue-srk" />
+        <IconsLoader class="loading text-orange-srk dark:text-blue-srk" />
       </div>
     </div>
   </div>
@@ -266,27 +323,17 @@ import {
   useRouter,
   useStore,
 } from "@nuxtjs/composition-api";
-import ArrowBack from "client/components/icons/ArrowBack.vue";
-import Delete from "client/components/icons/Delete.vue";
-import Edit from "client/components/icons/Edit.vue";
-import Loader from "client/components/icons/Loader.vue";
 import { DestinationListModel } from "client/models";
 import useSelf from "client/composables/useSelf";
 import hrbacCan from "common/utils/hrbacCan";
 import { Role } from "common/enums/hrbac";
 import uniqueId from "common/utils/uniqueId";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
-import { ListVisibility } from "common/enums";
+import { ListVisibility, FriendStatus } from "common/enums";
 import Input from "client/components/Input.vue";
 import { MAX_ITEMS_PER_LIST } from "server/config/dataLimits";
 
 export default defineComponent({
-  components: {
-    ArrowBack,
-    Delete,
-    Edit,
-    Loader,
-  },
   setup() {
     const context = useContext();
     const route = useRoute();
@@ -323,10 +370,10 @@ export default defineComponent({
       await refreshModel();
     });
 
-    const showSearchModal = ref<boolean>(false);
-    const loadingIds = ref<string[]>([]);
+    const showYelpSearchModal = ref<boolean>(false);
 
-    const onSelect = async (destinationId: string) => {
+    const loadingIds = ref<string[]>([]);
+    const onRemoveItem = async (destinationId: string) => {
       if (!list.value) {
         return;
       }
@@ -344,6 +391,8 @@ export default defineComponent({
       model
         .query()
         .with("items", (query) => query.orderBy("name"))
+        .with("users", (query) => query.orderBy("username"))
+        .with("users.friendStatus")
         .find([route.value.params.username, route.value.params.listId])
     );
 
@@ -413,6 +462,21 @@ export default defineComponent({
       }
     };
 
+    const loadingUserIds = ref<string[]>([]);
+    const onRemoveUser = async (username: string) => {
+      if (!list.value) {
+        return;
+      }
+
+      loadingUserIds.value.push(username);
+      await model.apiRemoveUserFromList({
+        id: list.value.id,
+        username: list.value.owner,
+        targetUsername: username,
+      });
+      loadingUserIds.value = loadingUserIds.value.filter((e) => e !== username);
+    };
+
     const showDeleteConfirmationModal = ref<boolean>(false);
     const onShowDeleteConfirmationModal = () => {
       showDeleteConfirmationModal.value = true;
@@ -430,6 +494,8 @@ export default defineComponent({
         router.push("/u/" + route.value.params.username);
       }
     };
+
+    const showMemberSearchModal = ref<boolean>(false);
 
     const time = ref<number>(Date.now());
     const timeUpdater = ref<any>(null);
@@ -452,8 +518,9 @@ export default defineComponent({
 
       loadingIds,
 
-      showSearchModal,
-      onSelect,
+      showYelpSearchModal,
+      loadingUserIds,
+      onRemoveItem,
 
       list,
       isMe,
@@ -462,6 +529,11 @@ export default defineComponent({
 
       maxItems,
       maxItemsReached,
+
+      ListVisibility,
+      FriendStatus,
+      showMemberSearchModal,
+      onRemoveUser,
 
       // form
       listNameInput,

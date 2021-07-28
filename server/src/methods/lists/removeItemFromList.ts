@@ -3,7 +3,7 @@ import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import { IDestinationListPayload } from "common/types/api";
 import { RemoveItemFromListDto } from "common/dto/lists";
-import mapItems from "./_mapItems";
+import getDestinationList from "./getDestinationList";
 
 export default async (
   authResult: SrkCookie,
@@ -32,12 +32,5 @@ export default async (
 
   await DI.destinationListRepo.persistAndFlush(list);
 
-  return {
-    id: list.id,
-    name: list.name,
-    owner: authResult.actor.username,
-    description: list.description,
-    visibility: list.visibility,
-    items: mapItems(list.destinations.getItems()),
-  };
+  return await getDestinationList(authResult, { username, id });
 };

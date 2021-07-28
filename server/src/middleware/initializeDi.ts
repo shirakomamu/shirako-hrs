@@ -6,6 +6,7 @@ import { Member } from "server/entities/Member";
 import { DestinationList } from "server/entities/DestinationList";
 import { Destination } from "server/entities/Destination";
 import { ApiKey } from "server/entities/ApiKey";
+import { Friend } from "server/entities/Friend";
 
 export const DI = {} as {
   orm: Promise<MikroORM>;
@@ -14,6 +15,7 @@ export const DI = {} as {
   memberRepo: EntityRepository<Member>;
   destinationListRepo: EntityRepository<DestinationList>;
   destinationItemRepo: EntityRepository<Destination>;
+  friendRequestRepo: EntityRepository<Friend>;
 };
 
 let initialized: boolean = false;
@@ -34,6 +36,7 @@ export default async (_req: Request, _res: Response, next: NextFunction) => {
     DI.memberRepo = DI.em.getRepository(Member);
     DI.destinationListRepo = DI.em.getRepository(DestinationList);
     DI.destinationItemRepo = DI.em.getRepository(Destination);
+    DI.friendRequestRepo = DI.em.getRepository(Friend);
 
     initialized = true;
   }

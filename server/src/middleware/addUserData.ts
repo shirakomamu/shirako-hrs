@@ -72,15 +72,13 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
           key: true,
         }),
       } as SrkCookie;
+      return next();
     } catch (e) {
       req.locals.authResult = {
         authType: AuthType.none,
       } as SrkCookie;
-    } finally {
-      next();
+      return next();
     }
-
-    return;
   }
 
   if (

@@ -2,9 +2,8 @@ import { ListVisibility } from "common/enums";
 import { IMemberPayload } from "common/types/api";
 import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
-import getUserCached from "server/services/auth0-mgmt/getUserCached";
-import transformUserToSafeActor from "server/services/auth0-mgmt/transformUserToSafeActor";
 import { SrkCookie } from "server/services/jwt";
+import _getIdentityMapFromUsername from "server/methods/users/_getIdentityMapFromUsername";
 
 export default async (
   authResult: SrkCookie,
@@ -14,59 +13,69 @@ export default async (
     throw new SrkError("badRequest");
   }
 
-  const targetUser = transformUserToSafeActor(
-    await getUserCached({ username })
-  );
-
-  const [self, target] = await Promise.all([
+  const [targetUserMap, self] = await Promise.all([
+    _getIdentityMapFromUsername([username]),
     authResult.actor
-      ? DI.memberRepo.findOne({
-          sub: authResult.actor.id,
-        })
+      ? DI.memberRepo.findOne({ sub: authResult.actor.id }, [
+          "outgoingFriends",
+          "incomingFriends",
+        ])
       : null,
-    DI.memberRepo.findOneOrFail(
-      {
-        sub: targetUser.id,
-      },
-      ["outgoingFriends", "incomingFriends", "destinationLists"]
-    ),
   ]);
+  const targetUser = targetUserMap[username];
 
-  const lists = target.destinationLists
-    .getItems()
-    .filter((e) => {
-      if (e.owner === self) return true;
-      if (e.visibility === ListVisibility.anyone) return true;
-      if (
-        self &&
-        e.visibility === ListVisibility.friends &&
-        target.confirmedFriends.includes(self)
-      )
-        return true;
-      if (
-        self &&
-        e.visibility === ListVisibility.list &&
-        e.sharedWith.contains(self)
-      )
-        return true;
-      return false;
-    })
-    .map((e) => ({
-      id: e.id,
-      owner: username, // it's a hack to get username because it's always self
-      name: e.name,
-      description: e.description,
-      visibility: e.visibility,
-    }));
+  if (!targetUser) {
+    throw new SrkError("resourceInvalid");
+  }
+
+  const confirmedFriends = self?.confirmedFriends.map((e) => e.id) || [];
+  const orArray: object[] = [
+    // condition: visible to anyone
+    {
+      visibility: ListVisibility.anyone,
+    },
+    // condition: visible to confirmed friends
+    {
+      visibility: ListVisibility.friends,
+      owner: {
+        $in: confirmedFriends,
+      },
+    },
+  ];
+
+  if (self) {
+    orArray.push(
+      // condition: visible to shared list
+      {
+        visibility: ListVisibility.list,
+        sharedWith: self,
+      },
+      // condition: owner
+      {
+        owner: self,
+      }
+    );
+  }
+
+  const listsEntities = await DI.destinationListRepo.find({
+    owner: {
+      sub: targetUser.id,
+    },
+    $or: orArray,
+  });
+
+  const lists = listsEntities.map((e) => ({
+    id: e.id,
+    owner: targetUser.username,
+    name: e.name,
+    description: e.description,
+    visibility: e.visibility,
+  }));
 
   return {
     username,
-    nickname: targetUser.nickname || username,
+    nickname: targetUser.nickname,
     avatar: targetUser.avatar,
-    hasFriendRequest: self
-      ? target.pendingIncomingFriends.includes(self)
-      : false,
-    isFriend: self ? target.confirmedFriends.includes(self) : false,
     isAcceptingFriends: targetUser.isAcceptingFriends,
     lists,
   };

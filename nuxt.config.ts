@@ -1,6 +1,8 @@
 import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import appinfo from "./appinfo";
+// windi doesn't seem to play nice with non-root srcDir
+import windiConfig from "./client/windi.config";
 
 const serverConfig = {
   host: process.env.NODE_ENV !== "production" ? "localhost" : "0.0.0.0",
@@ -59,11 +61,12 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    // "nuxt-vite",
     // https://go.nuxtjs.dev/typescript
     "@nuxt/typescript-build",
     "@nuxtjs/composition-api/module",
     // https://go.nuxtjs.dev/tailwindcss
-    "@nuxtjs/tailwindcss",
+    "nuxt-windicss",
     // https://go.nuxtjs.dev/pwa
     // "@nuxtjs/pwa",
     // "@aceforth/nuxt-optimized-images",
@@ -132,6 +135,22 @@ export default {
     middleware: ["pageGuard"],
   },
 
+  // https://vite.nuxtjs.org/getting-started/config
+  // vite: {
+  //   /* options for vite */
+  //   // ssr: true // enable unstable server-side rendering for development (false by default)
+  //   // experimentWarning: false // hide experimental warning message (disabled by default for tests)
+
+  //   plugins: [
+  //     new TsConfigPathsPlugin({
+  //       configFile: "tsconfig.json",
+  //     }),
+  //   ],
+  //   vue: {
+  //     /* options for vite-plugin-vue2 */
+  //   },
+  // },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     extend(config) {
@@ -165,13 +184,13 @@ export default {
     baseURL: "http://" + serverConfig.host + ":" + serverConfig.port,
   },
 
-  // TailwindCSS module configuration (https://tailwindcss.nuxtjs.org/options)
-  tailwindcss: {
-    cssPath: "assets/styles/tailwind.less",
-    configPath: "tailwind.config.js",
+  // https://windicss.org/integrations/nuxt.html
+  windicss: {
+    // cssPath: "assets/styles/tailwind.less",
+    // configPath: "client/windi.config.ts",
     exposeConfig: false,
     viewer: false,
-    config: {},
+    config: windiConfig,
   },
 
   // https://marquez.co/docs/nuxt-optimized-images/configuration

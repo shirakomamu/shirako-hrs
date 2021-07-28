@@ -23,7 +23,7 @@
         "
         @click="goHome"
       >
-        <ArrowBack class="icon-inline" /> Back to home page
+        <IconsArrowBack class="icon-inline" /> Back to home page
       </ComboButton>
     </div>
   </div>
@@ -38,13 +38,9 @@ import {
   useRouter,
   useRoute,
 } from "@nuxtjs/composition-api";
-import ArrowBack from "client/components/icons/ArrowBack.vue";
 
 export default defineComponent({
   name: "Error",
-  components: {
-    ArrowBack,
-  },
   props: {
     error: {
       type: Object,

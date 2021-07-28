@@ -1,7 +1,13 @@
 import { Model } from "@vuex-orm/core";
 import { AxiosRequestConfig } from "axios";
-import { IMemberPayload, ISrkResponse } from "common/types/api";
+import {
+  IMemberPayload,
+  ISearchUsersPayload,
+  ISrkResponse,
+} from "common/types/api";
 import DestinationListModel from "./DestinationList.model";
+import DestinationListMemberModel from "./DestinationListMember.model";
+import FriendModel from "./Friend.model";
 import VgtParamModel from "./VgtParam.model";
 
 interface Meta {
@@ -15,20 +21,33 @@ export default class extends Model {
   public username!: string;
   public nickname!: string;
   public avatar!: string;
-  public hasFriendRequest!: boolean;
-  public isFriend!: boolean;
+  // public pendingFriendRequestFrom!: boolean;
+  // public pendingFriendRequestTo!: boolean;
+  // public isFriend!: boolean;
+  public friendStatus!: FriendModel;
   public isAcceptingFriends!: boolean;
   public lists!: DestinationListModel[];
+
+  public partOfLists!: DestinationListModel[];
+  private listsLoaded!: boolean;
 
   public static fields() {
     return {
       username: this.string(null),
       nickname: this.string(null),
       avatar: this.string(null),
-      hasFriendRequest: this.boolean(false),
-      isFriend: this.boolean(false),
+      // pendingFriendRequestFrom: this.boolean(false),
+      // pendingFriendRequestTo: this.boolean(false),
+      // isFriend: this.boolean(false),
+      friendStatus: this.hasOne(FriendModel, "username"),
       isAcceptingFriends: this.boolean(false),
       lists: this.hasMany(DestinationListModel, "owner"),
+      partofLists: this.belongsToMany(
+        DestinationListModel,
+        DestinationListMemberModel,
+        "username",
+        "listId"
+      ),
     };
   }
 
@@ -50,22 +69,13 @@ export default class extends Model {
     return this.getMeta().fetching || false;
   }
 
-  public static async apiSendFriendRequest(_username: string) {
-    return await null;
-  }
-
-  public static async apiConfirmFriendRequest(_username: string) {
-    return await null;
-  }
-
-  public static async apiDeclineFriendRequest(_username: string) {
-    return await null;
-  }
-
   public static async apiFetch(username: string) {
-    const storedData = this.query().with("lists").find(username);
+    const storedData = this.query()
+      .with("lists")
+      .with("friendStatus")
+      .find(username.toLowerCase());
 
-    if (!storedData) {
+    if (!storedData || !storedData.listsLoaded) {
       this.fetching = true;
       const response: ISrkResponse<IMemberPayload> =
         await this.store().dispatch("api/send", {
@@ -76,16 +86,48 @@ export default class extends Model {
 
       if (response.ok) {
         this.insertOrUpdate({
-          data: response.payload,
+          data: {
+            ...response.payload,
+            listsLoaded: true,
+          },
         });
 
-        return response.payload;
+        return this.query()
+          .with("lists")
+          .with("friendStatus")
+          .find(username.toLowerCase());
       }
 
       return null;
     } else {
-      return storedData.$toJson() as IMemberPayload;
+      return storedData;
     }
+  }
+
+  public static async apiSearch(keyword: string) {
+    this.fetching = true;
+    const response: ISrkResponse<ISearchUsersPayload> =
+      await this.store().dispatch("api/send", {
+        method: "get",
+        url: "/api/users/",
+        params: {
+          keyword,
+        },
+      } as AxiosRequestConfig);
+    this.fetching = false;
+
+    if (response.ok) {
+      this.insertOrUpdate({
+        data: response.payload.users,
+      });
+
+      return this.query()
+        .with("friendStatus")
+        .whereIdIn(response.payload.users.map((e) => e.username))
+        .get();
+    }
+
+    return [];
   }
 
   private static initialize() {

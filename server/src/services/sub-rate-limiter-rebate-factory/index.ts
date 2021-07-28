@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { RateLimiterStoreAbstract } from "rate-limiter-flexible";
-import { SrkExpressRequest, SrkExpressResponse } from "../jwt";
+import { SrkExpressRequest, SrkExpressResponse } from "server/services/jwt";
 
 type ConsumptionKeyGenerator = ({
   req,

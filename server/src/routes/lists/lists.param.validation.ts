@@ -75,6 +75,7 @@ export const UsernameParamSchema: ParamSchema = {
     errorMessage: "Username must be a string",
   },
   trim: true,
+  toLowerCase: true,
   isLength: {
     errorMessage: "Username must be 1 to 24 characters long",
     options: {

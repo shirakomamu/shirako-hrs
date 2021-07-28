@@ -1,7 +1,7 @@
 <template>
   <Modal
     :visible="visible"
-    container-class="p-8 w-full max-w-prose"
+    container-class="p-8 w-full max-w-xl"
     @hide="emit('hide', ...arguments)"
   >
     <div class="p-8 bg-gray-200 dark:bg-gray-700">

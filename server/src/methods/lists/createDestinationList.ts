@@ -1,6 +1,6 @@
 import { CreateListDto } from "common/dto/lists";
 import SrkError from "server/classes/SrkError";
-import getMemberFromActor from "server/methods/users/getMemberFromActor";
+import getMemberFromActor from "server/methods/users/_getMemberFromActor";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import { IDestinationListPayload } from "common/types/api";
@@ -33,5 +33,6 @@ export default async (
     description: list.description,
     visibility: list.visibility,
     items: [],
+    users: [],
   };
 };

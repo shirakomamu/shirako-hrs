@@ -8,3 +8,9 @@ export enum ListVisibility {
   "friends" = "friends",
   "anyone" = "anyone",
 }
+
+export enum FriendStatus {
+  "confirmed" = "confirmed",
+  "pendingOutgoing" = "pendingOutgoing",
+  "pendingIncoming" = "pendingIncoming",
+}

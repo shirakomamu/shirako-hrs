@@ -17,7 +17,7 @@
           :disabled="isRemoving"
           :loading="isRemoving"
           @click="removeItem"
-          ><Delete class="icon-inline"
+          ><IconsDelete class="icon-inline"
         /></ComboButton>
       </div>
     </div>
@@ -81,7 +81,7 @@
       </template>
     </Drop>
 
-    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+    <div class="flex flex-col sm:(flex-row items-center) gap-4">
       <div class="grid grid-cols-1 text-sm gap-2">
         <div>
           <template v-if="display_address">
@@ -128,15 +128,11 @@ import {
   PropType,
   ref,
 } from "@nuxtjs/composition-api";
-import Delete from "client/components/icons/Delete.vue";
 import timeAgo from "common/utils/timeAgo";
 import { format } from "date-fns";
 
 export default defineComponent({
   name: "DestinationItem",
-  components: {
-    Delete,
-  },
   props: {
     id: {
       type: String,

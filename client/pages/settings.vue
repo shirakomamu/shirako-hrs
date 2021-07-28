@@ -26,7 +26,7 @@
 
           <div class="flex flex-row items-center gap-4">
             <ComboButton
-              class="text-sm bg-black dark:bg-white text-white dark:text-black"
+              class="text-sm bg-black dark:(bg-white text-black) text-white"
               alt="Resend verification email"
               :loading="isSendingVerificationEmail"
               :disabled="isSendingVerificationEmail"
@@ -92,7 +92,7 @@
                   @click="showUsernameEditor(true)"
                 >
                   {{ username }}
-                  <Edit v-if="emailVerified" class="icon-inline" />
+                  <IconsEdit v-if="emailVerified" class="icon-inline" />
                 </button>
               </div>
               <Input
@@ -130,7 +130,7 @@
                   @click="showNicknameEditor(true)"
                 >
                   {{ nickname }}
-                  <Edit v-if="emailVerified" class="icon-inline" />
+                  <IconsEdit v-if="emailVerified" class="icon-inline" />
                 </button>
               </div>
               <Input
@@ -167,7 +167,7 @@
                   @click="showEmailEditor(true)"
                 >
                   {{ email }}
-                  <Edit class="icon-inline" />
+                  <IconsEdit class="icon-inline" />
                 </button>
               </div>
               <Input
@@ -197,9 +197,8 @@
                   class="
                     text-sm
                     bg-black
-                    dark:bg-white
-                    text-white
-                    dark:text-black
+                    dark:(bg-white
+                    text-black) text-white
                     w-full
                     sm:w-auto
                   "
@@ -231,7 +230,7 @@
             p-8
           "
         >
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label
                 class="font-semibold dark:text-white"
@@ -261,7 +260,7 @@
             </select>
           </div>
 
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label
                 class="font-semibold dark:text-white"
@@ -305,7 +304,7 @@
             p-8
           "
         >
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label
                 class="font-semibold dark:text-white"
@@ -351,14 +350,15 @@
             p-8
           "
         >
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label class="font-semibold dark:text-white">API access</label>
               <p class="text-sm">
-                Use a bearer token to access your account programatically.
+                Use a bearer token to access your account programatically. Note:
+                Undocumented APIs may change without notice at any time.
               </p>
             </div>
-            <Loader v-if="isApiStateLoading" class="icon-inline" />
+            <IconsLoader v-if="isApiStateLoading" class="icon-inline" />
             <template v-else>
               <ComboButton
                 v-if="!tokenCreatedOn"
@@ -371,14 +371,14 @@
               >
               <template v-else>
                 <ComboButton
-                  alt="Rotate token"
+                  alt="Refresh token"
                   class="text-sm bg-orange-srk text-white w-full sm:w-auto"
                   :loading="isCreatingApiToken"
                   :disabled="
                     !emailVerified || isCreatingApiToken || isDeletingApiToken
                   "
                   @click="createApiToken"
-                  >Rotate token</ComboButton
+                  >Refresh token</ComboButton
                 >
                 <ComboButton
                   alt="Delete token"
@@ -394,7 +394,7 @@
             </template>
           </div>
 
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex flex-col sm:(flex-row items-center) gap-4">
             <div class="flex-grow">
               <label class="font-semibold dark:text-white"
                 >Delete my account</label
@@ -443,7 +443,7 @@
                   p-2
                   overflow-x-auto overflow-y-hidden
                 "
-              ><button type="button" alt="Copy to clipboard" class="p-0 mr-2" @click="copyApiKeyToClipboard"><ContentCopy class="icon-inline" /></button>{{ apiKeyValue }}</pre>
+              ><button type="button" alt="Copy to clipboard" class="p-0 mr-2" @click="copyApiKeyToClipboard"><IconsContentCopy class="icon-inline" /></button>{{ apiKeyValue }}</pre>
             </template>
             <template #tooltip>
               <p class="text-xs">Token copied to clipboard.</p>
@@ -542,9 +542,6 @@ import {
   watch,
   onMounted,
 } from "@nuxtjs/composition-api";
-import ContentCopy from "client/components/icons/ContentCopy.vue";
-import Edit from "client/components/icons/Edit.vue";
-import Loader from "client/components/icons/Loader.vue";
 import Input from "client/components/Input.vue";
 import uniqueId from "common/utils/uniqueId";
 import {
@@ -569,12 +566,6 @@ import {
 } from "common/dto/auth";
 
 export default defineComponent({
-  components: {
-    ContentCopy,
-    Edit,
-    Loader,
-  },
-
   meta: {
     guard: {
       roles: [Role._self_profile],
