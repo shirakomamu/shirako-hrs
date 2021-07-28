@@ -22,7 +22,9 @@
       "
     />
 
+    <AppInitializing v-if="!isAuthLoaded" />
     <div
+      v-else
       class="flex flex-col flex-grow justify-center"
       :class="{
         'py-8': $route.path !== '/',
@@ -52,6 +54,7 @@
 
 <script lang="ts">
 import {
+  computed,
   defineComponent,
   onMounted,
   ref,
@@ -76,6 +79,8 @@ export default defineComponent({
         await store.$db().model(FriendModel).apiLoad();
       }
     });
+
+    const isAuthLoaded = computed(() => store.getters["auth/loaded"]);
 
     // const store = useStore();
     // store.dispatch("auth/fetch");
@@ -115,6 +120,7 @@ export default defineComponent({
     });
 
     return {
+      isAuthLoaded,
       refreshing,
       registration,
       updateExists,

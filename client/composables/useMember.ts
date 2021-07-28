@@ -9,6 +9,7 @@ const useMember = ({ username }: { username: string }) => {
   return useAsync(async () => {
     const r = await model.apiFetch(username);
 
+    console.log("useMember error");
     if (!r) {
       context.error({
         statusCode: 404,
