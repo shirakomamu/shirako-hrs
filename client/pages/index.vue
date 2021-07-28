@@ -132,19 +132,19 @@ export default defineComponent({
 }
 
 .srk-icon {
-  content: url("client/assets/images/icons/icon-512xt.png");
+  content: url("/icons/512-tr-or.png");
 
   @media (prefers-color-scheme: dark) {
-    content: url("client/assets/images/icons/icon-512ft.png");
+    content: url("/icons/512-tr-bl.png");
   }
 }
 
 @screen md {
   .srk-icon {
-    content: url("client/assets/images/icons/icon-512tt.png");
+    content: url("/icons/512-tr-w.png");
 
     @media (prefers-color-scheme: dark) {
-      content: url("client/assets/images/icons/icon-512ft.png");
+      content: url("/icons/512-tr-bl.png");
     }
   }
 

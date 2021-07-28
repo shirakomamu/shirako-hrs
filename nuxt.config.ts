@@ -45,7 +45,7 @@ export default {
       {
         rel: "apple-touch-icon",
         type: "image/png",
-        href: "/appletouch.png",
+        href: "/icons/192-or-w.png",
       },
     ],
   },
@@ -130,7 +130,7 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     meta: {
-      theme_color: "#0089ff",
+      theme_color: "#ff7600",
     },
     workbox: {
       // enabled: true,
@@ -141,17 +141,18 @@ export default {
       short_name: appinfo.name, // displayed on desktop or mobile
       description: appinfo.description,
       lang: "en",
-      icons: [
-        {
-          src: "/favicon.png",
-          type: "image/png",
-          sizes: "512x512",
-        },
-      ],
+      // icons: [
+      //   {
+      //     src: "/icons/512-or-w.png",
+      //     type: "image/png",
+      //     sizes: "512x512",
+      //   },
+      // ],
       background_color: "#191919",
     },
     icon: {
       source: appinfo.favicon,
+      fileName: "icons/512-or-w.png",
     },
   },
 

@@ -29,18 +29,18 @@
       without your explicit consent.
     </p>
     <p>
-      Please note that other users of this app may see information that you make
-      public. Such information are labeled in their respective management areas.
-      We do not take responsibility for abuse or misuse of information which you
-      make available to other users.
+      Please note that other users of this service may see certain information
+      that you provide to us. Such information are labeled in their respective
+      management areas. We do not take responsibility for abuse or misuse of
+      information which you make available to other users.
     </p>
 
     <h6 class="text-2xl font-semibold dark:text-white">Account management</h6>
     <p>
-      You must create an account to use the facilities provided by this app.
-      Account registration and authentication services for this app are provided
-      by Auth0. Upon registration or logging in, you will be redirected from our
-      site to Auth0. Please refer to their privacy policy at
+      You must create an account to use the facilities provided by this service.
+      Account registration and authentication services for this site are
+      provided by Auth0. Upon registration or logging in, you will be redirected
+      from our site to Auth0. Please refer to their privacy policy at
       <a
         href="https://auth0.com/privacy"
         class="
@@ -91,9 +91,10 @@
     </h6>
     <p>
       We utilize Atlassian's Jira Service Management to provide basic help
-      services should you need to contact us regarding this app. Our help center
-      is accessible through both the web and email. In either case, we require
-      you to provide us an email address so that we can contact you back.
+      services should you need to contact us regarding this service. Our help
+      center is accessible through both the web and email. In either case, we
+      require you to provide us an email address so that we can contact you
+      back.
     </p>
     <p>
       Please note that in order to view the progress of your ticket through the
@@ -142,9 +143,24 @@
 
     <h6 class="text-2xl font-semibold dark:text-white">Use of Yelp data</h6>
     <p>
-      Restaurant metadata is made available to this app by Yelp in accordance to
-      their guidelines and agreements. We provide a link to the Yelp page for
-      each destination, which identifies the traffic as coming from us.
+      Restaurant metadata is made available to this service by Yelp in
+      accordance to their guidelines and terms. We provide a link to the Yelp
+      page for each destination, which identifies the traffic as coming from us.
+      Please note that Yelp may use or process your data separately from us.
+      Please see their privacy policy at
+      <a
+        href="https://www.yelp.com/tos/privacy_policy"
+        class="
+          hover:underline
+          focus:underline
+          text-orange-srk
+          dark:text-blue-srk
+        "
+        target="_blank"
+        rel="noopener noreferrer"
+        >https://www.yelp.com/tos/privacy_policy</a
+      >
+      for more information.
     </p>
   </div>
 </template>

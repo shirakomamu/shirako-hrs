@@ -80,21 +80,6 @@
         >
       </div>
     </div>
-    <h6 class="text-2xl dark:text-white">About us</h6>
-    <p>
-      This project is created and maintained by
-      <a
-        href="https://shirako.dev"
-        class="
-          hover:underline
-          focus:underline
-          text-orange-srk
-          dark:text-blue-srk
-        "
-        target="_blank"
-        >shirako</a
-      >.
-    </p>
   </div>
 </template>
 
