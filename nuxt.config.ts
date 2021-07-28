@@ -147,7 +147,7 @@ export default {
       lang: "en",
       icons: [
         {
-          src: "/images/512xt.png",
+          src: "/512xt.png",
           type: "image/png",
           sizes: "512x512",
         },

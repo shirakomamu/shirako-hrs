@@ -60,11 +60,7 @@ export const actions: ActionTree<RootState, RootState> = {
 
     // console.log("Final");
     // commit("auth/setActor", savedStore.auth.actor);
-    const r: ISrkResponse<ISelfIdentifyPayload> = await dispatch(
-      "auth/fetch",
-      undefined,
-      { root: true }
-    );
+    const r: ISrkResponse<ISelfIdentifyPayload> = await dispatch("auth/fetch");
     if (r.ok && r.payload.actor?.id) {
       await this.$db().model(FriendModel).apiLoad();
     }
