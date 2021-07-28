@@ -231,6 +231,8 @@ export default {
     },
   },
 
+  serverMiddleware: ["redirect-ssl"],
+
   // https://marquez.co/docs/nuxt-optimized-images/configuration
   // optimizedImages: {
   //   optimizeImages: true,
