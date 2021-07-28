@@ -3,7 +3,7 @@
     class="py-1 px-2 uppercase w-max text-xs font-semibold text-white"
     :class="classAdder"
   >
-    <Schedule class="icon-inline" />
+    <IconsSchedule class="icon-inline" />
     {{ displayText }}
   </div>
 </template>
@@ -11,14 +11,10 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import timeAgo from "common/utils/timeAgo";
-import Schedule from "client/components/icons/Schedule.vue";
 import { FormatStyle } from "javascript-time-ago/style";
 
 export default defineComponent({
   name: "OpenStatusIndicator",
-  components: {
-    Schedule,
-  },
   props: {
     timeUntilClose: {
       type: Number,

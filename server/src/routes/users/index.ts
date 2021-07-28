@@ -9,12 +9,19 @@ import {
   CreateFriendValidators,
   DeleteFriendValidators,
   GetMemberValidators,
+  SearchMembersValidators,
 } from "./users.validation";
 
 const controller = new UsersController();
 const router: Router = Router();
 
 router.get("/:username", [...GetMemberValidators], route(controller.getMember));
+
+router.get(
+  "/",
+  [useSimpleGuard([Role._self_profile]), ...SearchMembersValidators],
+  route(controller.searchMembersByUsername)
+);
 
 router.get(
   "/me/friends",

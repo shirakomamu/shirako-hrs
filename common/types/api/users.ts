@@ -24,3 +24,7 @@ export interface IFriendStatusPayload {
     status: FriendStatus;
   }[];
 }
+
+export interface ISearchUsersPayload {
+  users: Omit<UserIdentity, "id">[];
+}

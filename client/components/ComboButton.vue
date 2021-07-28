@@ -20,7 +20,7 @@
     }"
     v-on="$listeners"
   >
-    <Loader v-if="loading" class="loader h-6" />
+    <IconsLoader v-if="loading" class="loader h-6" />
     <div :class="{ hide: loading }" class="w-full h-full">
       <slot />
     </div>
@@ -29,13 +29,9 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-import Loader from "client/components/icons/Loader.vue";
 
 export default defineComponent({
   name: "ComboButton",
-  components: {
-    Loader,
-  },
   props: {
     type: {
       type: String,

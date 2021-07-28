@@ -3,7 +3,8 @@ import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import getUserCached from "server/services/auth0-mgmt/getUserCached";
 import { ListVisibility } from "common/enums";
-import { IDestinationListPayload } from "common/types/api";
+import { IDestinationListPayload, UserIdentity } from "common/types/api";
+import _getIdentityMapFromId from "../users/_getIdentityMapFromId";
 import mapItems from "./_mapItems";
 
 export default async (
@@ -24,9 +25,6 @@ export default async (
   ]);
 
   const confirmedFriends = user?.confirmedFriends.map((e) => e.id) || [];
-
-  // const targetUser = transformUserToSafeActor(targetUserCached);
-
   const orArray: object[] = [
     // condition: visible to anyone
     {
@@ -46,7 +44,9 @@ export default async (
       // condition: visible to shared list
       {
         visibility: ListVisibility.list,
-        sharedWith: user,
+        sharedWith: {
+          $in: [user], // it's like this so that it doesn't filter to only this share, allowing user enumeration
+        },
       },
       // condition: owner
       {
@@ -54,6 +54,8 @@ export default async (
       }
     );
   }
+
+  // console.log("OR CONDITIONS", orArray);
 
   const list = await repo.findOneOrFail(
     {
@@ -63,8 +65,25 @@ export default async (
       },
       $or: orArray,
     },
-    ["destinations"]
+    ["destinations", "sharedWith"]
   );
+
+  const users: Omit<UserIdentity, "id">[] = [];
+  if (username === authResult.actor?.username) {
+    const sharedWithSubs = list.sharedWith.getItems().map((e) => e.sub);
+    const sharedWithMap = await _getIdentityMapFromId(sharedWithSubs);
+
+    for (const sub of sharedWithSubs) {
+      const identity = sharedWithMap[sub];
+
+      if (!identity) continue;
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, ...rest } = identity;
+
+      users.push(rest);
+    }
+  }
 
   return {
     id: list.id,
@@ -73,5 +92,6 @@ export default async (
     description: list.description,
     visibility: list.visibility,
     items: mapItems(list.destinations.getItems()),
+    users,
   };
 };

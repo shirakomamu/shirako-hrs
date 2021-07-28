@@ -2,7 +2,7 @@ import { IFriendStatusPayload, UserIdentity } from "common/types/api";
 import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
-import getIdentityMapFromId from "server/methods/auth/_getIdentityMapFromId";
+import getIdentityMapFromId from "server/methods/users/_getIdentityMapFromId";
 import { FriendStatus } from "common/enums";
 
 export default async (authResult: SrkCookie): Promise<IFriendStatusPayload> => {

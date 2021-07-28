@@ -8,7 +8,7 @@
       :disabled="isLoading"
       @click="onRemove"
     >
-      <PersonRemove class="icon-inline" />
+      <IconsPersonRemove class="icon-inline" />
       Remove friend</ComboButton
     >
     <template v-else-if="friendStatus === FriendStatus.pendingIncoming">
@@ -19,7 +19,7 @@
         :disabled="isLoading"
         @click="onAdd"
       >
-        <Check class="icon-inline" />
+        <IconsCheck class="icon-inline" />
         Accept friend request</ComboButton
       >
 
@@ -30,7 +30,7 @@
         :disabled="isLoading"
         @click="onRemove"
       >
-        <NotInterested class="icon-inline" />
+        <IconsNotInterested class="icon-inline" />
         Reject friend request</ComboButton
       >
     </template>
@@ -41,7 +41,7 @@
       :disabled="isLoading"
       @click="onRemove"
     >
-      <Close class="icon-inline" />
+      <IconsClose class="icon-inline" />
       Cancel pending friend request</ComboButton
     >
     <ComboButton
@@ -52,7 +52,7 @@
       :disabled="isLoading"
       @click="onAdd"
     >
-      <PersonAdd class="icon-inline" />
+      <IconsPersonAdd class="icon-inline" />
       Send friend request</ComboButton
     >
     <ComboButton
@@ -60,7 +60,7 @@
       class="bg-blue-srk text-white text-sm"
       :disabled="true"
     >
-      <PersonAdd class="icon-inline" />
+      <IconsPersonAdd class="icon-inline" />
       Email verification required</ComboButton
     >
     <ComboButton
@@ -69,7 +69,7 @@
       class="bg-blue-srk text-white text-sm"
       :disabled="true"
     >
-      <Block class="icon-inline" />
+      <IconsBlock class="icon-inline" />
       Not accepting friend requests</ComboButton
     >
   </div>
@@ -86,22 +86,10 @@ import useSelf from "client/composables/useSelf";
 import { FriendStatus } from "common/enums";
 import { Role } from "common/enums/hrbac";
 import hrbacCan from "common/utils/hrbacCan";
-import Check from "client/components/icons/Check.vue";
-import Close from "client/components/icons/Close.vue";
-import NotInterested from "client/components/icons/NotInterested.vue";
-import PersonAdd from "client/components/icons/PersonAdd.vue";
-import PersonRemove from "client/components/icons/PersonRemove.vue";
 import { FriendModel } from "client/models";
 
 export default defineComponent({
   name: "FriendStatusButton",
-  components: {
-    Check,
-    Close,
-    NotInterested,
-    PersonAdd,
-    PersonRemove,
-  },
   props: {
     username: {
       type: String,

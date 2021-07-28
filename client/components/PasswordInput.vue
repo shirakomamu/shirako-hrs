@@ -22,12 +22,12 @@
       </div>
       <div class="visibility-button flex flex-row items-center justify-end">
         <div v-if="indicatorState !== 'none'" class="w-8 pl-2">
-          <Loader v-if="indicatorState === 'loading'" />
-          <Error
+          <IconsLoader v-if="indicatorState === 'loading'" />
+          <IconsError
             v-else-if="indicatorState === 'failure'"
             class="text-yellow-600 dark:text-yellow-500"
           />
-          <Check
+          <IconsCheck
             v-else-if="indicatorState === 'success'"
             class="text-blue-srk"
           />
@@ -38,8 +38,8 @@
           :title="show ? 'Hide password' : 'Show password'"
           @click="togglePasswordVisibility"
         >
-          <VisibilityOff v-if="show" />
-          <Visibility v-else />
+          <IconsVisibilityOff v-if="show" />
+          <IconsVisibility v-else />
         </button>
       </div>
     </div>
@@ -66,23 +66,11 @@ import {
   PropType,
 } from "@nuxtjs/composition-api";
 import zxcvbn, { ZXCVBNResult } from "zxcvbn";
-import Loader from "client/components/icons/Loader.vue";
-import Check from "client/components/icons/Check.vue";
-import Error from "client/components/icons/Error.vue";
-import Visibility from "client/components/icons/Visibility.vue";
-import VisibilityOff from "client/components/icons/VisibilityOff.vue";
 import uniqueId from "common/utils/uniqueId";
 import endWithString from "common/utils/endWithString";
 
 export default defineComponent({
   name: "PasswordInput",
-  components: {
-    Loader,
-    Check,
-    Error,
-    Visibility,
-    VisibilityOff,
-  },
   inheritAttrs: false,
   props: {
     value: {

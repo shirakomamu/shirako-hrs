@@ -5,7 +5,7 @@
     @hide="emit('hide', ...arguments)"
   >
     <div class="p-8 bg-gray-200 dark:bg-gray-700">
-      <YelpSearchModule
+      <MemberSearchModule
         ref="module"
         :managed-list="managedList"
         :disable-add="disableAdd"
@@ -28,7 +28,7 @@ import YelpSearchModule from "client/components/YelpSearchModule.vue";
 import { DestinationListModel } from "client/models";
 
 export default defineComponent({
-  name: "YelpSearchModal",
+  name: "MemberSearchModal",
   props: {
     visible: {
       type: Boolean,

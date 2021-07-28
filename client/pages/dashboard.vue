@@ -12,7 +12,7 @@
             alt="Show instructions"
             class="p-0 text-orange-srk dark:text-blue-srk"
             @click="helpVisible = true"
-            ><HelpOutline class="icon-inline h-8 w-8"
+            ><IconsHelpOutline class="icon-inline h-8 w-8"
           /></ComboButton></div></template
       ><template #tooltip>
         <p class="font-semibold">How to use</p>
@@ -21,7 +21,7 @@
           <li>
             Press
             <span class="text-orange-srk dark:text-blue-srk"
-              ><PlayArrow class="icon-inline" /> Activate neurons</span
+              ><IconsPlayArrow class="icon-inline" /> Activate neurons</span
             >
             at the bottom.
           </li>
@@ -91,9 +91,6 @@
                   @pick="onPick"
                 />
               </div>
-              <!-- <div v-else-if="isSearching">
-              <Loader class="search-loader icon-inline text-blue-srk" />
-            </div> -->
             </template>
           </Drop>
           <p class="text-xl dark:text-white font-semibold">My lists</p>
@@ -109,7 +106,7 @@
           >
             <DashboardListChooserAddList />
             <div v-if="isLoading">
-              <Loader class="text-orange-srk dark:text-blue-srk h-8 w-8" />
+              <IconsLoader class="text-orange-srk dark:text-blue-srk h-8 w-8" />
             </div>
             <p v-else-if="!unselectedLists.length && !isLoading" class="m-2">
               No lists available.
@@ -172,7 +169,10 @@
           :loading="isActivating"
           @click="activateNeurons"
         >
-          <PlayArrow v-if="selectedLists.length" class="h-6 w-6 icon-inline" />
+          <IconsPlayArrow
+            v-if="selectedLists.length"
+            class="h-6 w-6 icon-inline"
+          />
           {{
             selectedLists.length ? "Activate neurons" : "Neurons not available"
           }}
@@ -188,7 +188,7 @@
           focus:underline
         "
         @click="deactivateNeurons"
-        ><ArrowBack class="icon-inline" /> Back to start</ComboButton
+        ><IconsArrowBack class="icon-inline" /> Back to start</ComboButton
       >
       <div class="grid grid-cols-1 justify-items-center w-full">
         <div
@@ -227,7 +227,7 @@
               <Drop
                 :visible="listViewerVisibility[index]"
                 class="inline"
-                container-class="p-4 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg text-xs"
+                container-class="p-4 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg text-xs w-max"
                 :close-after="2000"
                 @hide="listViewerVisibility[index] = false"
               >
@@ -254,7 +254,7 @@
               <Drop
                 :visible="userViewerVisibility[index]"
                 class="inline"
-                container-class="p-4 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg text-xs"
+                container-class="p-4 drop-bottom drop-left bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg text-xs w-max"
                 :close-after="2000"
                 @hide="userViewerVisibility[index] = false"
               >
@@ -326,26 +326,16 @@ import {
 import { Collection, Item } from "@vuex-orm/core";
 import uniqueId from "common/utils/uniqueId";
 import Input from "client/components/Input.vue";
-import HelpOutline from "client/components/icons/HelpOutline.vue";
-import Loader from "client/components/icons/Loader.vue";
-import PlayArrow from "client/components/icons/PlayArrow.vue";
 import useInternalApi from "client/composables/useInternalApi";
 import { MAX_NEURONS } from "server/config/dataLimits";
 import { IActivatedNeuronsPayload, NeuronData } from "common/types/api";
 import { ActivateNeuronsDto } from "common/dto/neurons";
-import ArrowBack from "client/components/icons/ArrowBack.vue";
 
 export default defineComponent({
   meta: {
     guard: {
       roles: [Role._self_destination_lists],
     } as Guard,
-  },
-  components: {
-    ArrowBack,
-    HelpOutline,
-    Loader,
-    PlayArrow,
   },
   setup() {
     const context = useContext();

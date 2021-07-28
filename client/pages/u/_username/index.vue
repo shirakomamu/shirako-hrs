@@ -95,7 +95,7 @@
       <div class="grid grid-cols-1 gap-4">
         <div class="flex flex-row gap-4 items-center">
           <h6 class="text-2xl dark:text-white">
-            <List class="icon-inline" /> Lists
+            <IconsList class="icon-inline" /> Lists
           </h6>
         </div>
 
@@ -189,7 +189,7 @@
       <div v-if="isMe" class="grid grid-cols-1 gap-4">
         <div class="flex flex-row gap-4 items-center">
           <h6 class="text-2xl dark:text-white">
-            <People class="icon-inline" /> Friends
+            <IconsPeople class="icon-inline" /> Friends
           </h6>
         </div>
 
@@ -266,9 +266,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Friends list Show confirmed in one tab (with remove button) Show pending
-        (outgoing / incoming) to accept / cancel -->
       </div>
 
       <CreateListModal
@@ -278,7 +275,7 @@
     </template>
     <template v-else>
       <div class="grid grid-cols-1 place-items-center">
-        <Loader class="loading text-blue-srk" />
+        <IconsLoader class="loading text-blue-srk" />
       </div>
     </template>
   </div>
@@ -299,10 +296,6 @@ import {
   watch,
 } from "@nuxtjs/composition-api";
 import hrbacCan from "common/utils/hrbacCan";
-import useMember from "client/composables/useMember";
-import List from "client/components/icons/List.vue";
-import Loader from "client/components/icons/Loader.vue";
-import People from "client/components/icons/People.vue";
 import useSelf from "client/composables/useSelf";
 import { FriendModel, MemberModel } from "client/models";
 import { FriendStatus } from "common/enums";
@@ -313,11 +306,6 @@ export default defineComponent({
       roles: [Role._self_profile],
     } as Guard,
   },
-  components: {
-    List,
-    Loader,
-    People,
-  },
   setup() {
     const context = useContext();
     const route = useRoute();
@@ -325,22 +313,23 @@ export default defineComponent({
     const store = useStore();
     const model = store.$db().model(MemberModel);
 
-    const member = useMember({
-      username: route.value.params.username,
-    });
+    const member = computed(() =>
+      model
+        .query()
+        .with("lists", (query) => query.orderBy("name"))
+        .with("friendStatus")
+        .find(route.value.params.username)
+    );
 
     watch(
       () => route.value.params.username,
       async (value: string, oldValue: string) => {
         if (value.toLowerCase() === oldValue.toLowerCase()) return;
-        member.value = null;
         const r = await model.apiFetch(value);
 
         if (!r) {
           return context.error({ statusCode: 404 });
         }
-
-        member.value = r;
       }
     );
 
@@ -391,9 +380,14 @@ export default defineComponent({
       allFriends.value.filter((e) => e.status === FriendStatus.pendingIncoming)
     );
 
-    onMounted(() => {
+    onMounted(async () => {
       pIndex.value = Math.floor(Math.random() * p.value.length);
       store.$db().model(FriendModel).apiLoad();
+      const r = await model.apiFetch(route.value.params.username);
+
+      if (!r) {
+        return context.error({ statusCode: 404 });
+      }
     });
 
     const isCreateListModalVisible = ref<boolean>(false);

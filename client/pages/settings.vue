@@ -92,7 +92,7 @@
                   @click="showUsernameEditor(true)"
                 >
                   {{ username }}
-                  <Edit v-if="emailVerified" class="icon-inline" />
+                  <IconsEdit v-if="emailVerified" class="icon-inline" />
                 </button>
               </div>
               <Input
@@ -130,7 +130,7 @@
                   @click="showNicknameEditor(true)"
                 >
                   {{ nickname }}
-                  <Edit v-if="emailVerified" class="icon-inline" />
+                  <IconsEdit v-if="emailVerified" class="icon-inline" />
                 </button>
               </div>
               <Input
@@ -167,7 +167,7 @@
                   @click="showEmailEditor(true)"
                 >
                   {{ email }}
-                  <Edit class="icon-inline" />
+                  <IconsEdit class="icon-inline" />
                 </button>
               </div>
               <Input
@@ -358,7 +358,7 @@
                 Undocumented APIs may change without notice at any time.
               </p>
             </div>
-            <Loader v-if="isApiStateLoading" class="icon-inline" />
+            <IconsLoader v-if="isApiStateLoading" class="icon-inline" />
             <template v-else>
               <ComboButton
                 v-if="!tokenCreatedOn"
@@ -443,7 +443,7 @@
                   p-2
                   overflow-x-auto overflow-y-hidden
                 "
-              ><button type="button" alt="Copy to clipboard" class="p-0 mr-2" @click="copyApiKeyToClipboard"><ContentCopy class="icon-inline" /></button>{{ apiKeyValue }}</pre>
+              ><button type="button" alt="Copy to clipboard" class="p-0 mr-2" @click="copyApiKeyToClipboard"><IconsContentCopy class="icon-inline" /></button>{{ apiKeyValue }}</pre>
             </template>
             <template #tooltip>
               <p class="text-xs">Token copied to clipboard.</p>
@@ -542,9 +542,6 @@ import {
   watch,
   onMounted,
 } from "@nuxtjs/composition-api";
-import ContentCopy from "client/components/icons/ContentCopy.vue";
-import Edit from "client/components/icons/Edit.vue";
-import Loader from "client/components/icons/Loader.vue";
 import Input from "client/components/Input.vue";
 import uniqueId from "common/utils/uniqueId";
 import {
@@ -569,12 +566,6 @@ import {
 } from "common/dto/auth";
 
 export default defineComponent({
-  components: {
-    ContentCopy,
-    Edit,
-    Loader,
-  },
-
   meta: {
     guard: {
       roles: [Role._self_profile],

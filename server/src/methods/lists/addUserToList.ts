@@ -2,33 +2,41 @@ import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import { IDestinationListPayload } from "common/types/api";
-import { RemoveItemFromListDto } from "common/dto/lists";
+import { AddUserToListDto } from "common/dto/lists";
+import getUserCached from "server/services/auth0-mgmt/getUserCached";
+import { ListVisibility } from "common/enums";
 import getDestinationList from "./getDestinationList";
 
 export default async (
   authResult: SrkCookie,
-  { username, id, destinationId }: RemoveItemFromListDto
+  { username, id, targetUsername }: AddUserToListDto
 ): Promise<IDestinationListPayload> => {
   if (!authResult.actor || authResult.actor.username !== username) {
     throw new SrkError("unauthorized");
   }
+  if (targetUsername === username) {
+    throw new SrkError("badRequest");
+  }
 
-  const [list, destination] = await Promise.all([
+  const [list, targetUser] = await Promise.all([
     DI.destinationListRepo.findOneOrFail(
       {
         owner: {
           sub: authResult.actor.id,
         },
         id,
+        visibility: ListVisibility.list,
       },
-      ["destinations"]
+      ["sharedWith"]
     ),
-    DI.destinationItemRepo.findOneOrFail({
-      yelpId: destinationId,
-    }),
+    getUserCached({ username: targetUsername }),
   ]);
 
-  list.destinations.remove(destination);
+  const targetUserDb = await DI.memberRepo.findOneOrFail({
+    sub: targetUser.user_id || "",
+  });
+
+  list.sharedWith.add(targetUserDb);
 
   await DI.destinationListRepo.persistAndFlush(list);
 

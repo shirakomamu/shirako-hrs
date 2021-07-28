@@ -33,5 +33,6 @@ export default async (
     description: list.description,
     visibility: list.visibility,
     items: [],
+    users: [],
   };
 };

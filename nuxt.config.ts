@@ -61,6 +61,7 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    // "nuxt-vite",
     // https://go.nuxtjs.dev/typescript
     "@nuxt/typescript-build",
     "@nuxtjs/composition-api/module",
@@ -133,6 +134,22 @@ export default {
   router: {
     middleware: ["pageGuard"],
   },
+
+  // https://vite.nuxtjs.org/getting-started/config
+  // vite: {
+  //   /* options for vite */
+  //   // ssr: true // enable unstable server-side rendering for development (false by default)
+  //   // experimentWarning: false // hide experimental warning message (disabled by default for tests)
+
+  //   plugins: [
+  //     new TsConfigPathsPlugin({
+  //       configFile: "tsconfig.json",
+  //     }),
+  //   ],
+  //   vue: {
+  //     /* options for vite-plugin-vue2 */
+  //   },
+  // },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

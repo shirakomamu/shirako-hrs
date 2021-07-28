@@ -29,3 +29,12 @@ export const DeleteFriendValidators = [
     },
   }),
 ];
+
+export const SearchMembersValidators = [
+  ...checkSchema({
+    keyword: {
+      in: ["query"],
+      ...UsernameParamSchema,
+    },
+  }),
+];

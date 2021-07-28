@@ -1,75 +1,88 @@
 <template>
-  <div class="flex flex-row gap-4 items-center">
-    <div
-      v-if="image_url"
-      class="flex-shrink-0 relative h-32 w-32 overflow-hidden"
-    >
-      <ImageFader
-        :src="image_url"
-        class="absolute h-full w-full object-cover"
-      />
+  <div class="grid grid-cols-1 gap-4">
+    <div class="flex flex-row gap-2 items-center">
+      <div class="font-semibold">
+        <p>
+          {{ name }}
+          <span class="text-sm opacity-60">{{ price }}</span>
+        </p>
+      </div>
+      <a v-if="url" :href="url" rel="noopener noreferrer" target="_blank">
+        <button
+          type="button"
+          alt="Open in Yelp"
+          class="
+            p-0
+            text-orange-srk
+            dark:text-blue-srk
+            opacity-80
+            hover:opacity-100
+            focus:opacity-100
+          "
+        >
+          <IconsOpenInNew class="text-sm icon-inline" />
+        </button>
+      </a>
     </div>
-    <div class="flex-grow grid grid-cols-1 gap-2">
-      <div class="flex flex-row gap-2 items-center">
-        <div class="font-semibold">
-          <p>
-            {{ name }}
-            <span class="text-sm opacity-60">{{ price }}</span>
-          </p>
-        </div>
-        <a v-if="url" :href="url" rel="noopener noreferrer" target="_blank">
-          <button
-            type="button"
-            alt="Open in Yelp"
-            class="
-              p-0
-              text-orange-srk
-              dark:text-blue-srk
-              opacity-80
-              hover:opacity-100
-              focus:opacity-100
-            "
-          >
-            <OpenInNew class="text-sm icon-inline" />
-          </button>
-        </a>
+    <div class="flex flex-col sm:flex-row gap-4 items-center">
+      <div
+        v-if="image_url"
+        class="
+          flex-shrink-0
+          relative
+          w-full
+          h-48
+          sm:(h-32
+          w-32)
+          overflow-hidden
+        "
+      >
+        <ImageFader
+          :src="image_url"
+          class="absolute h-full w-full object-cover"
+        />
       </div>
-
-      <div class="flex flex-col sm:(flex-row items-center) gap-2">
-        <div class="grid grid-cols-1 text-sm">
-          <template v-if="display_address">
-            <p v-for="(line, index) in display_address" :key="index">
-              {{ line }}
+      <div class="w-full flex-grow grid grid-cols-1 gap-2">
+        <div class="flex flex-col sm:(flex-row items-center) gap-2">
+          <div class="grid grid-cols-1 text-sm">
+            <template v-if="display_address">
+              <p v-for="(line, index) in display_address" :key="index">
+                {{ line }}
+              </p>
+            </template>
+            <p class="text-green-600 dark:text-green-500">
+              {{ display_phone }}
             </p>
-          </template>
-          <p class="text-green-600 dark:text-green-500">{{ display_phone }}</p>
+          </div>
+
+          <div class="flex-grow" />
+
+          <div v-if="showAddButton">
+            <ComboButton
+              :alt="!isAdded ? 'Add to list' : 'Added'"
+              class="w-full sm:w-max text-sm bg-blue-srk text-white"
+              :disabled="disabled || isAdded || isAdding"
+              :loading="isAdding"
+              @click="addItem"
+              ><IconsAdd class="icon-inline" />
+              {{ !isAdded ? "Add to list" : "Added" }}</ComboButton
+            >
+          </div>
         </div>
 
-        <div class="flex-grow" />
-
-        <div v-if="showAddButton">
-          <ComboButton
-            :alt="isAdded ? 'Add to list' : 'Added'"
-            class="w-full sm:w-max text-sm bg-blue-srk text-white"
-            :disabled="disabled || !isAdded || isAdding"
-            :loading="isAdding"
-            @click="addItem"
-            ><Add class="icon-inline" />
-            {{ isAdded ? "Add to list" : "Added" }}</ComboButton
-          >
+        <div class="text-xs">
+          <a :href="url" target="_blank" rel="noopener noreferrer">
+            <StarRating :rating="rating" /><span class="opacity-50">
+              ({{ review_count }} review{{
+                review_count === 1 ? "" : "s"
+              }})</span
+            >
+          </a>
         </div>
-      </div>
 
-      <div class="text-xs">
-        <a :href="url" target="_blank" rel="noopener noreferrer">
-          <StarRating :rating="rating" /><span class="opacity-50">
-            ({{ review_count }} review{{ review_count === 1 ? "" : "s" }})</span
-          >
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 opacity-50 text-xs">
-        <p :title="lastUpdatedTs">{{ lastUpdatedString }}</p>
+        <div class="grid grid-cols-1 opacity-50 text-xs">
+          <p :title="lastUpdatedTs">{{ lastUpdatedString }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -78,16 +91,10 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import { format } from "date-fns";
-import OpenInNew from "client/components/icons/OpenInNew.vue";
-import Add from "client/components/icons/Add.vue";
 import timeAgo from "common/utils/timeAgo";
 
 export default defineComponent({
   name: "YelpSearchModuleItem",
-  components: {
-    OpenInNew,
-    Add,
-  },
   props: {
     id: {
       type: String,

@@ -5,7 +5,7 @@ import { IDestinationListPayload } from "common/types/api";
 import { AddItemToListDto } from "common/dto/lists";
 import { MAX_ITEMS_PER_LIST } from "server/config/dataLimits";
 import identifyDestination from "server/methods/items/identifyDestination";
-import mapItems from "./_mapItems";
+import getDestinationList from "./getDestinationList";
 
 export default async (
   authResult: SrkCookie,
@@ -41,12 +41,5 @@ export default async (
 
   await DI.destinationListRepo.persistAndFlush(list);
 
-  return {
-    id: list.id,
-    name: list.name,
-    owner: authResult.actor.username,
-    description: list.description,
-    visibility: list.visibility,
-    items: mapItems(list.destinations.getItems()),
-  };
+  return await getDestinationList(authResult, { username, id });
 };

@@ -33,7 +33,7 @@
               v-else
               to="/settings"
               class="font-semibold hover:underline focus:underline"
-              ><Error
+              ><IconsError
                 class="
                   icon-inline
                   text-red-500
@@ -102,14 +102,9 @@ import {
 import useSelf from "client/composables/useSelf";
 import { Role } from "common/enums/hrbac";
 import hrbacCan from "common/utils/hrbacCan";
-import Error from "client/components/icons/Error.vue";
 
 export default defineComponent({
   name: "Index",
-  components: {
-    Error,
-  },
-
   setup() {
     const context = useContext();
     const self = useSelf();

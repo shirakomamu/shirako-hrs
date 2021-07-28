@@ -1,5 +1,6 @@
 import { ListVisibility } from "common/enums";
 import { IDestinationItemPayload } from "./items";
+import { UserIdentity } from "./users";
 
 export interface DestinationListMetadata {
   id: string;
@@ -11,6 +12,7 @@ export interface DestinationListMetadata {
 
 export interface IDestinationListPayload extends DestinationListMetadata {
   items: IDestinationItemPayload[];
+  users: Omit<UserIdentity, "id">[];
 }
 
 export interface IDestinationListsPayload {

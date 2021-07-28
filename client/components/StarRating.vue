@@ -1,20 +1,5 @@
 <template>
   <div class="inline">
-    <!-- <StarRate
-      v-for="item in numFullStars"
-      :key="'full-' + item"
-      class="icon-inline"
-    />
-    <StarHalf
-      v-for="item in numHalfStars"
-      :key="'half-' + item"
-      class="icon-inline"
-    />
-    <StarOutline
-      v-for="item in numEmptyStars"
-      :key="'empty-' + item"
-      class="icon-inline"
-    /> -->
     <ImageFader
       v-if="rating === 5"
       class="inline h-4"
@@ -70,17 +55,9 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
-// import StarRate from "client/components/icons/StarRate.vue";
-// import StarHalf from "client/components/icons/StarHalf.vue";
-// import StarOutline from "client/components/icons/StarOutline.vue";
 
 export default defineComponent({
   name: "StarRating",
-  components: {
-    // StarRate,
-    // StarHalf,
-    // StarOutline,
-  },
   props: {
     rating: {
       type: Number,
@@ -98,8 +75,4 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less" scoped>
-.icon-inline {
-  top: unset;
-}
-</style>
+<style lang="less" scoped></style>

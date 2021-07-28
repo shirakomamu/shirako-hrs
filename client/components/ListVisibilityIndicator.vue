@@ -1,11 +1,17 @@
 <template>
   <div class="uppercase w-max text-xs font-semibold" :class="classAdder">
-    <Person v-if="visibility === ListVisibility.list" class="icon-inline" />
-    <People
+    <IconsPerson
+      v-if="visibility === ListVisibility.list"
+      class="icon-inline"
+    />
+    <IconsPeople
       v-else-if="visibility === ListVisibility.friends"
       class="icon-inline"
     />
-    <Groups v-else class="icon-inline" />
+    <IconsGroups
+      v-else-if="visibility === ListVisibility.anyone"
+      class="icon-inline"
+    />
     {{ listVisibilityText }}
   </div>
 </template>
@@ -14,17 +20,9 @@
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import useListVisibilityOptions from "client/composables/useListVisibilityOptions";
 import { ListVisibility } from "common/enums";
-import Groups from "client/components/icons/Groups.vue";
-import People from "client/components/icons/People.vue";
-import Person from "client/components/icons/Person.vue";
 
 export default defineComponent({
   name: "ListVisibilityIndicator",
-  components: {
-    Groups,
-    People,
-    Person,
-  },
   props: {
     visibility: {
       type: String as PropType<ListVisibility>,

@@ -3,7 +3,7 @@ import { IFriendStatusPayload } from "common/types/api";
 import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
-import _getIdentityMapFromUsername from "server/methods/auth/_getIdentityMapFromUsername";
+import _getIdentityMapFromUsername from "server/methods/users/_getIdentityMapFromUsername";
 import getSelfFriendData from "./getSelfFriendData";
 
 export default async (

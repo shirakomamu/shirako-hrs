@@ -48,7 +48,7 @@
               ><ComboButton
                 class="p-0 text-orange-srk dark:text-blue-srk"
                 @click="navigate"
-                ><Dashboard class="icon-inline" />
+                ><IconsDashboard class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Dashboard</span
                 ></ComboButton
@@ -78,7 +78,7 @@
               <nuxt-link
                 :to="'/u/' + username"
                 class="text-orange-srk dark:text-blue-srk"
-                ><Person class="icon-inline" />
+                ><IconsPerson class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Profile</span
                 ></nuxt-link
@@ -86,7 +86,7 @@
               <nuxt-link
                 to="/settings"
                 class="text-orange-srk dark:text-blue-srk"
-                ><Settings class="icon-inline" />
+                ><IconsSettings class="icon-inline" />
                 <span class="hover:underline focus:underline"
                   >Settings</span
                 ></nuxt-link
@@ -99,7 +99,7 @@
               alt="Sign out"
               class="text-sm text-red-500 border border-red-500"
               @click="signOut"
-              ><Logout class="icon-inline" /> Sign out</ComboButton
+              ><IconsLogout class="icon-inline" /> Sign out</ComboButton
             >
           </div>
         </template>
@@ -116,21 +116,11 @@ import {
   useContext,
 } from "@nuxtjs/composition-api";
 import useSelf from "client/composables/useSelf";
-import Dashboard from "client/components/icons/Dashboard.vue";
-import Logout from "client/components/icons/Logout.vue";
-import Person from "client/components/icons/Person.vue";
-import Settings from "client/components/icons/Settings.vue";
 import hrbacCan from "common/utils/hrbacCan";
 import { Role } from "common/enums/hrbac";
 
 export default defineComponent({
   name: "AppHeader",
-  components: {
-    Dashboard,
-    Logout,
-    Person,
-    Settings,
-  },
   setup() {
     const context = useContext();
     const self = useSelf();

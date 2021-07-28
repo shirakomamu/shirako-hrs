@@ -70,7 +70,7 @@
         class="text-sm border border-blue-srk text-blue-srk"
         :disabled="isCreatingList"
         :loading="isCreatingList"
-        ><PlaylistAdd class="icon-inline" /> Create list</ComboButton
+        ><IconsPlaylistAdd class="icon-inline" /> Create list</ComboButton
       >
     </form>
   </Modal>
@@ -92,13 +92,9 @@ import { DestinationListModel } from "client/models";
 import { ListVisibility } from "common/enums";
 import uniqueId from "common/utils/uniqueId";
 import Input from "client/components/Input.vue";
-import PlaylistAdd from "client/components/icons/PlaylistAdd.vue";
 
 export default defineComponent({
   name: "CreateListModal",
-  components: {
-    PlaylistAdd,
-  },
   props: {
     visible: {
       type: Boolean,

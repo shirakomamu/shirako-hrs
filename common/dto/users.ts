@@ -9,3 +9,7 @@ export type CreateFriendDto = {
 export type DeleteFriendDto = {
   username: string;
 };
+
+export type SearchMembersDto = {
+  keyword: string;
+};

@@ -8,7 +8,9 @@ import {
   CreateFriendDto,
   DeleteFriendDto,
   GetMemberDto,
+  SearchMembersDto,
 } from "common/dto/users";
+import searchMembersByUsername from "server/methods/users/searchMembersByUsername";
 
 export default class {
   public getMember = async (
@@ -51,6 +53,18 @@ export default class {
     const payload = await deleteFriendLink(
       req.locals.authResult,
       req.body as DeleteFriendDto
+    );
+
+    return new SrkResponse({ payload });
+  };
+
+  public searchMembersByUsername = async (
+    req: SrkExpressRequest,
+    _res: SrkExpressResponse
+  ) => {
+    const payload = await searchMembersByUsername(
+      req.locals.authResult,
+      req.query as SearchMembersDto
     );
 
     return new SrkResponse({ payload });

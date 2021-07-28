@@ -2,10 +2,12 @@ import SrkResponse from "server/classes/SrkResponse";
 import { SrkExpressRequest, SrkExpressResponse } from "server/services/jwt";
 import {
   AddItemToListDto,
+  AddUserToListDto,
   CreateListDto,
   EditListDto,
   GetListDto,
   RemoveItemFromListDto,
+  RemoveUserFromListDto,
   SearchListsDto,
 } from "common/dto/lists";
 import addItemToList from "server/methods/lists/addItemToList";
@@ -15,6 +17,8 @@ import deleteDestinationList from "server/methods/lists/deleteDestinationList";
 import searchDestinationLists from "server/methods/lists/searchDestinationLists";
 import createDestinationList from "server/methods/lists/createDestinationList";
 import getDestinationList from "server/methods/lists/getDestinationList";
+import addUserToList from "server/methods/lists/addUserToList";
+import removeUserFromList from "server/methods/lists/removeUserFromList";
 
 export default class {
   public searchDestinationLists = async (
@@ -101,6 +105,30 @@ export default class {
     const payload = await removeItemFromList(
       req.locals.authResult,
       req.params as RemoveItemFromListDto
+    );
+
+    return new SrkResponse({ payload });
+  };
+
+  public addUserToList = async (
+    req: SrkExpressRequest,
+    _res: SrkExpressResponse
+  ) => {
+    const payload = await addUserToList(
+      req.locals.authResult,
+      req.params as AddUserToListDto
+    );
+
+    return new SrkResponse({ payload });
+  };
+
+  public removeUserFromList = async (
+    req: SrkExpressRequest,
+    _res: SrkExpressResponse
+  ) => {
+    const payload = await removeUserFromList(
+      req.locals.authResult,
+      req.params as RemoveUserFromListDto
     );
 
     return new SrkResponse({ payload });

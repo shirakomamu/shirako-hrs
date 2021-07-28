@@ -23,12 +23,15 @@
         />
       </div>
       <div class="check-mark px-2 w-10">
-        <Loader v-if="indicatorState === 'loading'" />
-        <Error
+        <IconsLoader v-if="indicatorState === 'loading'" />
+        <IconsError
           v-else-if="indicatorState === 'failure'"
           class="text-yellow-600 dark:text-yellow-500"
         />
-        <Check v-else-if="indicatorState === 'success'" class="text-blue-srk" />
+        <IconsCheck
+          v-else-if="indicatorState === 'success'"
+          class="text-blue-srk"
+        />
       </div>
     </div>
     <slot />
@@ -53,14 +56,10 @@ import {
   watch,
   PropType,
 } from "@nuxtjs/composition-api";
-import Loader from "client/components/icons/Loader.vue";
-import Check from "client/components/icons/Check.vue";
-import Error from "client/components/icons/Error.vue";
 import uniqueId from "common/utils/uniqueId";
 
 export default defineComponent({
   name: "Input",
-  components: { Loader, Check, Error },
   inheritAttrs: false,
   props: {
     value: {

@@ -5,10 +5,13 @@ import useSimpleGuard from "server/middleware/useSimpleGuard";
 import ListsController from "./lists.controller";
 import {
   AddItemToDestinationListValidators,
+  AddUserToDestinationListValidators,
   CreateDestinationListValidators,
   DeleteDestinationListValidators,
   EditDestinationListValidators,
   GetDestinationListValidators,
+  RemoveItemFromDestinationListValidators,
+  RemoveUserFromDestinationListValidators,
   SearchDestinationListsValidators,
 } from "./lists.validation";
 
@@ -64,9 +67,27 @@ router.delete(
   "/:username/:id/items/:destinationId",
   [
     useSimpleGuard([Role._self_destination_lists]),
-    ...AddItemToDestinationListValidators,
+    ...RemoveItemFromDestinationListValidators,
   ],
   route(controller.removeItemFromList)
+);
+
+router.post(
+  "/:username/:id/users/:targetUsername",
+  [
+    useSimpleGuard([Role._self_destination_lists]),
+    ...AddUserToDestinationListValidators,
+  ],
+  route(controller.addUserToList)
+);
+
+router.delete(
+  "/:username/:id/users/:targetUsername",
+  [
+    useSimpleGuard([Role._self_destination_lists]),
+    ...RemoveUserFromDestinationListValidators,
+  ],
+  route(controller.removeUserFromList)
 );
 
 export default router;

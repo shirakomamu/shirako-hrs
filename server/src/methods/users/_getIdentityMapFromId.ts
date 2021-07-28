@@ -1,8 +1,8 @@
-import { FriendRequestPrivacy } from "common/enums";
 import { UserIdentity } from "common/types/api";
 import getUserCached from "server/services/auth0-mgmt/getUserCached";
+import _mapAuth0ToIdentity from "./_mapAuth0ToIdentity";
 
-export default async <T extends string>(
+export default async <T extends string = string>(
   userIds: T[]
 ): Promise<Partial<Record<T, UserIdentity>>> => {
   const uniqueUserIds = userIds.filter((e, i, a) => a.indexOf(e) === i);
@@ -22,19 +22,7 @@ export default async <T extends string>(
     if (result.status === "fulfilled") {
       const userId = result.value.user_id as T;
 
-      usermap[userId] = {
-        id: userId,
-        username: result.value.username || "n/a",
-        nickname: result.value.nickname || "n/a",
-        avatar:
-          process.env.DEFAULT_PROFILE_PICTURE_OVERRIDE_URL ||
-          result.value.picture ||
-          "",
-        cohort: null,
-        isAcceptingFriends:
-          result.value.user_metadata?.privacySettings?.friendRequestPrivacy ===
-          FriendRequestPrivacy.anyone,
-      };
+      usermap[userId] = _mapAuth0ToIdentity(result.value);
     }
   }
 

@@ -59,7 +59,9 @@ export default async (
             // condition: visible to shared list
             {
               visibility: ListVisibility.list,
-              sharedWith: user,
+              sharedWith: {
+                $in: [user],
+              },
             },
             // condition: owner
             {
@@ -69,7 +71,7 @@ export default async (
         },
       ],
     },
-    ["destinations"]
+    ["destinations", "owner"]
   );
 
   const neuronStore: {

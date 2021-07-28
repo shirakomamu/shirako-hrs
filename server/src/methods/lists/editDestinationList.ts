@@ -3,7 +3,7 @@ import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import { IDestinationListPayload } from "common/types/api";
-import mapItems from "./_mapItems";
+import getDestinationList from "./getDestinationList";
 
 export default async (
   authResult: SrkCookie,
@@ -19,12 +19,9 @@ export default async (
 
   const repo = DI.destinationListRepo;
 
-  const list = await repo.findOneOrFail(
-    {
-      id,
-    },
-    ["destinations"]
-  );
+  const list = await repo.findOneOrFail({
+    id,
+  });
 
   list.name = name || list.name;
   list.description =
@@ -33,12 +30,5 @@ export default async (
 
   await repo.persistAndFlush(list);
 
-  return {
-    id: list.id,
-    name: list.name,
-    owner: authResult.actor.username,
-    description: list.description,
-    visibility: list.visibility,
-    items: mapItems(list.destinations.getItems()),
-  };
+  return await getDestinationList(authResult, { username, id });
 };

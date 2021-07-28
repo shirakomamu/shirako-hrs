@@ -42,7 +42,7 @@
           class="text-sm border w-full"
           :loading="isSearching"
           :disabled="isSearching"
-          ><Search class="icon-inline" /> Search</ComboButton
+          ><IconsSearch class="icon-inline" /> Search</ComboButton
         >
       </div>
       <div class="flex flex-row justify-end">
@@ -57,9 +57,12 @@
         </a>
       </div>
     </form>
-    <div v-if="searchResults.total >= 0" class="grid grid-cols-1 gap-2">
-      <div v-for="(item, index) in searchResults.items" :key="index">
-        <hr v-if="index === 0" class="mb-2" />
+    <div v-if="searchResults.total >= 0" class="grid grid-cols-1 gap-4">
+      <div
+        v-for="(item, index) in searchResults.items"
+        :key="index"
+        class="p-4 bg-white bg-opacity-50 dark:bg-opacity-5"
+      >
         <YelpSearchModuleItem
           :id="item.id"
           :name="item.name"
@@ -73,11 +76,10 @@
           :last-updated="item.lastUpdated"
           :show-add-button="!!managedList"
           :is-adding="loadingIds.includes(item.id)"
-          :is-added="!addedIds.includes(item.id)"
+          :is-added="addedIds.includes(item.id)"
           :disabled="disableAdd"
           @pick="onSelect"
         />
-        <hr class="mt-2" />
       </div>
 
       <div v-if="searchResults.total === 0">
@@ -101,7 +103,6 @@ import useInternalApi from "client/composables/useInternalApi";
 import useSelf from "client/composables/useSelf";
 import { BusinessSearchDto } from "common/dto/items";
 import Input from "client/components/Input.vue";
-import Search from "client/components/icons/Search.vue";
 import uniqueId from "common/utils/uniqueId";
 import { DestinationListModel } from "client/models";
 import { Item } from "@vuex-orm/core";
@@ -109,9 +110,6 @@ import { IDestinationSearchPayload } from "common/types/api/items";
 
 export default defineComponent({
   name: "YelpSearchModule",
-  components: {
-    Search,
-  },
   props: {
     managedList: {
       type: Object as PropType<Item<DestinationListModel> | null>,

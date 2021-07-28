@@ -42,7 +42,7 @@
           :loading="loading"
           :disabled="disabled"
           @click="onPick"
-          ><Add v-if="!picked" class="icon-inline" /><Remove
+          ><IconsAdd v-if="!picked" class="icon-inline" /><IconsRemove
             v-else
             class="icon-inline"
           />
@@ -57,15 +57,9 @@
 import { defineComponent, PropType } from "@nuxtjs/composition-api";
 import { Item } from "@vuex-orm/core";
 import { DestinationListModel } from "client/models";
-import Add from "client/components/icons/Add.vue";
-import Remove from "client/components/icons/Remove.vue";
 
 export default defineComponent({
   name: "DashboardListChooser",
-  components: {
-    Add,
-    Remove,
-  },
   props: {
     list: {
       type: Object as PropType<Item<DestinationListModel>>,
