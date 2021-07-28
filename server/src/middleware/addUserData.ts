@@ -3,7 +3,9 @@ import { NextFunction, Request, Response } from "express";
 // import jwksClient from "jwks-rsa";
 import { SrkCookie, AuthType } from "server/services/jwt";
 import Actor from "server/classes/Actor";
-import getUserCached from "server/services/auth0-mgmt/getUserCached";
+import getUserCached, {
+  clearCache,
+} from "server/services/auth0-mgmt/getUserCached";
 import transformUserToActor from "server/services/auth0-mgmt/transformUserToActor";
 import { splitKey, validateKey } from "server/services/api-key";
 
@@ -65,10 +67,16 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
       const { sub } = splitKey(token) as { sub: string };
       const userinfo = await getUserCached({ id: sub });
 
+      const actor = transformUserToActor(userinfo);
+
+      if (!userinfo.email_verified) {
+        clearCache({ id: actor.id, username: actor.username });
+      }
+
       req.locals.authResult = {
         authType: AuthType.auth0,
         actor: new Actor({
-          ...transformUserToActor(userinfo),
+          ...actor,
           key: true,
         }),
       } as SrkCookie;
@@ -99,9 +107,15 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
       req.oidc.accessToken.isExpired() ? req.oidc.accessToken.refresh() : null,
     ]);
 
+    const actor = transformUserToActor(userinfo);
+
+    if (!userinfo.email_verified) {
+      clearCache({ id: actor.id, username: actor.username });
+    }
+
     req.locals.authResult = {
       authType: AuthType.auth0,
-      actor: new Actor(transformUserToActor(userinfo)),
+      actor: new Actor(actor),
     } as SrkCookie;
   } catch (e) {
     req.locals.authResult = {

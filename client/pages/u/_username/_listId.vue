@@ -64,7 +64,10 @@
             :username="user.username"
             :nickname="user.nickname"
             :avatar="user.avatar"
-            :is-friend="user.friendStatus.status === FriendStatus.confirmed"
+            :is-friend="
+              user.friendStatus &&
+              user.friendStatus.status === FriendStatus.confirmed
+            "
             :is-removing="loadingUserIds.includes(user.username)"
             :show-delete-button="canModifyList"
             @pick="onRemoveUser"
