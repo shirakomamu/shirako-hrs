@@ -330,7 +330,7 @@
               max="64"
               passive-text="Your default location is not shared with anyone."
               required
-              :disabled="isDefaultLocationLoading"
+              :disabled="!emailVerified || isDefaultLocationLoading"
               :do-validation="true"
               @keyup.esc.prevent="processDefaultLocation(false)"
               @keyup.enter.prevent="processDefaultLocation(true)"

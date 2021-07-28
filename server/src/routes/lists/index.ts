@@ -21,7 +21,7 @@ const router: Router = Router();
 router.get(
   "/",
   [
-    // useSimpleGuard([Role._self_destination_lists]),
+    useSimpleGuard([Role._self_destination_lists]), // used by dashboard
     ...SearchDestinationListsValidators,
   ],
   route(controller.searchDestinationLists)
@@ -38,19 +38,28 @@ router.post(
 
 router.get(
   "/:username/:id",
-  [...GetDestinationListValidators],
+  [
+    useSimpleGuard([Role._self_profile]), // to see
+    ...GetDestinationListValidators,
+  ],
   route(controller.getDestinationList)
 );
 
 router.patch(
   "/:username/:id",
-  [...EditDestinationListValidators],
+  [
+    useSimpleGuard([Role._self_destination_lists]),
+    ...EditDestinationListValidators,
+  ],
   route(controller.editDestinationList)
 );
 
 router.delete(
   "/:username/:id",
-  [...DeleteDestinationListValidators],
+  [
+    useSimpleGuard([Role._self_destination_lists]),
+    ...DeleteDestinationListValidators,
+  ],
   route(controller.deleteDestinationList)
 );
 
