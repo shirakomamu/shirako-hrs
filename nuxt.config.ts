@@ -1,5 +1,6 @@
 import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import redirectSsl from "redirect-ssl";
 import appinfo from "./appinfo";
 // windi doesn't seem to play nice with non-root srcDir
 
@@ -38,8 +39,13 @@ export default {
     link: [
       {
         rel: "icon",
-        type: "image/x-icon",
+        type: "image/png",
         href: appinfo.favicon,
+      },
+      {
+        rel: "apple-touch-icon",
+        type: "image/png",
+        href: "/appletouch.png",
       },
     ],
   },
@@ -137,6 +143,14 @@ export default {
       short_name: appinfo.name, // displayed on desktop or mobile
       description: appinfo.description,
       lang: "en",
+      icons: [
+        {
+          src: "/images/512xt.png",
+          type: "image/png",
+          sizes: "512x512",
+        },
+      ],
+      background_color: "#191919",
     },
     icon: {
       source: appinfo.favicon,
@@ -231,7 +245,9 @@ export default {
     },
   },
 
-  serverMiddleware: ["redirect-ssl"],
+  serverMiddleware: [
+    redirectSsl.create({ enabled: process.env.NODE_ENV === "production" }),
+  ],
 
   // https://marquez.co/docs/nuxt-optimized-images/configuration
   // optimizedImages: {
