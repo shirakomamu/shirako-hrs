@@ -1,7 +1,11 @@
 <template>
   <div class="nav flex items-center px-8">
     <div class="justify-start items-center">
-      <nuxt-link v-slot="{ navigate }" :to="!self ? '/' : '/dashboard'" custom>
+      <nuxt-link
+        v-slot="{ navigate }"
+        :to="!self || !emailVerified ? '/' : '/dashboard'"
+        custom
+      >
         <div
           class="pointer space-x-4 flex flex-row items-center"
           @click="navigate"

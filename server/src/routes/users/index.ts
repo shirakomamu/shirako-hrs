@@ -15,7 +15,11 @@ import {
 const controller = new UsersController();
 const router: Router = Router();
 
-router.get("/:username", [...GetMemberValidators], route(controller.getMember));
+router.get(
+  "/:username",
+  [useSimpleGuard([Role._self_profile]), ...GetMemberValidators],
+  route(controller.getMember)
+);
 
 router.get(
   "/",
