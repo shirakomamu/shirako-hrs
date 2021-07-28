@@ -2,17 +2,7 @@
   <div class="nav flex items-center px-8">
     <div class="justify-start flex flex-grow items-center">
       <div class="text-gray-500 text-sm">
-        <span
-          >© 2021
-          <a
-            href="https://shirako.dev/"
-            target="_blank"
-            class="hover:underline focus:underline"
-            rel="noopener noreferrer"
-            >白狐マム</a
-          ></span
-        >
-        |
+        © 2021 白狐マム |
         <nuxt-link
           to="/privacy"
           class="
