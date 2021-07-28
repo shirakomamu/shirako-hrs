@@ -23,7 +23,6 @@ export const actions: ActionTree<ModuleState, ModuleState> = {
     dispatch,
     commit,
   }): Promise<ISrkResponse<ISelfIdentifyPayload>> {
-    console.log("auth/fetch called");
     const response: ISrkResponse<ISelfIdentifyPayload> = await dispatch(
       "api/send",
       {
@@ -32,8 +31,6 @@ export const actions: ActionTree<ModuleState, ModuleState> = {
       },
       { root: true }
     );
-
-    console.log("Response is", response);
 
     if (response.ok) {
       commit("setActor", response.payload.actor);
