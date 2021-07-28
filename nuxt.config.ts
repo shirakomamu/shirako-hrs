@@ -1,6 +1,5 @@
 import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
-import { defineConfig } from "windicss/helpers";
 import appinfo from "./appinfo";
 // windi doesn't seem to play nice with non-root srcDir
 
@@ -68,7 +67,7 @@ export default {
     // https://go.nuxtjs.dev/tailwindcss
     "nuxt-windicss",
     // https://go.nuxtjs.dev/pwa
-    // "@nuxtjs/pwa",
+    "@nuxtjs/pwa",
     // "@aceforth/nuxt-optimized-images",
   ],
 
@@ -125,11 +124,24 @@ export default {
     timing: false,
   },
   // PWA module configuration: https://go.nuxtjs.dev/pwa
-  // pwa: {
-  //   manifest: {
-  //     lang: "en",
-  //   },
-  // },
+  pwa: {
+    meta: {
+      theme_color: "#0089ff",
+    },
+    workbox: {
+      // enabled: true,
+      // offline: false,
+    },
+    manifest: {
+      name: appinfo.name, // actual name
+      short_name: appinfo.name, // displayed on desktop or mobile
+      description: appinfo.description,
+      lang: "en",
+    },
+    icon: {
+      source: appinfo.favicon,
+    },
+  },
 
   router: {
     middleware: ["pageGuard"],
@@ -190,7 +202,7 @@ export default {
     // configPath: "client/windi.config.ts",
     exposeConfig: false,
     viewer: false,
-    config: defineConfig({
+    config: {
       purge: [
         // "./components/**/*.vue",
         // "./layouts/**/*.vue",
@@ -216,7 +228,7 @@ export default {
         },
       },
       plugins: [],
-    }),
+    },
   },
 
   // https://marquez.co/docs/nuxt-optimized-images/configuration
