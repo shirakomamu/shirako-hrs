@@ -16,8 +16,9 @@
     </div>
     <div class="flex-grow" />
     <div class="flex items-center text-sm">
+      <IconsLoader v-if="!isActorLoaded" class="icon-inline w-8 h-8" />
       <a
-        v-if="!self"
+        v-else-if="!self"
         key="sign-in-link"
         href="/api/auth/login"
         class="
@@ -114,6 +115,7 @@ import {
   defineComponent,
   ref,
   useContext,
+  useStore,
 } from "@nuxtjs/composition-api";
 import useSelf from "client/composables/useSelf";
 import hrbacCan from "common/utils/hrbacCan";
@@ -132,6 +134,10 @@ export default defineComponent({
     const emailVerified = computed(() =>
       hrbacCan({ roles: [Role._email_verified] }, self.value)
     );
+
+    const store = useStore();
+
+    const isActorLoaded = computed(() => store.getters["auth/loaded"]);
 
     const showPopup = () => (popupVisible.value = true);
 
@@ -152,6 +158,7 @@ export default defineComponent({
       popupVisible,
       showPopup,
       signOut,
+      isActorLoaded,
       // onDashboardClick,
     };
   },

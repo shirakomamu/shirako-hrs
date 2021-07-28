@@ -4,17 +4,20 @@ import { ISrkResponse, ISelfIdentifyPayload } from "common/types/api";
 
 export const state = () => ({
   actor: null as ActorDto | null,
+  loaded: false as boolean,
 });
 
 export interface ModuleState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<ModuleState, ModuleState> = {
   actor: (state) => state.actor,
+  loaded: (state) => state.loaded,
 };
 
 export const mutations: MutationTree<ModuleState> = {
   setActor: (state, actor?: ActorDto) => {
     state.actor = actor || null;
+    state.loaded = true;
   },
 };
 
