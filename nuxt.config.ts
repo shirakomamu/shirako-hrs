@@ -1,6 +1,5 @@
 import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
-import { defineConfig } from "windicss/helpers";
 import appinfo from "./appinfo";
 // windi doesn't seem to play nice with non-root srcDir
 
@@ -203,7 +202,7 @@ export default {
     // configPath: "client/windi.config.ts",
     exposeConfig: false,
     viewer: false,
-    config: defineConfig({
+    config: {
       purge: [
         // "./components/**/*.vue",
         // "./layouts/**/*.vue",
@@ -229,7 +228,7 @@ export default {
         },
       },
       plugins: [],
-    }),
+    },
   },
 
   // https://marquez.co/docs/nuxt-optimized-images/configuration
