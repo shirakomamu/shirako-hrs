@@ -1,5 +1,6 @@
 import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import redirectSsl from "redirect-ssl";
 import appinfo from "./appinfo";
 // windi doesn't seem to play nice with non-root srcDir
 
@@ -244,7 +245,9 @@ export default {
     },
   },
 
-  serverMiddleware: ["redirect-ssl"],
+  serverMiddleware: [
+    redirectSsl.create({ enabled: process.env.NODE_ENV === "production" }),
+  ],
 
   // https://marquez.co/docs/nuxt-optimized-images/configuration
   // optimizedImages: {
