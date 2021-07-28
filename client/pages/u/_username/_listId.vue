@@ -335,8 +335,14 @@ import useListVisibilityOptions from "client/composables/useListVisibilityOption
 import { ListVisibility, FriendStatus } from "common/enums";
 import Input from "client/components/Input.vue";
 import { MAX_ITEMS_PER_LIST } from "server/config/dataLimits";
+import { Guard } from "common/types/hrbac";
 
 export default defineComponent({
+  meta: {
+    guard: {
+      roles: [Role._self_profile],
+    } as Guard,
+  },
   setup() {
     const context = useContext();
     const route = useRoute();
