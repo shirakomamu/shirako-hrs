@@ -38,7 +38,10 @@
           :show-add-button="!!managedList"
           :is-adding="loadingIds.includes(user.username)"
           :is-added="addedIds.includes(user.username)"
-          :is-friend="user.friendStatus.status === FriendStatus.confirmed"
+          :is-friend="
+            user.friendStatus &&
+            user.friendStatus.status === FriendStatus.confirmed
+          "
           @pick="onSelect"
         />
       </div>
@@ -121,8 +124,9 @@ export default defineComponent({
       if (!term.value) return;
 
       isSearching.value = true;
-      searchResults.value.users = await memberModel.apiSearch(term.value);
-      searchResults.value.total = searchResults.value.users.length;
+      const r = await memberModel.apiSearch(term.value);
+      searchResults.value.users = r;
+      searchResults.value.total = r.length;
       isSearching.value = false;
     };
 
