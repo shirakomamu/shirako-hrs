@@ -8,6 +8,7 @@
             href="https://shirako.dev/"
             target="_blank"
             class="hover:underline focus:underline"
+            rel="noopener noreferrer"
             >白狐マム</a
           ></span
         >
