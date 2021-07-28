@@ -38,8 +38,13 @@ export default {
     link: [
       {
         rel: "icon",
-        type: "image/x-icon",
+        type: "image/png",
         href: appinfo.favicon,
+      },
+      {
+        rel: "apple-touch-icon",
+        type: "image/png",
+        href: "/appletouch.png",
       },
     ],
   },
@@ -137,6 +142,14 @@ export default {
       short_name: appinfo.name, // displayed on desktop or mobile
       description: appinfo.description,
       lang: "en",
+      icons: [
+        {
+          src: "/images/512xt.png",
+          type: "image/png",
+          sizes: "512x512",
+        },
+      ],
+      background_color: "#191919",
     },
     icon: {
       source: appinfo.favicon,
