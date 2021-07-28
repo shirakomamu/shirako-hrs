@@ -55,14 +55,27 @@ import {
   defineComponent,
   onMounted,
   ref,
+  useStore,
   // useStore,
 } from "@nuxtjs/composition-api";
+import { FriendModel } from "client/models";
+import { ISelfIdentifyPayload, ISrkResponse } from "common/types/api";
 
 export default defineComponent({
   setup() {
     const refreshing = ref<boolean>(false);
     const registration = ref<null | ServiceWorkerRegistration>(null);
     const updateExists = ref<boolean>(false);
+    const store = useStore();
+
+    onMounted(async () => {
+      const r: ISrkResponse<ISelfIdentifyPayload> = await store.dispatch(
+        "auth/fetch"
+      );
+      if (r.ok && r.payload.actor?.id) {
+        await store.$db().model(FriendModel).apiLoad();
+      }
+    });
 
     // const store = useStore();
     // store.dispatch("auth/fetch");

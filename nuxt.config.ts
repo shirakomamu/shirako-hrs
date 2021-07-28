@@ -118,11 +118,7 @@ export default {
 
   privateRuntimeConfig: {
     axios: {
-      baseURL:
-        `http${process.env.NODE_ENV === "production" ? "s" : ""}://` +
-        serverConfig.host +
-        ":" +
-        serverConfig.port,
+      baseURL: "http://" + serverConfig.host + ":" + serverConfig.port,
     },
   },
 
@@ -147,7 +143,7 @@ export default {
       lang: "en",
       icons: [
         {
-          src: "/512xt.png",
+          src: "/icon.png",
           type: "image/png",
           sizes: "512x512",
         },
@@ -209,11 +205,7 @@ export default {
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    baseURL:
-      `http${process.env.NODE_ENV === "production" ? "s" : ""}://` +
-      serverConfig.host +
-      ":" +
-      serverConfig.port,
+    baseURL: "http://" + serverConfig.host + ":" + serverConfig.port,
   },
 
   // https://windicss.org/integrations/nuxt.html
@@ -252,7 +244,10 @@ export default {
   },
 
   serverMiddleware: [
-    redirectSsl.create({ enabled: process.env.NODE_ENV === "production" }),
+    redirectSsl.create({
+      enabled: process.env.NODE_ENV === "production",
+      // seems like can't set port, because needs 443 for client but PORT for server
+    }),
   ],
 
   // https://marquez.co/docs/nuxt-optimized-images/configuration
