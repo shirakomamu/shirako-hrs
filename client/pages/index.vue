@@ -2,7 +2,7 @@
   <div class="space-y-8 flex flex-col">
     <div class="relative flex flex-col flex-grow">
       <div class="tag-contents flex-grow flex flex-col p-12 gap-8">
-        <div class="flex-grow grid grid-cols-1 items-center">
+        <div class="flex flex-col flex-grow justify-center">
           <div class="space-y-8">
             <img alt="Shirako logo" class="srk-icon" width="64" height="64" />
             <p class="text-3xl">

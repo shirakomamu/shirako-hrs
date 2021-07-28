@@ -22,11 +22,7 @@ router.get("/logout", (_req, res) =>
   res.oidc.logout({ returnTo: process.env.SERVER_BASE_URI })
 );
 
-router.get(
-  "/me",
-  [useSimpleGuard([Role._self_profile])],
-  route(controller.identifyMyself)
-);
+router.get("/me", route(controller.identifyMyself));
 router.patch(
   "/me",
   [useSimpleGuard([Role._self_profile]), ...UpdateUserValidators],

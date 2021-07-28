@@ -143,7 +143,7 @@ export default {
       lang: "en",
       icons: [
         {
-          src: "/icon.png",
+          src: "/favicon.png",
           type: "image/png",
           sizes: "512x512",
         },
