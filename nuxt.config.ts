@@ -1,8 +1,8 @@
 import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import { defineConfig } from "windicss/helpers";
 import appinfo from "./appinfo";
 // windi doesn't seem to play nice with non-root srcDir
-import windiConfig from "./client/windi.config";
 
 const serverConfig = {
   host: process.env.NODE_ENV !== "production" ? "localhost" : "0.0.0.0",
@@ -190,7 +190,33 @@ export default {
     // configPath: "client/windi.config.ts",
     exposeConfig: false,
     viewer: false,
-    config: windiConfig,
+    config: defineConfig({
+      purge: [
+        // "./components/**/*.vue",
+        // "./layouts/**/*.vue",
+        // "./pages/**/*.vue",
+        // "./plugins/**/*.{js,ts}",
+        // "./nuxt.config.{js,ts}",
+      ],
+      darkMode: "media", // false or 'media' or 'class'
+      theme: {
+        extend: {
+          textColor: {
+            "blue-srk": "#0089ff",
+            "orange-srk": "#ff7600",
+          },
+          borderColor: {
+            "blue-srk": "#0089ff",
+            "orange-srk": "#ff7600",
+          },
+          backgroundColor: {
+            "blue-srk": "#0089ff",
+            "orange-srk": "#ff7600",
+          },
+        },
+      },
+      plugins: [],
+    }),
   },
 
   // https://marquez.co/docs/nuxt-optimized-images/configuration
