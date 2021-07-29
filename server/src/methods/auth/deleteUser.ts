@@ -15,7 +15,7 @@ export default async (authResult: SrkCookie): Promise<void> => {
 
   await DI.em.begin();
   try {
-    DI.em.removeAndFlush(self);
+    DI.em.remove(self);
     await deleteUser(authResult.actor.id);
     DI.em.commit();
   } catch (e) {

@@ -5,6 +5,6 @@ import ja from "javascript-time-ago/locale/ja";
 TimeAgo.addLocale(ja);
 TimeAgo.addDefaultLocale(en);
 
-const timeAgo = new TimeAgo(["ja-JP", "en-US"]);
+const timeAgo = new TimeAgo(["en-US", "ja-JP"]);
 
 export default timeAgo;

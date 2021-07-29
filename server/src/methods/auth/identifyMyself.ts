@@ -1,6 +1,7 @@
 import { SrkCookie } from "server/services/jwt";
 import { ISelfIdentifyPayload } from "common/types/api";
 import getMemberFromActor from "server/methods/users/_getMemberFromActor";
+import Actor from "server/classes/Actor";
 
 export default async (authResult: SrkCookie): Promise<ISelfIdentifyPayload> => {
   if (!authResult.actor) {
@@ -8,9 +9,9 @@ export default async (authResult: SrkCookie): Promise<ISelfIdentifyPayload> => {
   }
 
   // force internal registration upon identification
-  await getMemberFromActor(authResult);
+  const { actorDto } = await getMemberFromActor(authResult);
 
   return {
-    actor: authResult.actor,
+    actor: new Actor(actorDto),
   };
 };
