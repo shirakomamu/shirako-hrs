@@ -23,6 +23,7 @@
           transform-gpu
           hover:scale-105
           transition
+          text-center
         "
       >
         <a
@@ -60,6 +61,7 @@
           transform-gpu
           hover:scale-105
           transition
+          text-center
         "
       >
         <a
