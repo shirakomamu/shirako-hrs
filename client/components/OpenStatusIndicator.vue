@@ -31,7 +31,7 @@ export default defineComponent({
   },
   setup(props) {
     const shortOptions = {
-      labels: "short",
+      labels: "mini",
       steps: [
         { formatAs: "minute" },
         { minTime: 2 * 60 * 60, formatAs: "hour" },
