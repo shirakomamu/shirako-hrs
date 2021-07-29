@@ -8,9 +8,10 @@
       p-4
       h-full
       transition
-      bg-white bg-opacity-50
-      dark:(bg-opacity-5
-      hover:bg-opacity-10) hover:bg-opacity-70
+      bg-white/50
+      hover:bg-white/70
+      dark:(bg-white/5
+      hover:bg-white/10)
     "
   >
     <div class="grid grid-cols-1 gap-2 place-items-center">

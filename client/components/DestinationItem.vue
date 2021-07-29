@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 p-4 bg-white bg-opacity-50 dark:bg-opacity-5">
+  <div class="flex flex-col gap-4 p-4 bg-white/50 dark:bg-white/5">
     <div class="flex flex-row gap-2 items-start">
       <div class="font-semibold">
         <p>
@@ -37,9 +37,8 @@
           h-full
           w-full
           object-cover
-          bg-black
-          dark:bg-white
-          bg-opacity-5
+          bg-black/5
+          dark:bg-white/5
         "
       >
         <p class="opacity-50 uppercase">No image</p>

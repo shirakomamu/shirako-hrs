@@ -7,10 +7,10 @@
       text-center
       p-2
       transition
-      bg-white bg-opacity-50
-      hover:bg-opacity-70
-      dark:(bg-opacity-5
-      hover:bg-opacity-10)
+      bg-white/50
+      hover:bg-white/70
+      dark:(bg-white/5
+      hover:bg-white/10)
     "
   >
     <IconsPlaylistAdd class="list-icon opacity-50 h-6 w-6" />

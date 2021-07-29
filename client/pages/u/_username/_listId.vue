@@ -8,9 +8,8 @@
           hover:underline
           focus:underline
         "
-        :to="`/u/${route.params.username}`"
-        ><IconsArrowBack class="icon-inline" /> Back to
-        {{ route.params.username }}'s profile</nuxt-link
+        :to="backLink.route"
+        ><IconsArrowBack class="icon-inline" /> {{ backLink.text }}</nuxt-link
       >
       <div class="space-x-2">
         <h6 class="text-2xl dark:text-white inline">{{ title }}</h6>
@@ -356,6 +355,18 @@ export default defineComponent({
       () => (list.value?.items || []).length >= maxItems
     );
 
+    const backLink = computed(() =>
+      route.value.query.db
+        ? {
+            route: "/dashboard",
+            text: "Back to dashboard",
+          }
+        : {
+            route: `/u/${route.value.params.username}`,
+            text: `Back to ${route.value.params.username}'s profile`,
+          }
+    );
+
     // useList({
     //   username: route.value.params.username,
     //   id: route.value.params.listId,
@@ -524,6 +535,8 @@ export default defineComponent({
       console,
       route,
       listLoading,
+
+      backLink,
 
       loadingIds,
 

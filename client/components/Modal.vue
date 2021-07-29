@@ -1,16 +1,10 @@
 <template>
   <div
     ref="modalOverlay"
-    class="
-      modal-overlay
-      bg-opacity-50
-      overflow
-      grid grid-cols-1
-      justify-items-center
-    "
+    class="modal-overlay overflow grid grid-cols-1 justify-items-center"
     :class="{
       'items-center': verticalCenter,
-      'bg-black': overlay,
+      'bg-black/50': overlay,
       active: shown,
       visible: visibility,
     }"

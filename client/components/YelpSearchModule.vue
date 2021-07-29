@@ -61,7 +61,7 @@
       <div
         v-for="(item, index) in searchResults.items"
         :key="index"
-        class="p-4 bg-white bg-opacity-50 dark:bg-opacity-5"
+        class="p-4 bg-white bg-white/50 dark:bg-white/5"
       >
         <YelpSearchModuleItem
           :id="item.id"

@@ -8,6 +8,7 @@
 
     <CreateListModal
       :visible="isCreateListModalVisible"
+      :to-dashboard-after-create="true"
       @hide="isCreateListModalVisible = false"
     />
   </div>

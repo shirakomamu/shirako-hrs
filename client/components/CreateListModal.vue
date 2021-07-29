@@ -100,6 +100,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    toDashboardAfterCreate: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props, { emit }) {
     const self = useSelf();
@@ -137,7 +141,12 @@ export default defineComponent({
       isCreatingList.value = false;
 
       if (response.ok) {
-        router.push("/u/" + self.value?.username + "/" + response.payload.id);
+        router.push({
+          path: "/u/" + self.value?.username + "/" + response.payload.id,
+          query: {
+            db: props.toDashboardAfterCreate ? "1" : undefined,
+          },
+        });
       }
     };
 

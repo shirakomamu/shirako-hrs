@@ -5,8 +5,8 @@
         flex flex-col
         sm:(flex-row
         items-center)
-        bg-white bg-opacity-50
-        dark:bg-opacity-5
+        bg-white/50
+        dark:bg-white/5
         p-4
         gap-4
       "
@@ -15,7 +15,12 @@
         <div>
           <nuxt-link
             class="inline font-semibold hover:underline focus:underline"
-            :to="`/u/${list.owner}/${list.id}`"
+            :to="{
+              path: `/u/${list.owner}/${list.id}`,
+              query: {
+                db: '1',
+              },
+            }"
             >{{ list.name }}</nuxt-link
           >
           <nuxt-link
