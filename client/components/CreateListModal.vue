@@ -50,6 +50,7 @@
             <span class="italic opacity-50">(optional)</span></label
           >
           <textarea
+            :id="listDescriptionUid"
             v-model="formListDescription"
             class="list-description-form p-2 text-sm"
             rows="5"
