@@ -229,8 +229,8 @@ export default defineComponent({
     );
     const lastUpdatedString = computed(() =>
       props.lastUpdated > 0
-        ? timeAgo.format(props.lastUpdated, "round-minute")
-        : "never"
+        ? "updated " + timeAgo.format(props.lastUpdated, "round-minute")
+        : "never updated"
     );
 
     const popupVisible = ref<boolean>(false);

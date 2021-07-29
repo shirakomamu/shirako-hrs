@@ -91,7 +91,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import { format } from "date-fns";
-import timeAgo from "common/utils/timeAgo";
+// import timeAgo from "common/utils/timeAgo";
 
 export default defineComponent({
   name: "YelpSearchModuleItem",
@@ -159,10 +159,11 @@ export default defineComponent({
         ? format(props.lastUpdated, "yyyy-MM-dd HH:mm")
         : "never"
     );
-    const lastUpdatedString = computed(() =>
-      props.lastUpdated > 0
-        ? timeAgo.format(props.lastUpdated, "round-minute")
-        : "never"
+    const lastUpdatedString = computed(
+      () => ""
+      // props.lastUpdated > 0
+      //   ? "updated " + timeAgo.format(props.lastUpdated, "round-minute")
+      //   : ""
     );
 
     const addItem = () => {
