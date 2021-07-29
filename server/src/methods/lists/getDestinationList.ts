@@ -4,7 +4,7 @@ import { SrkCookie } from "server/services/jwt";
 import getUserCached from "server/services/auth0-mgmt/getUserCached";
 import { ListVisibility } from "common/enums";
 import { IDestinationListPayload, UserIdentity } from "common/types/api";
-import _getIdentityMapFromId from "../users/_getIdentityMapFromId";
+import _getIdentityMapFromId from "server/methods/users/_getIdentityMapFromId";
 import mapItems from "./_mapItems";
 
 export default async (
