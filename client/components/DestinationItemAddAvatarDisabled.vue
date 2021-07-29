@@ -8,8 +8,8 @@
       p-4
       h-full
       transition
-      bg-white bg-opacity-50
-      dark:bg-opacity-5
+      bg-white/50
+      dark:bg-white/5
     "
   >
     <div class="grid grid-cols-1 gap-2 place-items-center">

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white bg-opacity-50 dark:bg-opacity-5 p-4 sm:(py-2 px-4)">
+  <div class="bg-white/50 dark:bg-white/5 p-4 sm:(py-2 px-4)">
     <div class="flex flex-col sm:(flex-row items-center) gap-2">
       <div class="flex flex-row items-center gap-2">
         <div class="flex-shrink-0">

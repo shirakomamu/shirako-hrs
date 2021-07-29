@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8">
+  <div class="space-y-8 flex flex-col">
     <Drop
       :visible="helpVisible"
       container-class="p-8 drop-bottom drop-right bg-gray-100 dark:bg-gray-800 filter drop-shadow-lg text-sm"
@@ -33,7 +33,20 @@
         </ol>
       </template></Drop
     >
-    <div v-if="!isActivated" class="space-y-8">
+    <div
+      v-if="isActivating || isOnArtificialDelay"
+      class="flex-grow grid grid-cols-1 place-items-center"
+    >
+      <div class="grid grid-cols-1 gap-4 place-items-center">
+        <div>
+          <IconsArtificialLoader
+            class="text-8xl icon-inline text-orange-srk dark:text-blue-srk"
+          />
+        </div>
+        <p class="text-2xl text-center">{{ activatingMessage }}</p>
+      </div>
+    </div>
+    <div v-else-if="!isActivated" class="space-y-8">
       <div
         class="
           grid grid-cols-1
@@ -179,7 +192,7 @@
         </ComboButton>
       </div>
     </div>
-    <div v-else class="space-y-8">
+    <div v-else-if="isActivated" class="space-y-8">
       <ComboButton
         class="
           text-lg text-orange-srk
@@ -215,7 +228,10 @@
             <p>No neurons available.</p>
           </div>
           <div
-            v-for="(item, index) in neuronResults"
+            v-for="(item, index) in neuronResults.slice(
+              0,
+              allNeuronsShown ? neuronResults.length : 1
+            )"
             :key="item.id"
             class="space-y-2"
           >
@@ -295,6 +311,20 @@
               :last-updated="item.lastUpdated"
             />
           </div>
+
+          <ComboButton
+            v-if="neuronResults.length > 1 && !allNeuronsShown"
+            class="
+              text-orange-srk
+              dark:text-blue-srk
+              hover:underline
+              focus:underline
+              text-center
+              w-full
+            "
+            @click="allNeuronsShown = true"
+            >Show more</ComboButton
+          >
         </div>
       </div>
     </div>
@@ -385,6 +415,7 @@ export default defineComponent({
       isLoading.value = true;
       await memberModel.apiFetch(self.value?.username || "");
       isLoading.value = false;
+      allNeuronsShown.value = false;
     });
 
     const listModel = store.$db().model(DestinationListModel);
@@ -438,8 +469,13 @@ export default defineComponent({
     const listViewerVisibility = ref<boolean[]>([]);
     const activateNeurons = async () => {
       if (!selectedLists.value.length) return;
-
+      activatingMessage.value =
+        possibleMessages.value[
+          Math.floor(Math.random() * possibleMessages.value.length)
+        ];
+      isOnArtificialDelay.value = true;
       isActivating.value = true;
+      setTimeout(() => (isOnArtificialDelay.value = false), 3000);
       const r = await api<IActivatedNeuronsPayload>({
         method: "post",
         url: "/api/neurons/activate",
@@ -495,6 +531,7 @@ export default defineComponent({
 
     const deactivateNeurons = () => {
       router.push("/dashboard");
+      allNeuronsShown.value = false;
     };
 
     const time = ref<number>(Date.now());
@@ -519,11 +556,30 @@ export default defineComponent({
 
     const isActivated = ref<boolean>(false);
     const neuronResults = ref<Collection<DestinationItemModel>>([]);
+    const allNeuronsShown = ref<boolean>(false);
+    const isOnArtificialDelay = ref<boolean>(false);
+    const activatingMessage = ref<string>("Hang on tight...");
+    const possibleMessages = ref<string[]>([
+      "Hang on tight...",
+      "Activating neurons...",
+      "Working on it...",
+      "Variety is spicy...",
+      "Reticulating splines...",
+      "Don't touch my ship!",
+      "A rolling stone gathers no bugs...",
+      "Getting things ready...",
+      "Suspense is golden...",
+      "Activating almonds...",
+    ]);
 
     return {
       time,
       maxNeurons,
       maxNeuronsReached,
+      allNeuronsShown,
+      isOnArtificialDelay,
+      possibleMessages,
+      activatingMessage,
 
       member,
       helpVisible,

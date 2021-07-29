@@ -9,10 +9,9 @@
             grid grid-cols-1
             gap-4
             items-center
-            bg-gray-200
-            dark:bg-gray-700
+            bg-gray-200/50
+            dark:bg-gray-700/50
             p-8
-            bg-opacity-50
           "
         >
           <p>
@@ -437,9 +436,8 @@
               <pre
                 class="
                   text-xs
-                  bg-black
+                  bg-black/50
                   text-white
-                  bg-opacity-50
                   p-2
                   overflow-x-auto overflow-y-hidden
                 "
@@ -457,9 +455,8 @@
           <pre
             class="
               text-xs
-              bg-black
+              bg-black/50
               text-white
-              bg-opacity-50
               p-2
               overflow-x-auto overflow-y-hidden
             "
