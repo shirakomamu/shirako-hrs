@@ -35,7 +35,7 @@
     >
     <div
       v-if="isActivating || isOnArtificialDelay"
-      class="flex-grow grid grid-cols-1 place-items-center"
+      class="flex-grow flex flex-col justify-center"
     >
       <div class="grid grid-cols-1 gap-4 place-items-center">
         <div>
