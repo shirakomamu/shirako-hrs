@@ -10,6 +10,7 @@ import getWeightedRandom from "common/utils/getWeightedRandom";
 import { IDestinationItemPayload } from "common/types/api/items";
 import { MAX_NEURONS } from "server/config/dataLimits";
 import getUserCached from "server/services/auth0-mgmt/getUserCached";
+import shuffle from "common/utils/shuffle";
 
 const MERGE_EXPONENT = 2;
 const OWNER_EXPONENT = 3;
@@ -192,7 +193,10 @@ export default async (
   const selectedIds: string[] = [];
 
   if (neuronScore.length === selectedNeuronCount) {
-    selectedNeurons.push(...neuronScore);
+    console.log(neuronScore.map((e) => e.nid));
+    const randomizedNeurons = shuffle(neuronScore);
+    console.log(...randomizedNeurons.map((e) => e.nid));
+    selectedNeurons.push(...randomizedNeurons);
   } else {
     for (let i = 0; i < selectedNeuronCount; i++) {
       const selected = getWeightedRandom(
