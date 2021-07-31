@@ -15,7 +15,7 @@ export default async (
 
   const repo = DI.destinationListRepo;
 
-  const member = await getMemberFromActor(authResult);
+  const { member } = await getMemberFromActor(authResult);
 
   const list = repo.create({
     owner: member,

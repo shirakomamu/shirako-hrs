@@ -1,4 +1,4 @@
-import { NuxtConfig } from "@nuxt/types";
+// import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import redirectSsl from "redirect-ssl";
 import appinfo from "./appinfo";
@@ -45,7 +45,7 @@ export default {
       {
         rel: "apple-touch-icon",
         type: "image/png",
-        href: "/icons/192-or-w.png",
+        href: "icons/192-or-w.png",
       },
     ],
   },
@@ -258,4 +258,4 @@ export default {
   // },
 
   ignore: ["**/*.test.*", ["**/migrations/Migration*.js"]],
-} as NuxtConfig;
+};
