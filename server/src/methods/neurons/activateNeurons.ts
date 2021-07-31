@@ -193,9 +193,7 @@ export default async (
   const selectedIds: string[] = [];
 
   if (neuronScore.length === selectedNeuronCount) {
-    console.log(neuronScore.map((e) => e.nid));
     const randomizedNeurons = shuffle(neuronScore);
-    console.log(...randomizedNeurons.map((e) => e.nid));
     selectedNeurons.push(...randomizedNeurons);
   } else {
     for (let i = 0; i < selectedNeuronCount; i++) {
