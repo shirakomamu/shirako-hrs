@@ -66,10 +66,48 @@ import { ISelfIdentifyPayload, ISrkResponse } from "common/types/api";
 
 export default defineComponent({
   setup() {
+    const store = useStore();
+
+    const isAuthLoaded = computed(() => store.getters["auth/loaded"]);
     const refreshing = ref<boolean>(false);
     const registration = ref<null | ServiceWorkerRegistration>(null);
     const updateExists = ref<boolean>(false);
-    const store = useStore();
+
+    // this is called when sw receives SKIP_WAITING event
+    navigator.serviceWorker?.addEventListener("controllerchange", () => {
+      // Prevent multiple refreshes
+      if (refreshing.value) return;
+      refreshing.value = true;
+      // Here the actual reload of the page occurs
+      window.location.reload();
+    });
+
+    const refreshApp = () => {
+      // Make sure we only send a 'skip waiting' message if the SW is waiting
+      if (!registration.value || !registration.value.waiting) return;
+
+      // send message to SW to skip the waiting and activate the new SW
+      registration.value.waiting.postMessage({ type: "SKIP_WAITING" });
+    };
+
+    // Store the SW registration so we can send it a message
+    // We use `updateExists` to control whatever alert, toast, dialog, etc we want to use
+    // To alert the user there is an update they need to refresh for
+    const onUpdateAvailable = (event: {
+      detail: ServiceWorkerRegistration;
+    }) => {
+      registration.value = event.detail;
+      updateExists.value = true;
+
+      // automatic refresh when update is available
+      refreshApp();
+    };
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    document.addEventListener("swUpdated", onUpdateAvailable, {
+      once: true,
+    });
 
     onMounted(async () => {
       const r: ISrkResponse<ISelfIdentifyPayload> = await store.dispatch(
@@ -80,50 +118,12 @@ export default defineComponent({
       }
     });
 
-    const isAuthLoaded = computed(() => store.getters["auth/loaded"]);
-
-    // const store = useStore();
-    // store.dispatch("auth/fetch");
-
-    // Store the SW registration so we can send it a message
-    // We use `updateExists` to control whatever alert, toast, dialog, etc we want to use
-    // To alert the user there is an update they need to refresh for
-    const updateAvailable = (event: { detail: ServiceWorkerRegistration }) => {
-      registration.value = event.detail;
-      updateExists.value = true;
-    };
-
-    // Called when the user accepts the update
-    const refreshApp = () => {
-      updateExists.value = false;
-      // Make sure we only send a 'skip waiting' message if the SW is waiting
-      if (!registration.value || !registration.value.waiting) return;
-
-      // send message to SW to skip the waiting and activate the new SW
-      registration.value.waiting.postMessage({ type: "SKIP_WAITING" });
-    };
-
-    onMounted(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      document.addEventListener("swUpdated", updateAvailable, {
-        once: true,
-      });
-
-      // Prevent multiple refreshes
-      navigator.serviceWorker?.addEventListener("controllerchange", () => {
-        if (refreshing.value) return;
-        refreshing.value = true;
-        // Here the actual reload of the page occurs
-        window.location.reload();
-      });
-    });
-
     return {
       isAuthLoaded,
       refreshing,
       registration,
       updateExists,
+      onUpdateAvailable,
       refreshApp,
     };
   },
