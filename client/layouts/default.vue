@@ -73,15 +73,6 @@ export default defineComponent({
     const registration = ref<null | ServiceWorkerRegistration>(null);
     const updateExists = ref<boolean>(false);
 
-    // this is called when sw receives SKIP_WAITING event
-    navigator.serviceWorker?.addEventListener("controllerchange", () => {
-      // Prevent multiple refreshes
-      if (refreshing.value) return;
-      refreshing.value = true;
-      // Here the actual reload of the page occurs
-      window.location.reload();
-    });
-
     const refreshApp = () => {
       // Make sure we only send a 'skip waiting' message if the SW is waiting
       if (!registration.value || !registration.value.waiting) return;
@@ -103,13 +94,22 @@ export default defineComponent({
       refreshApp();
     };
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    document.addEventListener("swUpdated", onUpdateAvailable, {
-      once: true,
-    });
-
     onMounted(async () => {
+      // this is called when sw receives SKIP_WAITING event
+      navigator.serviceWorker?.addEventListener("controllerchange", () => {
+        // Prevent multiple refreshes
+        if (refreshing.value) return;
+        refreshing.value = true;
+        // Here the actual reload of the page occurs
+        window.location.reload();
+      });
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      document.addEventListener("swUpdated", onUpdateAvailable, {
+        once: true,
+      });
+
       const r: ISrkResponse<ISelfIdentifyPayload> = await store.dispatch(
         "auth/fetch"
       );
