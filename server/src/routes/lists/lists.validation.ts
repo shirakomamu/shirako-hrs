@@ -22,6 +22,15 @@ export const SearchDestinationListsValidators = [
   }),
 ];
 
+export const GetListsOfInterestValidators = [
+  ...checkSchema({
+    username: {
+      in: ["params"],
+      ...SelfUsernameParamSchema,
+    },
+  }),
+];
+
 export const CreateDestinationListValidators = [
   ...checkSchema({
     username: {

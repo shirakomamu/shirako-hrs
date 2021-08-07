@@ -5,6 +5,7 @@ import updateUser from "server/services/auth0-mgmt/updateUser";
 import { UpdateUserDto } from "common/dto/auth";
 import { Role } from "common/enums/hrbac";
 import hrbacCan from "common/utils/hrbacCan";
+import { clearCache } from "server/services/auth0-mgmt/getUserCached";
 
 export default async (
   authResult: SrkCookie,
@@ -22,6 +23,10 @@ export default async (
   }
 
   try {
+    if (username || nickname || email) {
+      await clearCache({ username: authResult.actor.username }); // to clear cache for old one
+    }
+
     const response = await updateUser(authResult.actor.id, {
       username,
       nickname,

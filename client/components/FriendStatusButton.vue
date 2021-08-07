@@ -4,8 +4,8 @@
       v-if="friendStatus === FriendStatus.confirmed"
       alt="Remove friend"
       class="bg-red-500 text-white text-sm"
-      :loading="isLoading"
-      :disabled="isLoading"
+      :loading="isRemoving"
+      :disabled="isRemoving"
       @click="onRemove"
     >
       <IconsPersonRemove class="icon-inline" />
@@ -15,8 +15,8 @@
       <ComboButton
         alt="Accept friend request"
         class="bg-green-600 text-white text-sm"
-        :loading="isLoading"
-        :disabled="isLoading"
+        :loading="isAdding"
+        :disabled="isAdding || isRemoving"
         @click="onAdd"
       >
         <IconsCheck class="icon-inline" />
@@ -26,8 +26,8 @@
       <ComboButton
         alt="Reject friend request"
         class="bg-red-500 text-white text-sm"
-        :loading="isLoading"
-        :disabled="isLoading"
+        :loading="isRemoving"
+        :disabled="isAdding || isRemoving"
         @click="onRemove"
       >
         <IconsNotInterested class="icon-inline" />
@@ -37,8 +37,8 @@
     <ComboButton
       v-else-if="friendStatus === FriendStatus.pendingOutgoing"
       class="bg-orange-srk text-white text-sm"
-      :loading="isLoading"
-      :disabled="isLoading"
+      :loading="isRemoving"
+      :disabled="isRemoving"
       @click="onRemove"
     >
       <IconsClose class="icon-inline" />
@@ -48,8 +48,8 @@
       v-else-if="isAcceptingFriends && canAddFriends"
       alt="Send friend request"
       class="bg-blue-srk text-white text-sm"
-      :loading="isLoading"
-      :disabled="isLoading"
+      :loading="isAdding"
+      :disabled="isAdding"
       @click="onAdd"
     >
       <IconsPersonAdd class="icon-inline" />
@@ -107,23 +107,31 @@ export default defineComponent({
   setup(props) {
     const self = useSelf();
     const canAddFriends = hrbacCan({ roles: [Role._self_friends] }, self.value);
-    const isLoading = ref<boolean>(false);
+    const isAdding = ref<boolean>(false);
+    const isRemoving = ref<boolean>(false);
 
     const store = useStore();
     const model = store.$db().model(FriendModel);
 
     const onAdd = async () => {
-      isLoading.value = true;
+      isAdding.value = true;
       await model.apiCreateFriend(props.username);
-      isLoading.value = false;
+      isAdding.value = false;
     };
     const onRemove = async () => {
-      isLoading.value = true;
+      isRemoving.value = true;
       await model.apiDeleteFriend(props.username);
-      isLoading.value = false;
+      isRemoving.value = false;
     };
 
-    return { FriendStatus, canAddFriends, isLoading, onAdd, onRemove };
+    return {
+      FriendStatus,
+      canAddFriends,
+      isAdding,
+      isRemoving,
+      onAdd,
+      onRemove,
+    };
   },
 });
 </script>

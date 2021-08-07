@@ -1,5 +1,6 @@
 import { Model } from "@vuex-orm/core";
 import { AxiosRequestConfig } from "axios";
+import { ActorDto } from "common/dto/auth";
 import {
   AddItemToListDto,
   AddUserToListDto,
@@ -14,6 +15,7 @@ import { ListVisibility } from "common/enums";
 import {
   IDestinationListPayload,
   IDestinationListsPayload,
+  IListsOfInterestPayload,
   ISrkResponse,
 } from "common/types/api";
 import DestinationItemModel from "./DestinationItem.model";
@@ -38,6 +40,7 @@ export default class extends Model {
   public items!: DestinationItemModel[];
   public users!: MemberModel[];
   private itemsLoaded!: boolean;
+  private isOfInterest!: boolean;
 
   public static fields() {
     return {
@@ -59,6 +62,7 @@ export default class extends Model {
         "username"
       ),
       itemsLoaded: this.boolean(false),
+      isOfInterest: this.boolean(false),
     };
   }
 
@@ -78,6 +82,27 @@ export default class extends Model {
 
   public static get fetching(): boolean {
     return this.getMeta().fetching || false;
+  }
+
+  public static async getListsOfInterest() {
+    const self = this.store().getters["auth/actor"] as ActorDto | null;
+    if (!self) return;
+    const response: ISrkResponse<IListsOfInterestPayload> =
+      await this.store().dispatch("api/send", {
+        method: "get",
+        url: "/api/lists/" + self.username,
+      });
+
+    if (response.ok) {
+      this.insertOrUpdate({
+        data: response.payload.lists.map((e) => ({
+          ...e,
+          isOfInterest: true,
+        })),
+      });
+    }
+
+    return response;
   }
 
   public static async apiCreateList(username: string, data: CreateListDto) {

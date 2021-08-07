@@ -149,7 +149,7 @@
                 v-for="(list, index) in destinationLists"
                 v-slot="{ navigate }"
                 :key="index"
-                :to="`/u/${route.params.username}/${list.id}`"
+                :to="`/u/${list.owner}/${list.id}`"
                 custom
               >
                 <ComboButton
@@ -169,7 +169,9 @@
                         py-8
                       "
                     >
-                      <p class="text-sm font-semibold">{{ list.name }}</p>
+                      <div>
+                        <p class="text-sm font-semibold">{{ list.name }}</p>
+                      </div>
                       <ListVisibilityIndicator
                         :visibility="list.visibility"
                         class="absolute left-0 bottom-0"
@@ -179,6 +181,87 @@
                 </ComboButton>
               </nuxt-link>
             </template>
+          </div>
+          <div v-else class="grid grid-flow-row grid-cols-1 gap-4 items-center">
+            <p>No lists available.</p>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="isMe" class="grid grid-cols-1 gap-4">
+        <div class="flex flex-row gap-4 items-center">
+          <h6 class="text-2xl dark:text-white">
+            <IconsList class="icon-inline" /> Shared with me
+          </h6>
+        </div>
+
+        <div
+          class="
+            grid grid-cols-1
+            gap-4
+            items-center
+            bg-gray-200
+            dark:bg-gray-700
+            p-8
+          "
+        >
+          <div
+            v-if="listsOfInterest.length"
+            class="
+              grid grid-cols-1
+              sm:grid-cols-2
+              md:grid-cols-4
+              lg:grid-cols-6
+              xl:grid-cols-8
+              gap-4
+            "
+          >
+            <nuxt-link
+              v-for="(list, index) in listsOfInterest"
+              v-slot="{ navigate }"
+              :key="index"
+              :to="`/u/${list.owner}/${list.id}`"
+              custom
+            >
+              <ComboButton
+                class="p-0 h-full w-full"
+                :alt="list.name"
+                @click="navigate"
+              >
+                <DestinationListAvatar>
+                  <div
+                    class="
+                      relative
+                      grid grid-cols-1
+                      items-center
+                      justify-items-center
+                      h-full
+                      w-full
+                      py-8
+                    "
+                  >
+                    <div>
+                      <p class="text-sm font-semibold">{{ list.name }}</p>
+                      <nuxt-link
+                        v-if="list.owner !== route.params.username"
+                        class="
+                          text-sm
+                          opacity-50
+                          hover:underline
+                          focus:underline
+                        "
+                        :to="list.owner"
+                        >@{{ list.owner }}</nuxt-link
+                      >
+                    </div>
+                    <ListVisibilityIndicator
+                      :visibility="list.visibility"
+                      class="absolute left-0 bottom-0"
+                    />
+                  </div>
+                </DestinationListAvatar>
+              </ComboButton>
+            </nuxt-link>
           </div>
           <div v-else class="grid grid-flow-row grid-cols-1 gap-4 items-center">
             <p>No lists available.</p>
@@ -297,7 +380,7 @@ import {
 } from "@nuxtjs/composition-api";
 import hrbacCan from "common/utils/hrbacCan";
 import useSelf from "client/composables/useSelf";
-import { FriendModel, MemberModel } from "client/models";
+import { DestinationListModel, FriendModel, MemberModel } from "client/models";
 import { FriendStatus } from "common/enums";
 
 export default defineComponent({
@@ -312,6 +395,7 @@ export default defineComponent({
     const self = useSelf();
     const store = useStore();
     const model = store.$db().model(MemberModel);
+    const listModel = store.$db().model(DestinationListModel);
 
     const member = computed(() =>
       model
@@ -320,16 +404,16 @@ export default defineComponent({
         .with("friendStatus")
         .find(route.value.params.username)
     );
+    const listsOfInterest = computed(() =>
+      listModel.query().where("isOfInterest", true).get()
+    );
 
     watch(
       () => route.value.params.username,
       async (value: string, oldValue: string) => {
         if (value.toLowerCase() === oldValue.toLowerCase()) return;
-        const r = await model.apiFetch(value);
 
-        if (!r) {
-          return context.error({ statusCode: 404 });
-        }
+        await loadData();
       }
     );
 
@@ -380,14 +464,21 @@ export default defineComponent({
       allFriends.value.filter((e) => e.status === FriendStatus.pendingIncoming)
     );
 
-    onMounted(async () => {
+    const loadData = async () => {
       pIndex.value = Math.floor(Math.random() * p.value.length);
       store.$db().model(FriendModel).apiLoad();
+      if (route.value.params.username === self.value?.username) {
+        listModel.getListsOfInterest();
+      }
       const r = await model.apiFetch(route.value.params.username);
 
       if (!r) {
         return context.error({ statusCode: 404 });
       }
+    };
+
+    onMounted(async () => {
+      await loadData();
     });
 
     const isCreateListModalVisible = ref<boolean>(false);
@@ -413,6 +504,7 @@ export default defineComponent({
       canAddFriends,
       canCreateList,
 
+      listsOfInterest,
       destinationLists,
 
       isCreateListModalVisible,

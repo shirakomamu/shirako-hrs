@@ -139,6 +139,9 @@
               <DestinationItemAddAvatarDisabled />
             </ComboButton>
           </nuxt-link>
+          <p v-if="!list.items.length && !isMe" class="m-4">
+            No items in list.
+          </p>
           <DestinationItem
             v-for="item in list.items"
             :id="item.id"

@@ -199,6 +199,17 @@ export default {
         },
       },
     },
+    // https://github.com/nuxt/nuxt.js/issues/9224
+    babel: {
+      plugins: [
+        [
+          "@babel/plugin-proposal-private-property-in-object",
+          {
+            loose: true,
+          },
+        ],
+      ],
+    },
     // babel: {
     //   plugins: ["@nuxtjs/composition-api/dist/babel-plugin"],
     // },

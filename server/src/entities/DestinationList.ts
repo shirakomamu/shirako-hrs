@@ -29,7 +29,7 @@ export class DestinationList extends BaseEntity {
 export default new EntitySchema<DestinationList, BaseEntity>({
   class: DestinationList,
   properties: {
-    owner: { entity: () => Member, reference: "m:1" },
+    owner: { entity: () => Member, reference: "m:1", onDelete: "cascade" },
     name: { type: "string" },
     description: { type: "string", nullable: true },
     visibility: { enum: true, items: () => ListVisibility },
