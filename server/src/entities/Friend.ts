@@ -1,5 +1,4 @@
-import assert from "common/utils/assert";
-import { ChangeSetType, EntitySchema, FlushEventArgs } from "@mikro-orm/core";
+import { EntitySchema } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Member } from "./Member";
 
@@ -15,45 +14,13 @@ export class Friend extends BaseEntity {
     this.user = user;
     this.friend = friend;
   }
-
-  async deleteReversePair(e: FlushEventArgs) {
-    const changeSets = e.uow.getChangeSets();
-    const cs = changeSets.filter(
-      (cs) => cs.type === ChangeSetType.DELETE && cs.entity instanceof Friend
-    );
-
-    if (!cs.length) return;
-
-    const repo = e.em.getRepository(Friend);
-
-    const entitiesToDelete = (
-      await Promise.all(
-        cs.map((f) => {
-          const thisEntity = f.entity as this;
-          const originatingUser = thisEntity.user;
-          const targetUser = thisEntity.friend;
-
-          return repo.findOne({
-            user: targetUser,
-            friend: originatingUser,
-          });
-        })
-      )
-    ).filter((f) => f);
-
-    assert<Friend[]>(entitiesToDelete);
-
-    if (!entitiesToDelete.length) return;
-
-    entitiesToDelete.forEach((f) => repo.remove(f));
-  }
 }
 
 export default new EntitySchema<Friend, BaseEntity>({
   class: Friend,
   properties: {
-    user: { entity: () => Member, reference: "m:1" },
-    friend: { entity: () => Member, reference: "m:1" },
+    user: { entity: () => Member, reference: "m:1", onDelete: "cascade" },
+    friend: { entity: () => Member, reference: "m:1", onDelete: "cascade" },
   },
   uniques: [
     {
@@ -61,7 +28,4 @@ export default new EntitySchema<Friend, BaseEntity>({
       name: "userFriend",
     },
   ],
-  hooks: {
-    beforeFlush: ["deleteReversePair"],
-  },
 });

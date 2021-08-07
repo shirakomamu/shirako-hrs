@@ -56,6 +56,48 @@ export class Member extends BaseEntity {
       .map((e) => e.member);
   }
 
+  // async deleteFriendPair(e: FlushEventArgs) {
+  //   console.log("Delete reverse pair called");
+  //   const changeSets = e.uow.getChangeSets();
+  //   const cs = changeSets.filter(
+  //     (cs) => cs.type === ChangeSetType.DELETE && cs.entity instanceof Member
+  //   );
+
+  //   console.log("Change sets", cs);
+
+  //   if (!cs.length) return;
+
+  //   const repo = e.em.getRepository(Friend);
+
+  //   const [entitiesToDelete] = await Promise.all(
+  //     cs.flatMap((f) => {
+  //       const thisEntity = f.entity;
+
+  //       return repo.find({
+  //         $or: [
+  //           {
+  //             user: thisEntity,
+  //           },
+  //           {
+  //             friend: thisEntity,
+  //           },
+  //         ],
+  //       });
+  //     })
+  //   );
+
+  //   console.log("Entities to delete", entitiesToDelete);
+
+  //   if (!entitiesToDelete.length) return;
+
+  //   console.log(
+  //     "Deleting reverse pair",
+  //     entitiesToDelete.map((e) => `${e.user}:${e.friend}`).join("/")
+  //   );
+
+  //   entitiesToDelete.forEach((f) => repo.remove(f));
+  // }
+
   // get pendingOutgoingFriends(): Member[] {
   //   const outFriends = this.outgoingFriends.getItems();
   //   const inFriends = this.incomingFriends.getItems();
@@ -133,4 +175,7 @@ export default new EntitySchema<Member, BaseEntity>({
     //   lazy: true,
     // },
   },
+  // hooks: {
+  //   beforeFlush: ["deleteFriendPair"],
+  // },
 });

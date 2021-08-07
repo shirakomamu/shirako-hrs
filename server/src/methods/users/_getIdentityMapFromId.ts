@@ -5,10 +5,12 @@ import _mapAuth0ToIdentity from "./_mapAuth0ToIdentity";
 export default async <T extends string = string>(
   userIds: T[]
 ): Promise<Partial<Record<T, UserIdentity>>> => {
-  const uniqueUserIds = userIds.filter((e, i, a) => a.indexOf(e) === i);
+  const uniqueUserIds = userIds.filter((e, i, a) => !!e && a.indexOf(e) === i);
+  if (!uniqueUserIds.length) return {};
   const uniqueUsers = await Promise.allSettled(
     uniqueUserIds.map((e) => getUserCached({ id: e }))
   );
+
   const usermap: Partial<Record<T, UserIdentity>> = {};
 
   // for (const id of uniqueUserIds) {

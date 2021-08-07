@@ -4,6 +4,7 @@ import SrkError from "server/classes/SrkError";
 import { DI } from "server/middleware/initializeDi";
 import { SrkCookie } from "server/services/jwt";
 import _getIdentityMapFromUsername from "server/methods/users/_getIdentityMapFromUsername";
+import _getIdentityMapFromId from "./_getIdentityMapFromId";
 
 export default async (
   authResult: SrkCookie,
@@ -16,7 +17,7 @@ export default async (
   const [targetUserMap, self] = await Promise.all([
     _getIdentityMapFromUsername([username]),
     authResult.actor
-      ? DI.memberRepo.findOne({ sub: authResult.actor.id }, [
+      ? DI.memberRepo.findOneOrFail({ sub: authResult.actor.id }, [
           "outgoingFriends",
           "incomingFriends",
         ])
@@ -29,11 +30,28 @@ export default async (
   }
 
   const confirmedFriends = self?.confirmedFriends.map((e) => e.id) || [];
-  const orArray: object[] = [
-    // condition: visible to anyone
-    {
-      visibility: ListVisibility.anyone,
-    },
+  const orArray: object[] = [];
+
+  // if the user is logged in, then...
+  if (self) {
+    orArray.push(
+      // condition: visible to shared list
+      {
+        visibility: ListVisibility.list,
+        sharedWith: {
+          $in: [self],
+        },
+      },
+      // condition: owner
+      {
+        owner: {
+          $in: [self], // otherwise "owner" can't be populated if it's not self...
+        },
+      }
+    );
+  }
+
+  orArray.push(
     // condition: visible to confirmed friends
     {
       visibility: ListVisibility.friends,
@@ -41,32 +59,30 @@ export default async (
         $in: confirmedFriends,
       },
     },
-  ];
+    // condition: visible to anyone
+    {
+      visibility: ListVisibility.anyone,
+    }
+  );
 
-  if (self) {
-    orArray.push(
-      // condition: visible to shared list
-      {
-        visibility: ListVisibility.list,
-        sharedWith: self,
-      },
-      // condition: owner
-      {
-        owner: self,
-      }
-    );
-  }
+  const jointCondition: { [key: string]: any } = {};
 
-  const listsEntities = await DI.destinationListRepo.find({
-    owner: {
-      sub: targetUser.id,
-    },
-    $or: orArray,
-  });
+  // only get lists owned by this user
+  jointCondition.owner = { sub: targetUser.id };
+  jointCondition.$or = orArray;
+
+  const listsEntities = await DI.destinationListRepo.find(jointCondition, [
+    "owner",
+  ]);
+
+  const usermap = await _getIdentityMapFromId(
+    listsEntities.map((e) => e.owner.sub)
+  );
 
   const lists = listsEntities.map((e) => ({
     id: e.id,
-    owner: targetUser.username,
+    owner: usermap[e.owner.sub]?.username || "n/a",
+    // owner: targetUser.username, // not applicable anymore if possible to get other users' lists
     name: e.name,
     description: e.description,
     visibility: e.visibility,

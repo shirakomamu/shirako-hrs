@@ -5,7 +5,7 @@ import getUserCached from "server/services/auth0-mgmt/getUserCached";
 import { ListVisibility } from "common/enums";
 import { IDestinationListsPayload } from "common/types/api";
 import SrkError from "server/classes/SrkError";
-import { searchForUsersByUsername } from "server/services/auth0-mgmt/getUserByUsername";
+import { searchForUsersByUsernameOrNickname } from "server/services/auth0-mgmt/getUserByUsername";
 
 export default async (
   authResult: SrkCookie,
@@ -23,7 +23,7 @@ export default async (
       "outgoingFriends",
       "incomingFriends",
     ]),
-    searchForUsersByUsername(keyword),
+    searchForUsersByUsernameOrNickname(keyword),
   ]);
 
   const confirmedFriends = user.confirmedFriends.map((e) => e.id) || [];

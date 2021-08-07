@@ -16,7 +16,12 @@ export class ApiKey extends BaseEntity {
 export default new EntitySchema<ApiKey, BaseEntity>({
   class: ApiKey,
   properties: {
-    owner: { entity: () => Member, mappedBy: "apiKey", reference: "1:1" },
+    owner: {
+      entity: () => Member,
+      mappedBy: "apiKey",
+      reference: "1:1",
+      onDelete: "cascade",
+    },
     key: { type: "string" },
   },
 });

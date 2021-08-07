@@ -26,12 +26,12 @@ export default async (
   const repo = DI.destinationListRepo;
   const memberRepo = DI.memberRepo;
 
-  const user = await memberRepo.findOneOrFail({ sub: authResult.actor?.id }, [
+  const self = await memberRepo.findOneOrFail({ sub: authResult.actor?.id }, [
     "outgoingFriends",
     "incomingFriends",
   ]);
 
-  const confirmedFriends = user.confirmedFriends.map((e) => e.id) || [];
+  const confirmedFriends = self.confirmedFriends.map((e) => e.id) || [];
 
   const lists = await repo.find(
     {
@@ -61,12 +61,14 @@ export default async (
             {
               visibility: ListVisibility.list,
               sharedWith: {
-                $in: [user],
+                $in: [self],
               },
             },
             // condition: owner
             {
-              owner: user,
+              owner: {
+                $in: [self],
+              },
             },
           ],
         },

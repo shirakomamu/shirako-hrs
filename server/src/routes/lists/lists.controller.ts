@@ -19,6 +19,7 @@ import createDestinationList from "server/methods/lists/createDestinationList";
 import getDestinationList from "server/methods/lists/getDestinationList";
 import addUserToList from "server/methods/lists/addUserToList";
 import removeUserFromList from "server/methods/lists/removeUserFromList";
+import getListsOfInterest from "server/methods/lists/getListsOfInterest";
 
 export default class {
   public searchDestinationLists = async (
@@ -130,6 +131,15 @@ export default class {
       req.locals.authResult,
       req.params as RemoveUserFromListDto
     );
+
+    return new SrkResponse({ payload });
+  };
+
+  public getListsOfInterest = async (
+    req: SrkExpressRequest,
+    _res: SrkExpressResponse
+  ) => {
+    const payload = await getListsOfInterest(req.locals.authResult);
 
     return new SrkResponse({ payload });
   };

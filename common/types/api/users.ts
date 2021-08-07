@@ -9,6 +9,10 @@ export interface IMemberPayload {
   lists: DestinationListMetadata[];
 }
 
+export interface IListsOfInterestPayload {
+  lists: DestinationListMetadata[];
+}
+
 export interface UserIdentity {
   id: string;
   username: string;

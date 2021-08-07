@@ -74,7 +74,7 @@
                   type="text"
                   name="searchTerm"
                   classes="p-2 text-sm w-full"
-                  passive-text="Search by list name, description, or username."
+                  passive-text="Search by list name, description, username, or nickname."
                   min="1"
                   max="64"
                   :do-validation="true"
@@ -106,7 +106,7 @@
               </div>
             </template>
           </Drop>
-          <p class="text-xl dark:text-white font-semibold">My lists</p>
+          <p class="text-xl dark:text-white font-semibold">Quick lists</p>
           <div
             class="
               flex-grow
@@ -399,12 +399,16 @@ export default defineComponent({
         .with(["lists", "lists.items"])
         .find(self.value?.username || "")
     );
-    const destinationLists = computed(
-      () =>
-        member.value?.lists.sort((a, b) =>
-          (a.name || "").localeCompare(b.name)
-        ) || []
-    );
+    const destinationLists = computed(() => [
+      ...(member.value?.lists || []).sort((a, b) =>
+        (a.name || "").localeCompare(b.name)
+      ),
+      ...listModel
+        .query()
+        .where("isOfInterest", true)
+        .get()
+        .sort((a, b) => (a.name || "").localeCompare(b.name)),
+    ]);
     const unselectedLists = computed(() =>
       destinationLists.value.filter(
         (e) => !selectedListsIds.value.includes(e.id)
@@ -413,7 +417,10 @@ export default defineComponent({
 
     onMounted(async () => {
       isLoading.value = true;
-      await memberModel.apiFetch(self.value?.username || "");
+      await Promise.all([
+        memberModel.apiFetch(self.value?.username || ""),
+        listModel.getListsOfInterest(),
+      ]);
       isLoading.value = false;
       allNeuronsShown.value = false;
     });
@@ -521,6 +528,7 @@ export default defineComponent({
     watch(
       () => route.value.query.neurons,
       (newNeuronState) => {
+        allNeuronsShown.value = false;
         if (newNeuronState !== "activated") {
           isActivated.value = false;
         } else if (newNeuronState === "activated" && hasActivated.value) {

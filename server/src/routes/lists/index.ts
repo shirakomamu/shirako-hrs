@@ -10,6 +10,7 @@ import {
   DeleteDestinationListValidators,
   EditDestinationListValidators,
   GetDestinationListValidators,
+  GetListsOfInterestValidators,
   RemoveItemFromDestinationListValidators,
   RemoveUserFromDestinationListValidators,
   SearchDestinationListsValidators,
@@ -25,6 +26,13 @@ router.get(
     ...SearchDestinationListsValidators,
   ],
   route(controller.searchDestinationLists)
+);
+
+// does NOT get user's lists, but rather lists shared with them and friends' lists (so it validates username is self)
+router.get(
+  "/:username",
+  [useSimpleGuard([Role._self_profile]), ...GetListsOfInterestValidators],
+  route(controller.getListsOfInterest)
 );
 
 router.post(
