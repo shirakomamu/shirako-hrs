@@ -91,7 +91,6 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import { format } from "date-fns";
-// import timeAgo from "common/utils/timeAgo";
 
 export default defineComponent({
   name: "YelpSearchModuleItem",
