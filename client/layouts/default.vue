@@ -63,6 +63,9 @@ import {
 } from "@nuxtjs/composition-api";
 import { FriendModel } from "client/models";
 import { ISelfIdentifyPayload, ISrkResponse } from "common/types/api";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+import ja from "javascript-time-ago/locale/ja";
 
 export default defineComponent({
   setup() {
@@ -95,6 +98,21 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      // initialize ta with user's language if available
+      const getLanguage = () =>
+        (navigator &&
+          navigator.languages &&
+          navigator.languages.length &&
+          navigator.languages[0]) ||
+        navigator.language ||
+        "en";
+
+      TimeAgo.addDefaultLocale(en);
+      TimeAgo.addLocale(ja);
+
+      const timeAgo = new TimeAgo(getLanguage());
+      store.commit("setTimeAgo", timeAgo);
+
       // this is called when sw receives SKIP_WAITING event
       navigator.serviceWorker?.addEventListener("controllerchange", () => {
         // Prevent multiple refreshes

@@ -1,20 +1,23 @@
-# shirako-hrs
+### [Shirako Eats](https://eats.shirako.dev)
 
-## Build Setup
+Full-stack app built on Nuxt.js with an Express server middleware.
 
-```bash
-# install dependencies
-$ npm install
+### Requirements
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+This app is currently configured to be deployed on Heroku. You must have the following services:
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+- PostgreSQL
+- Redis
+- SendGrid
 
-# generate static project
-$ npm run generate
-```
+If you wish to decouple this app from Heroku such as to deploy it within AWS or Google Cloud, you need to configure their connections within the environment variables yourself.
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+You must also obtain an API key from Yelp and configure a tenant within Auth0.
+
+### Development
+
+Run the local dev server with HMR with `npm run dev`.
+
+### Deployment
+
+Build the client with `npm run build` and start the production server with `npm run start`.

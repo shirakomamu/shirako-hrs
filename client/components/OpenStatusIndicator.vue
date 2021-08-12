@@ -9,8 +9,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
-import timeAgo from "common/utils/timeAgo";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  useStore,
+} from "@nuxtjs/composition-api";
+import TimeAgo from "javascript-time-ago";
 import { FormatStyle } from "javascript-time-ago/style";
 
 export default defineComponent({
@@ -30,6 +35,9 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const store = useStore();
+    const timeAgo = store.getters.timeAgo as TimeAgo;
+
     const shortOptions = {
       labels: "mini",
       steps: [

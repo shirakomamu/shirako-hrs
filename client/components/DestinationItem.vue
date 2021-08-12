@@ -126,8 +126,9 @@ import {
   defineComponent,
   PropType,
   ref,
+  useStore,
 } from "@nuxtjs/composition-api";
-import timeAgo from "common/utils/timeAgo";
+import TimeAgo from "javascript-time-ago";
 import { format } from "date-fns";
 
 export default defineComponent({
@@ -222,6 +223,9 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const store = useStore();
+    const timeAgo = store.getters.timeAgo as TimeAgo;
+
     const lastUpdatedTs = computed(() =>
       props.lastUpdated > 0
         ? format(props.lastUpdated, "yyyy-MM-dd HH:mm")

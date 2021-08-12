@@ -1,16 +1,19 @@
 // import FriendModel from "client/models/Friend.model";
 // import { ISelfIdentifyPayload, ISrkResponse } from "common/types/api";
+import TimeAgo from "javascript-time-ago";
 import { Request, Response } from "express";
 import { GetterTree, ActionTree, MutationTree } from "vuex";
 
 export const state = () => ({
   selectedNeurons: [] as string[],
+  timeAgoInstance: null as TimeAgo | null,
 });
 
 export interface RootState extends ReturnType<typeof state> {}
 
 export const getters: GetterTree<RootState, RootState> = {
   selectedNeurons: (state) => state.selectedNeurons,
+  timeAgo: (state) => state.timeAgoInstance,
 };
 
 export const mutations: MutationTree<RootState> = {
@@ -18,6 +21,7 @@ export const mutations: MutationTree<RootState> = {
   removeNeuron: (state, neuron: string) => {
     state.selectedNeurons = state.selectedNeurons.filter((e) => e !== neuron);
   },
+  setTimeAgo: (state, timeAgo: TimeAgo) => (state.timeAgoInstance = timeAgo),
 };
 
 export const actions: ActionTree<RootState, RootState> = {

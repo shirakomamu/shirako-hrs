@@ -1,4 +1,3 @@
-// import { NuxtConfig } from "@nuxt/types";
 import TsConfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import redirectSsl from "redirect-ssl";
 import appinfo from "./appinfo";
@@ -9,6 +8,9 @@ const serverConfig = {
   port: process.env.PORT || 3000,
 };
 
+/**
+ * @type {import('@nuxt/types').NuxtConfig}
+ */
 export default {
   srcDir: "client/",
 
@@ -66,15 +68,12 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
-    // "nuxt-vite",
     // https://go.nuxtjs.dev/typescript
     "@nuxt/typescript-build",
     "@nuxtjs/composition-api/module",
-    // https://go.nuxtjs.dev/tailwindcss
     "nuxt-windicss",
     // https://go.nuxtjs.dev/pwa
     "@nuxtjs/pwa",
-    // "@aceforth/nuxt-optimized-images",
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -116,12 +115,6 @@ export default {
     build: process.env.HEROKU_SLUG_COMMIT?.slice(0, 7),
   },
 
-  privateRuntimeConfig: {
-    axios: {
-      baseURL: "http://" + serverConfig.host + ":" + serverConfig.port,
-    },
-  },
-
   server: {
     host: serverConfig.host,
     port: serverConfig.port,
@@ -141,13 +134,6 @@ export default {
       short_name: appinfo.name, // displayed on desktop or mobile
       description: appinfo.description,
       lang: "en",
-      // icons: [
-      //   {
-      //     src: "/icons/512-or-w.png",
-      //     type: "image/png",
-      //     sizes: "512x512",
-      //   },
-      // ],
       background_color: "#191919",
     },
     icon: {
@@ -159,22 +145,6 @@ export default {
   router: {
     middleware: ["pageGuard"],
   },
-
-  // https://vite.nuxtjs.org/getting-started/config
-  // vite: {
-  //   /* options for vite */
-  //   // ssr: true // enable unstable server-side rendering for development (false by default)
-  //   // experimentWarning: false // hide experimental warning message (disabled by default for tests)
-
-  //   plugins: [
-  //     new TsConfigPathsPlugin({
-  //       configFile: "tsconfig.json",
-  //     }),
-  //   ],
-  //   vue: {
-  //     /* options for vite-plugin-vue2 */
-  //   },
-  // },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
@@ -199,20 +169,6 @@ export default {
         },
       },
     },
-    // https://github.com/nuxt/nuxt.js/issues/9224
-    babel: {
-      plugins: [
-        [
-          "@babel/plugin-proposal-private-property-in-object",
-          {
-            loose: true,
-          },
-        ],
-      ],
-    },
-    // babel: {
-    //   plugins: ["@nuxtjs/composition-api/dist/babel-plugin"],
-    // },
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
@@ -222,30 +178,13 @@ export default {
 
   // https://windicss.org/integrations/nuxt.html
   windicss: {
-    // cssPath: "assets/styles/tailwind.less",
-    // configPath: "client/windi.config.ts",
     exposeConfig: false,
     viewer: false,
     config: {
-      purge: [
-        // "./components/**/*.vue",
-        // "./layouts/**/*.vue",
-        // "./pages/**/*.vue",
-        // "./plugins/**/*.{js,ts}",
-        // "./nuxt.config.{js,ts}",
-      ],
       darkMode: "media", // false or 'media' or 'class'
       theme: {
         extend: {
-          textColor: {
-            "blue-srk": "#0089ff",
-            "orange-srk": "#ff7600",
-          },
-          borderColor: {
-            "blue-srk": "#0089ff",
-            "orange-srk": "#ff7600",
-          },
-          backgroundColor: {
+          colors: {
             "blue-srk": "#0089ff",
             "orange-srk": "#ff7600",
           },
@@ -258,15 +197,8 @@ export default {
   serverMiddleware: [
     redirectSsl.create({
       enabled: process.env.NODE_ENV === "production",
-      // seems like can't set port, because needs 443 for client but PORT for server
     }),
   ],
-
-  // https://marquez.co/docs/nuxt-optimized-images/configuration
-  // optimizedImages: {
-  //   optimizeImages: true,
-  //   optimizeImagesInDev: true,
-  // },
 
   ignore: ["**/*.test.*", ["**/migrations/Migration*.js"]],
 };
