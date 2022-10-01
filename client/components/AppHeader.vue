@@ -1,6 +1,6 @@
 <template>
   <div class="nav flex items-center px-8">
-    <div class="justify-start items-center">
+    <div class="flex justify-start items-center gap-4">
       <nuxt-link
         v-slot="{ navigate }"
         :to="!self || !emailVerified ? '/' : '/dashboard'"
@@ -17,6 +17,7 @@
           }}</span>
         </div>
       </nuxt-link>
+      <nuxt-link to="/eol" class="text-red-500 text-sm">EOL</nuxt-link>
     </div>
     <div class="flex-grow" />
     <div class="flex items-center text-sm">
