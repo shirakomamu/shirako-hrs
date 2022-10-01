@@ -17,6 +17,10 @@
               <p>Just tell us which restaurants you like,</p>
               <p>and we'll pick for you.</p>
             </div>
+            <div class="text-md text-red-500">
+              <p class="font-bold">Shirako Eats ends service November 2022.</p>
+              <NuxtLink to="/eol"><p class="underline">Click here to learn more.</p></NuxtLink>
+            </div>
           </div>
         </div>
 
